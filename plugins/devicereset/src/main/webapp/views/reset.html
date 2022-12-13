@@ -1,0 +1,108 @@
+<!--
+  ~
+  ~ Headwind MDM: Open Source Android MDM Software
+  ~ https://h-mdm.com
+  ~
+  ~ Copyright (C) 2019 Headwind Solutions LLC (http://h-sms.com)
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~       http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  ~
+  -->
+
+<div class="width-1000" ng-controller="PluginDeviceResetTabController">
+
+    <div class="text-center row">
+        <h4 localized>plugin.devicereset.tab.title</h4>
+    </div>
+
+    <div class='form-group' ng-if='errorMessage'>
+        <div class='error'><span>{{errorMessage}}</span></div>
+    </div>
+
+    <div class='form-group' ng-if='successMessage'>
+        <div class='success'><span>{{successMessage}}</span></div>
+    </div>
+
+    <form class="form-horizontal row margin-top-40">
+        <div class="col-sm-10">
+            <input type="text"
+                   ng-model="formData.deviceNumber"
+                   ng-enter='search()'
+                   localized-placeholder="search.placeholder.device"
+                   autocomplete="off"
+                   class="form-control"
+                   typeahead="address for address in searchDevices($viewValue)"
+                   typeahead-loading="loadingDevices"
+                   typeahead-wait-ms="300"
+                   typeahead-focus-first="false"
+                   typeahead-input-formatter="deviceLookupFormatter($model)"
+                   typeahead-no-results="noResults">
+        </div>
+
+        <div class="col-sm-2">
+            <button type='button' class='btn btn-default' ng-click='search()' ng-disabled="loading"
+                    localized>button.search</button>
+        </div>
+    </form>
+
+    <div ng-if="device" class="margin-top-40">
+
+        <div class="form-group">
+            <div class="col-sm-6 align-right" localized>plugin.devicereset.reset.requested</div>
+            <div class="col-sm-6 bold">{{ formatDate(device.statusResetRequested) }}</div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-6 align-right" localized>plugin.devicereset.reset.confirmed</div>
+            <div class="col-sm-6 bold">{{ formatDate(device.statusResetConfirmed) }}</div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-6 align-right" localized>plugin.devicereset.reboot.requested</div>
+            <div class="col-sm-6 bold">{{ formatDate(device.rebootRequested) }}</div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-6 align-right" localized>plugin.devicereset.reboot.confirmed</div>
+            <div class="col-sm-6 bold">{{ formatDate(device.rebootConfirmed) }}</div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-6 align-right" localized>plugin.devicereset.lock.state</div>
+            <div class="col-sm-6 bold">{{ device.deviceLocked ? localization.localize('plugin.devicereset.locked') : '-' }}</div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-6 align-right" localized>plugin.devicereset.lock.message</div>
+            <div class="col-sm-6 bold" style="margin-bottom: 40px">{{ device.lockMessage ? device.lockMessage : '&nbsp;' }}</div>
+        </div>
+
+        <div class="form-group" style="color: red" localized>plugin.devicereset.text.line1</div>
+
+        <div class="form-group text-center margin-top-40">
+            <button type='button' class='btn btn-default' ng-click="cancel()"
+                    localized>button.cancel</button>
+
+            <button type='button' class='btn btn-default' ng-click="passwordReset()" ng-disabled="loading"
+                    localized>plugin.devicereset.button.password.reset</button>
+
+            <button type='button' class='btn btn-default' ng-click="deviceReboot()" ng-disabled="loading"
+                    localized>plugin.devicereset.button.reboot</button>
+
+            <button type='button' class='btn btn-default' ng-if="!device.deviceLocked" ng-click="deviceLock()" ng-disabled="loading"
+                    localized>plugin.devicereset.button.lock</button>
+
+            <button type='button' class='btn btn-default' ng-if="device.deviceLocked" ng-click="deviceUnlock()" ng-disabled="loading"
+                    localized>plugin.devicereset.button.unlock</button>
+
+            <button type='button' class='btn btn-default' ng-click="deviceReset()" ng-disabled="loading"
+                    localized>plugin.devicereset.button.submit</button>
+        </div>
+
+    </div>
+</div>

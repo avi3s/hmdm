@@ -1,0 +1,125 @@
+<!--
+  ~
+  ~ Headwind MDM: Open Source Android MDM Software
+  ~ https://h-mdm.com
+  ~
+  ~ Copyright (C) 2019 Headwind Solutions LLC (http://h-sms.com)
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~       http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  ~
+  -->
+
+<div class='devices' id='devices' style="width: 390px">
+
+    <div ncy-breadcrumb style="margin-bottom: 0"></div>
+
+
+    <div>
+        <div class="text-center row">
+            <h4 localized>plugin.devicelocations.history.tab.title</h4>
+            <h4>{{deviceNumber}}</h4>
+        </div>
+
+        <div class='form-group' ng-if='errorMessage'>
+            <div class='error'><span>{{errorMessage}}</span></div>
+        </div>
+
+        <div class='form-group' ng-if='successMessage'>
+            <div class='success'><span>{{successMessage}}</span></div>
+        </div>
+
+        <form class="form-horizontal margin-top">
+
+            <div class="text-center">
+                <h5 localized>plugin.devicelocations.history.period</h5>
+            </div>
+
+            <div>
+                <div class="col-sm-6">
+                    <div class='min-padding date-picker date-picker-input'>
+                        <input class='form-control' datepicker-popup='{{dateFormat}}'
+                               localized-placeholder="search.placeholder.from"
+                               ng-model='formData.dateFrom' is-open='openDatePickers.dateFrom' show-button-bar='false'
+                               datepicker-options='datePickerOptions'/>
+                    </div>
+                    <div class='min-padding date-picker date-picker-button'>
+                        <button type='button' class='btn btn-default' ng-click='openDateCalendar( $event, true )'>
+                            <span class='glyphicon glyphicon-calendar'></span>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class='min-padding date-picker date-picker-input'>
+                        <input class='form-control' datepicker-popup='{{dateFormat}}' localized-placeholder="search.placeholder.to"
+                               ng-model='formData.dateTo' is-open='openDatePickers.dateTo' show-button-bar='false'
+                               datepicker-options='datePickerOptions'/>
+                    </div>
+                    <div class='min-padding date-picker date-picker-button'>
+                        <button type='button' class='btn btn-default' ng-click='openDateCalendar( $event, false )'>
+                            <span class='glyphicon glyphicon-calendar'></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="col-sm-6">
+                    <div class='min-padding time-picker'>
+                        <timepicker ng-model='formData.timeFrom' show-meridian='false' show-seconds="true"
+                                    show-spinners="false" arrowkeys="true"></timepicker>
+                    </div>
+                </div>
+
+                <div class="col-sm-6">
+                    <div class='min-padding time-picker'>
+                        <timepicker ng-model='formData.timeTo' show-meridian='false' show-seconds="true"
+                                    show-spinners="false" arrowkeys="true"></timepicker>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="col-sm-offset-2 col-sm-10" style="padding-top: 20px">
+                    <input ng-model="options.showMarkers" type="checkbox" id="showMarkers">
+                    <label for="showMarkers" localized>plugin.devicelocations.history.show.markers</label>
+                </div>
+            </div>
+
+            <div>
+                <div class="col-sm-offset-2 col-sm-10" style="padding-top: 20px">
+                    <input ng-model="options.showLabels" type="checkbox" id="showLabels">
+                    <label for="showLabels" localized>plugin.devicelocations.history.show.labels</label>
+                </div>
+            </div>
+
+            <div>
+                <div class="col-sm-offset-2 col-sm-10" style="padding-top: 20px; padding-bottom: 20px">
+                    <input ng-model="options.showPath" type="checkbox" id="showPath">
+                    <label for="showPath" localized>plugin.devicelocations.history.show.path</label>
+                </div>
+            </div>
+
+            <div>
+                <div class="center margin-top-40">
+                    <button type='button' class='btn btn-default' ng-click='searchClicked()' ng-disabled="loading"
+                            localized>button.search</button>
+
+                    <button type='submit' class='btn btn-default' ng-click='exportClicked()' ng-disabled="loading"
+                            localized>button.plugin.devicelocations.export</button>
+                </div>
+            </div>
+
+        </form>
+
+    </div>
+</div>

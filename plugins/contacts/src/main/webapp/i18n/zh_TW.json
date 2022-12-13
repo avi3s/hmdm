@@ -1,0 +1,19 @@
+{	
+"breadcrumb.plugin.contacts.main": "聯繫人",
+"plugin.contacts.localization.key.name": "聯繫人",
+"plugin.contacts.notice": "此插件需要安裝移動代理（Contacts Plugin，com.hmdm.contacts）",
+"plugin.contacts.tab.title": "將聯繫人上傳到設備",
+"plugin.contacts.configuration": "配置",
+"plugin.contacts.vcf.url": " VCF文檔的URL",
+"plugin.contacts.vcf.url.placeholder": " https://your.host.com/vcf.file",
+"plugin.contacts.http.username": " HTTP用戶名",
+"plugin.contacts.http.username.placeholder": "用於HTTP授權的用戶名",
+"plugin.contacts.http.password": " HTTP密碼",
+"plugin.contacts.http.password.placeholder": " HTTP授權密碼",
+"plugin.contacts.account.type": " ACCOUNT_TYPE值",
+"plugin.contacts.account.type.placeholder": "同步聯繫人為ACCOUNT_TYPE",
+"plugin.contacts.sync.timespan": "同步間隔",
+"plugin.contacts.sync.timespan.placeholder": " URL重新加載之間的時間跨度",
+"plugin.contacts.wipe.all": "擦拭所有聯繫人",
+"plugin.contacts.data.saved": "設置已成功儲存"
+}	

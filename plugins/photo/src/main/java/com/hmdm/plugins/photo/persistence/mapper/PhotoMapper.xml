@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~
+  ~ Headwind MDM: Open Source Android MDM Software
+  ~ https://h-mdm.com
+  ~
+  ~ Copyright (C) 2019 Headwind Solutions LLC (http://h-sms.com)
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~       http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  ~
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hmdm.plugins.photo.persistence.mapper.PhotoMapper">
+
+    <select id="findAllPhotosByCustomerId"
+            parameterType="com.hmdm.plugins.photo.rest.json.PhotoFilter"
+            resultType="Photo">
+        SELECT photo.*, devices.number AS deviceNumber, places.pointId, places.pointAddress
+        FROM plugin_photo_photo photo
+        INNER JOIN devices ON devices.id = photo.deviceid
+        INNER JOIN users ON users.id = #{userId}
+        LEFT JOIN plugin_photo_photo_places places ON places.photoId = photo.id
+        WHERE devices.customerId = #{customerId}
+        AND (users.allDevicesAvailable = TRUE
+             OR
+             EXISTS(SELECT 1
+                    FROM deviceGroups
+                    INNER JOIN userDeviceGroupsAccess access ON deviceGroups.groupId = access.groupId AND access.userId = users.id
+                    WHERE devices.id = deviceGroups.deviceId
+                   )
+        )
+        <if test="deviceFilter != null">
+            AND (
+            devices.number ILIKE #{deviceFilter}
+            )
+        </if>
+        <if test="pointFilter != null">
+            AND (
+            places.pointId ILIKE #{pointFilter}
+            )
+        </if>
+        <if test="addressFilter != null">
+            AND (
+            photo.address ILIKE #{addressFilter} AND (NOT (#{featurePlacesEnabled} AND #{linkPhotoToPlace}) OR places.pointaddress IS NULL)
+            OR
+            places.pointaddress ILIKE #{addressFilter} AND (#{featurePlacesEnabled} AND #{linkPhotoToPlace})
+            )
+        </if>
+        <if test="dateFrom != null">
+            AND ( photo.createTime &gt;= #{dateFrom} )
+        </if>
+        <if test="dateTo != null">
+            AND ( photo.createTime &lt;= #{dateTo} )
+        </if>
+
+        <if test="sortValue.equals('createTime')">
+            ORDER BY photo.createTime DESC
+        </if>
+        <if test="sortValue.equals('deviceNumber')">
+            ORDER BY devices.number ASC, photo.createTime DESC
+        </if>
+        OFFSET (#{pageNum} - 1) * #{pageSize}
+        LIMIT #{pageSize}
+    </select>
+
+    <select id="countAll"
+            parameterType="com.hmdm.plugins.photo.rest.json.PhotoFilter"
+            resultType="long">
+        SELECT COUNT(photo.*) AS counter
+        FROM plugin_photo_photo photo
+        INNER JOIN devices ON devices.id = photo.deviceid
+        INNER JOIN users ON users.id = #{userId}
+        LEFT JOIN plugin_photo_photo_places places ON places.photoId = photo.id
+        WHERE devices.customerId = #{customerId}
+        AND (users.allDevicesAvailable = TRUE
+             OR
+             EXISTS (SELECT 1
+                     FROM deviceGroups
+                     INNER JOIN userDeviceGroupsAccess access ON deviceGroups.groupId = access.groupId AND access.userId = users.id
+                     WHERE devices.id = deviceGroups.deviceId
+                    )
+        )
+        <if test="deviceFilter != null">
+            AND (
+                devices.number ILIKE #{deviceFilter}
+            )
+        </if>
+        <if test="pointFilter != null">
+            AND (
+                places.pointId ILIKE #{pointFilter}
+            )
+        </if>
+        <if test="addressFilter != null">
+            AND (
+            photo.address ILIKE #{addressFilter} AND (NOT (#{featurePlacesEnabled} AND #{linkPhotoToPlace}) OR places.pointaddress IS NULL)
+            OR
+            places.pointaddress ILIKE #{addressFilter} AND (#{featurePlacesEnabled} AND #{linkPhotoToPlace})
+            )
+        </if>
+        <if test="dateFrom != null">
+            AND ( photo.createTime &gt;= #{dateFrom} )
+        </if>
+        <if test="dateTo != null">
+            AND ( photo.createTime &lt;= #{dateTo} )
+        </if>
+    </select>
+</mapper>

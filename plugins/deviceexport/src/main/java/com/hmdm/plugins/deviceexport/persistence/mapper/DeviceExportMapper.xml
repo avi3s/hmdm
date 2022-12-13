@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~
+  ~ Headwind MDM: Open Source Android MDM Software
+  ~ https://h-mdm.com
+  ~
+  ~ Copyright (C) 2019 Headwind Solutions LLC (http://h-sms.com)
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~       http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  ~
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hmdm.plugins.deviceexport.persistence.mapper.DeviceExportMapper">
+
+    <resultMap id="deviceResultForExport" type="DeviceExportRecord">
+        <result property="deviceNumber" column="deviceNumber"/>
+        <result property="id" column="id"/>
+        <result property="imei" column="imei"/>
+        <result property="serial" column="serial"/>
+        <result property="phone" column="phone"/>
+        <result property="description" column="description"/>
+        <result property="configurationId" column="configurationId"/>
+        <result property="configurationName" column="configurationName"/>
+        <result property="launcherVersion" column="launcherVersion"/>
+        <result property="adminPermission" column="adminPermission"/>
+        <result property="overlapPermission" column="overlapPermission"/>
+        <result property="historyPermission" column="historyPermission"/>
+        <result property="mdmMode" column="mdmMode"/>
+        <result property="kioskMode" column="kioskMode"/>
+        <result property="androidVersion" column="androidVersion"/>
+        <result property="infoAvailable" column="infoAvailable"/>
+        <result property="syncTime" column="syncTime"/>
+        <result property="model" column="model"/>
+        <result property="launcher" column="launcher"/>
+        <result property="custom1" column="custom1"/>
+        <result property="custom2" column="custom2"/>
+        <result property="custom3" column="custom3"/>
+    </resultMap>
+
+    <resultMap id="configurationView" type="DeviceExportConfigurationView">
+        <result property="id" column="id"/>
+
+        <collection property="applications" ofType="DeviceExportApplicationConfigurationView">
+            <result property="type" column="type"/>
+            <result property="pkg" column="pkg"/>
+            <result property="version" column="version"/>
+            <result property="name" column="name"/>
+            <result property="url" column="url"/>
+            <result property="action" column="action"/>
+        </collection>
+    </resultMap>
+
+    <select id="getDevicesForExport"
+            parameterType="com.hmdm.plugins.deviceexport.rest.json.DeviceExportRequest" resultMap="deviceResultForExport" resultOrdered="true">
+        SELECT DISTINCT ON (deviceNumber)
+            devices.id AS id,
+            devices.number AS deviceNumber,
+            CASE
+                WHEN devices.info::json -&gt;&gt; 'imei' IS NULL THEN (devices.imei)
+                WHEN (devices.info::json -&gt;&gt; 'imei') = 'null' THEN (devices.imei)
+                ELSE (devices.info::json -&gt;&gt; 'imei')
+            END AS imei,
+            devices.info::json -&gt;&gt; 'serial' AS serial,
+            CASE
+                WHEN devices.info::json -&gt;&gt; 'phone' IS NULL THEN (devices.phone)
+                WHEN (devices.info::json -&gt;&gt; 'phone') = 'null' THEN (devices.phone)
+                ELSE (devices.info::json -&gt;&gt; 'phone')
+            END AS phone,
+            devices.description as description,
+            configurations.id AS configurationId,
+            configurations.name AS configurationName,
+            deviceApps.app::json -> 'version' AS launcherVersion,
+           (devices.info::json -> 'permissions' ->> 0)::BOOLEAN AS adminPermission,
+           (devices.info::json -> 'permissions' ->> 1)::BOOLEAN AS overlapPermission,
+           (devices.info::json -> 'permissions' ->> 2)::BOOLEAN AS historyPermission,
+            devices.info::json -> 'mdmMode' AS mdmMode,
+            devices.info::json -> 'kioskMode' AS kioskMode,
+            devices.info::json -> 'androidVersion' AS androidVersion,
+            NOT devices.info IS NULL AS infoAvailable,
+            devices.lastupdate AS syncTime,
+            devices.info::json -> 'model' AS model,
+            devices.info::json -> 'launcherPackage' AS launcher,
+            devices.custom1 AS custom1,
+            devices.custom2 AS custom2,
+            devices.custom3 AS custom3
+        FROM devices
+        LEFT JOIN configurations ON configurations.id = devices.configurationid
+        LEFT JOIN applicationVersions ON configurations.mainAppId = applicationVersions.id
+        LEFT JOIN applications ON applications.id = applicationVersions.applicationid
+        LEFT JOIN (SELECT id, json_array_elements(info::json -&gt; 'applications') AS app FROM devices) deviceApps ON deviceApps.id = devices.id AND deviceApps.app::json -&gt;&gt; 'pkg' = applications.pkg
+        LEFT JOIN deviceGroups ON devices.id = deviceGroups.deviceId
+        LEFT JOIN groups ON deviceGroups.groupId = groups.id
+        LEFT JOIN users ON users.id = #{userId}
+        LEFT JOIN userDeviceGroupsAccess access ON groups.id = access.groupId AND access.userId = users.id
+        WHERE devices.customerId = #{customerId}
+        AND (users.allDevicesAvailable = TRUE OR NOT access.id IS NULL)
+        <if test="filterByGroupRequired">
+            AND (
+            EXISTS (
+                    SELECT 1
+                    FROM devicegroups
+                    WHERE devicegroups.deviceId = devices.id
+                    AND devicegroups.groupId IN (
+                        <foreach item="item" index="index" collection="filterIds" open="" separator="," close="">#{item}</foreach>
+                   )
+                )
+            )
+        </if>
+        <if test="filterByConfigurationRequired">
+            AND (
+                devices.configurationid IN (
+                    <foreach item="item" index="index" collection="filterIds" open="" separator="," close="">#{item}</foreach>
+                )
+            )
+        </if>
+        ORDER BY deviceNumber
+    </select>
+
+    <select id="getConfigurations" resultMap="configurationView">
+        SELECT
+            c.id AS id,
+            app.type AS type,
+            app.pkg AS pkg,
+            ver.version AS version,
+            app.name AS name,
+            ver.url AS url,
+            capps.action AS action
+        FROM configurations c
+        LEFT JOIN configurationApplications capps ON c.id = capps.configurationId
+        LEFT JOIN applicationVersions ver ON ver.id =  capps.applicationVersionId
+        LEFT JOIN applications app ON app.id =  ver.applicationId
+        WHERE c.customerId = #{customerId}
+    </select>
+
+    <select id="getDeviceApplicationsByCustomer" resultType="DeviceExportApplicationDeviceView">
+        SELECT DISTINCT
+            deviceApps.id AS deviceId,
+            deviceApps.app::json -&gt;&gt; 'pkg' AS pkg,
+            deviceApps.app::json -&gt;&gt; 'version' AS version
+        FROM (SELECT id, customerid, json_array_elements(info::json -&gt; 'applications') AS app FROM devices) deviceApps
+        WHERE customerId = #{customerId}
+    </select>
+
+    <select id="getDeviceGroupsByCustomer" resultType="DeviceExportGroupDeviceView">
+        SELECT dg.deviceId AS deviceId, groups.name as group
+        FROM deviceGroups dg LEFT JOIN groups ON dg.groupId = groups.id
+	    WHERE groups.customerId=#{customerId};
+    </select>
+
+</mapper>

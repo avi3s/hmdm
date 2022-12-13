@@ -1,0 +1,105 @@
+<!--
+  ~
+  ~ Headwind MDM: Open Source Android MDM Software
+  ~ https://h-mdm.com
+  ~
+  ~ Copyright (C) 2019 Headwind Solutions LLC (http://h-sms.com)
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~       http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  ~
+  -->
+
+<!-- Localization completed -->
+<div class="width-1000" ng-controller="PluginDeviceExportTabController">
+    <div class="text-center">
+        <h4 localized>plugin.deviceexport.tab.title</h4>
+    </div>
+
+    <div>
+        <div class='form-group'>
+            <div ng-show='errorMessage' class='error'><span>{{errorMessage}}</span></div>
+            <div ng-show='successMessage' class='success'><span>{{successMessage}}</span></div>
+        </div>
+    </div>
+
+    <div class="form-horizontal">
+
+        <div class="form-group">
+            <div class="col-sm-4 control-label">
+                <label for="filterType" localized>plugin.deviceexport.selection</label>
+            </div>
+            <div class="col-sm-8">
+                <select id="filterType" class="form-control" ng-model="request.filterType"
+                        ng-options="t.id as t.name for t in filterTypeOptions">
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group" ng-if="request.filterType == 1">
+            <div class="col-sm-4 control-label">
+                <label for="groupsSelection" localized>plugin.deviceexport.group.selection</label>
+            </div>
+            <div class="col-sm-8">
+                <div ng-dropdown-multiselect id="groupsSelection"
+                     options='groupsList'
+                     translation-texts='groupsFilteringTexts'
+                     selected-model='groupsSelection'
+                     class='left margin-right-half custom-multi-select'></div>
+            </div>
+        </div>
+
+        <div class="form-group" ng-if="request.filterType == 2">
+            <div class="col-sm-4 control-label">
+                <label for="configurationsSelection" localized>plugin.deviceexport.configuration.selection</label>
+            </div>
+            <div class="col-sm-8">
+                <div ng-dropdown-multiselect id="configurationsSelection"
+                     options='configurationsList'
+                     translation-texts='configurationsFilteringTexts'
+                     selected-model='configurationsSelection'
+                     class='left margin-right-half custom-multi-select'></div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-4 control-label">
+                <label for="exportType" localized>plugin.deviceexport.selection.file.type</label>
+            </div>
+            <div class="col-sm-8">
+                <select id="exportType" class="form-control" ng-model="request.exportType"
+                        ng-options="t.id as t.name for t in exportTypeOptions">
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-4 control-label">
+                <label for="columnsList" localized>plugin.deviceexport.column.selection</label>
+            </div>
+            <div class="col-sm-8">
+                <div ng-dropdown-multiselect id="columnsList"
+                     options='columnsList'
+                     translation-texts='columnsFilteringTexts'
+                     selected-model='columnsSelection'
+                     class='left margin-right-half custom-multi-select'></div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class='col-sm-offset-4 col-sm-8'>
+                <button type='submit' class='btn btn-default' ng-click='doExport()' ng-disabled="loading"
+                        localized>button.plugin.deviceexport.export</button>
+            </div>
+        </div>
+    </div>
+</div>

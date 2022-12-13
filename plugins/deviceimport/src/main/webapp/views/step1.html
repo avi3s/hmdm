@@ -1,0 +1,155 @@
+<!--
+  ~
+  ~ Headwind MDM: Open Source Android MDM Software
+  ~ https://h-mdm.com
+  ~
+  ~ Copyright (C) 2019 Headwind Solutions LLC (http://h-sms.com)
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~       http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  ~
+  -->
+
+<div class="form-horizontal width-1000">
+    <div class="form-group">
+        <div class="col-sm-4 control-label">
+            <label for="groupId_c" localized>plugin.deviceimport.group.selection</label>
+        </div>
+        <div class="col-sm-8">
+            <select id="groupId_c" class="form-control"
+                    ng-model="request.groupId" ng-options="t.id as t.name for t in groups"></select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-4 control-label">
+            <label for="configurationId_c" localized>plugin.deviceimport.configuration.selection</label>
+        </div>
+        <div class="col-sm-8">
+            <select id="configurationId_c" class="form-control"
+                    ng-model="request.configurationId" ng-options="t.id as t.name for t in configurations"></select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-4 control-label">
+            <label for="importType_c" localized>plugin.deviceexport.selection.file.type</label>
+        </div>
+        <div class="col-sm-8">
+            <select id="importType_c" class="form-control" ng-model="request.importType"
+                    ng-options="t.id as t.name for t in importTypeOptions">
+            </select>
+        </div>
+    </div>
+
+    <div class='form-group' ng-if="request.importType !== 'LIST'">
+        <label class='col-sm-4 control-label' localized>plugin.deviceimport.file.selection</label>
+        <div class='col-sm-8'>
+            <div class="btn btn-default full-width btn-upload" ng-if="!file.path"
+                 upload-button
+                 url="rest/plugins/deviceimport/upload"
+                 on-upload="onStartedUpload(files)"
+                 on-success="fileUploaded( response )"></div>
+            <span ng-if="file.path && !invalidFile">{{fileName}}</span>
+            <button class="btn btn-default" ng-if="file.path" ng-click="clearFile()" localized>button.cleanup</button>
+        </div>
+    </div>
+
+    <div class="form-group" ng-if="request.importType === 'LIST'">
+        <div class="col-sm-4 control-label">
+            <label for="fileList_c" localized>plugin.deviceimport.file.list</label>
+        </div>
+        <div class="col-sm-8">
+            <textarea id="fileList_c" class="form-control" rows="8"
+                      ng-model="request.listContent"></textarea>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-4 control-label">
+            <label for="numberSelection_c" localized>plugin.deviceimport.devicenumber.selection</label>
+        </div>
+        <div class="col-sm-8">
+            <select id="numberSelection_c" class="form-control"
+                    ng-model="request.deviceNumberColumnIndex" ng-options="t.id as t.name for t in columnOptions"></select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-4 control-label">
+            <label for="imeiSelection_c" localized>plugin.deviceimport.imei.selection</label>
+        </div>
+        <div class="col-sm-8">
+            <select id="imeiSelection_c" class="form-control"
+                    ng-model="request.imeiColumnIndex" ng-options="t.id as t.name for t in columnOptions"></select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-4 control-label">
+            <label for="phoneSelection_c" localized>plugin.deviceimport.phonenumber.selection</label>
+        </div>
+        <div class="col-sm-8">
+            <select id="phoneSelection_c" class="form-control"
+                    ng-model="request.phoneNumberColumnIndex" ng-options="t.id as t.name for t in columnOptions"></select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-4 control-label">
+            <label for="descSelection_c" localized>plugin.deviceimport.description.selection</label>
+        </div>
+        <div class="col-sm-8">
+            <select id="descSelection_c" class="form-control"
+                    ng-model="request.descriptionColumnIndex" ng-options="t.id as t.name for t in columnOptions"></select>
+        </div>
+    </div>
+
+    <div class="form-group" ng-if="settings.customPropertyName1">
+        <div class="col-sm-4 control-label">
+            <label for="custom1Selection_c">{{settings.customPropertyName1}}</label>
+        </div>
+        <div class="col-sm-8">
+            <select id="custom1Selection_c" class="form-control"
+                    ng-model="request.custom1ColumnIndex" ng-options="t.id as t.name for t in columnOptions"></select>
+        </div>
+    </div>
+
+    <div class="form-group" ng-if="settings.customPropertyName2">
+        <div class="col-sm-4 control-label">
+            <label for="custom2Selection_c">{{settings.customPropertyName2}}</label>
+        </div>
+        <div class="col-sm-8">
+            <select id="custom2Selection_c" class="form-control"
+                    ng-model="request.custom2ColumnIndex" ng-options="t.id as t.name for t in columnOptions"></select>
+        </div>
+    </div>
+
+    <div class="form-group" ng-if="settings.customPropertyName3">
+        <div class="col-sm-4 control-label">
+            <label for="custom3Selection_c">{{settings.customPropertyName3}}</label>
+        </div>
+        <div class="col-sm-8">
+            <select id="custom3Selection_c" class="form-control"
+                    ng-model="request.custom3ColumnIndex" ng-options="t.id as t.name for t in columnOptions"></select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class='col-sm-offset-4 col-sm-8'>
+            <button type='submit' class='btn btn-default' ng-click='doImport()' ng-disabled="loading"
+                    localized>button.plugin.deviceimport.import</button>
+        </div>
+    </div>
+</div>
+
+

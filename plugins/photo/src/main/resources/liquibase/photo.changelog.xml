@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~
+  ~ Headwind MDM: Open Source Android MDM Software
+  ~ https://h-mdm.com
+  ~
+  ~ Copyright (C) 2019 Headwind Solutions LLC (http://h-sms.com)
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~       http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  ~
+  -->
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd"
+        logicalFilePath="db.changelog.xml">
+
+    <!--
+    The change set IDs MUST start with "plugin-<plugin identifier>" followed by dash symbol ALWAYS.
+    The database object names declared by plugin MUST always start with "plugin_<plugin identifier>" followed by underscore
+    symbol.
+    -->
+
+    <changeSet id="plugin-photo-07.02.2019-10:00" author="isv" context="common">
+        <comment>Create photo_</comment>
+        <sql>
+            CREATE TABLE plugin_photo_photo (
+            id serial NOT NULL CONSTRAINT plugin_photo_photo_pr_key PRIMARY KEY,
+            createTime TIMESTAMP,
+            lat DOUBLE PRECISION,
+            lng DOUBLE PRECISION,
+            path TEXT NOT NULL,
+            deviceId INT NOT NULL REFERENCES devices( id ) ON DELETE CASCADE,
+            customerId INT NOT NULL REFERENCES customers( id ) ON DELETE CASCADE,
+            thumbnailImagePath TEXT,
+            contentType TEXT
+            );
+        </sql>
+        <rollback>
+            DROP TABLE plugin_photo_photo;
+        </rollback>
+    </changeSet>
+
+    <changeSet id="plugin-photo-07.02.2019-15:11" author="isv" context="common">
+        <comment>Register photo plugin</comment>
+        <sql>
+            INSERT INTO plugins (identifier, name, description, javascriptModuleFile, functionsViewTemplate, settingsViewTemplate)
+            VALUES ('photo', 'Фотографии', 'Фотографии, присланные устройствами',
+                    'app/components/plugins/photo/photo.module.js',
+                    'app/components/plugins/photo/views/photos.html',
+                    'app/components/plugins/photo/views/settings.html');
+        </sql>
+        <rollback>
+            DELETE FROM plugins WHERE identifier = 'photo';
+        </rollback>
+    </changeSet>
+
+    <changeSet id="plugin-photo-08.02.2019-16:06" author="isv" context="common">
+        <comment>Settings table</comment>
+        <sql>
+            CREATE TABLE plugin_photo_settings (
+                id serial NOT NULL CONSTRAINT plugin_photo_settings_pr_key PRIMARY KEY,
+                customerId INT NOT NULL CONSTRAINT plugin_photo_settings_customerid_unq UNIQUE REFERENCES customers( id ) ON DELETE CASCADE,
+                trackLocation BOOLEAN NOT NULL DEFAULT TRUE,
+                trackingOffWarning TEXT
+            );
+        </sql>
+        <rollback>
+            DROP TABLE plugin_photo_settings;
+        </rollback>
+    </changeSet>
+
+    <changeSet id="plugin-photo-12.02.2019-15:22" author="isv" context="common">
+        <comment>Settings table</comment>
+        <sql>
+            INSERT INTO permissions (name, description) VALUES ('plugin_photo_remove_photo', 'Имеет доступ к удалению фотографий');
+            INSERT INTO userRolePermissions (roleId, permissionId)
+                   SELECT id, currval('permissions_id_seq') FROM userroles WHERE name = 'Администратор';
+        </sql>
+        <rollback>
+            DELETE FROM permissions WHERE name = 'plugin_photo_remove_photo';
+        </rollback>
+    </changeSet>
+
+    <changeSet id="plugin-photo-13.02.2019-12:25" author="isv" context="common">
+        <comment>Settings sendPhoto</comment>
+        <sql>
+            ALTER TABLE plugin_photo_settings ADD COLUMN sendPhoto BOOLEAN NOT NULL DEFAULT FALSE;
+        </sql>
+        <rollback>
+            ALTER TABLE plugin_photo_settings DROP COLUMN sendPhoto;
+        </rollback>
+    </changeSet>
+
+    <changeSet id="plugin-photo-26.02.2019-17:17" author="isv" context="common">
+        <comment>Settings imagePaths, imageDeletionDelay</comment>
+        <sql>
+            ALTER TABLE plugin_photo_settings ADD COLUMN imagePaths TEXT;
+            ALTER TABLE plugin_photo_settings ADD COLUMN imageDeletionDelay INT;
+        </sql>
+        <rollback>
+            ALTER TABLE plugin_photo_settings DROP COLUMN imageDeletionDelay;
+            ALTER TABLE plugin_photo_settings DROP COLUMN imagePaths;
+        </rollback>
+    </changeSet>
+
+
+    <changeSet id="plugin-photo-29.03.2019-16:02" author="isv" context="common">
+        <comment>Photo address</comment>
+        <sql>
+            ALTER TABLE plugin_photo_photo ADD COLUMN address TEXT;
+        </sql>
+        <rollback>
+            ALTER TABLE plugin_photo_photo DROP COLUMN address;
+        </rollback>
+    </changeSet>
+
+    <changeSet id="plugin-photo-30.05.2019-12:29" author="isv" context="common">
+        <comment>Set the localization key for plugin name</comment>
+        <sql>
+            UPDATE plugins SET nameLocalizationKey='plugin.photo.localization.key.name' WHERE identifier='photo';
+        </sql>
+        <rollback>
+            UPDATE plugins SET nameLocalizationKey='plugin.name.not.specified' WHERE identifier='photo';
+        </rollback>
+    </changeSet>
+
+    <changeSet id="plugin-photo-08.06.2019-17:17" author="isv" context="common">
+        <comment>Settings addText, backgroundColor, textColor, transparency, textContent</comment>
+        <sql>
+            ALTER TABLE plugin_photo_settings ADD COLUMN addText BOOLEAN NOT NULL DEFAULT FALSE;
+            ALTER TABLE plugin_photo_settings ADD COLUMN backgroundColor VARCHAR(20);
+            ALTER TABLE plugin_photo_settings ADD COLUMN textColor VARCHAR(20);
+            ALTER TABLE plugin_photo_settings ADD COLUMN transparency INT;
+            ALTER TABLE plugin_photo_settings ADD COLUMN textContent TEXT;
+        </sql>
+        <rollback>
+            ALTER TABLE plugin_photo_settings DROP COLUMN textContent;
+            ALTER TABLE plugin_photo_settings DROP COLUMN transparency;
+            ALTER TABLE plugin_photo_settings DROP COLUMN textColor;
+            ALTER TABLE plugin_photo_settings DROP COLUMN backgroundColor;
+            ALTER TABLE plugin_photo_settings DROP COLUMN addText;
+        </rollback>
+    </changeSet>
+
+    <changeSet id="plugin-photo-27.06.19-13:36" author="isv" context="common">
+        <comment>Adding index on deviceId, createTime to plugin_photo_photo table</comment>
+        <sql>
+            CREATE INDEX plugin_photo_photo_devicecreatetime_idx ON plugin_photo_photo (deviceId, createtime);
+        </sql>
+        <rollback>
+            DROP INDEX plugin_photo_photo_devicecreatetime_idx;
+        </rollback>
+    </changeSet>
+
+    <changeSet id="plugin-photo-11.09.19-18:38" author="isv" context="common">
+        <comment>Set: plugins.enabledForDevice</comment>
+        <sql>
+            UPDATE plugins SET enabledForDevice = TRUE WHERE identifier = 'photo';
+        </sql>
+        <rollback>
+            UPDATE plugins SET enabledForDevice = FALSE WHERE identifier = 'photo';
+        </rollback>
+    </changeSet>
+
+    <changeSet id="plugin-photo-08.10.19-13:55" author="isv" context="common">
+        <comment>Table, new: plugin_photo_places</comment>
+        <sql>
+            CREATE TABLE plugin_photo_places (
+            id SERIAL NOT NULL CONSTRAINT plugin_photo_places_pr_key PRIMARY KEY,
+            customerId INT NOT NULL REFERENCES customers( id ) ON DELETE CASCADE,
+            placeId VARCHAR(1024) NOT NULL,
+            lat DOUBLE PRECISION NOT NULL,
+            lng DOUBLE PRECISION NOT NULL,
+            address TEXT,
+            reserve TEXT
+            );
+        </sql>
+        <rollback>
+            DROP TABLE plugin_photo_places;
+        </rollback>
+    </changeSet>
+
+    <changeSet id="plugin-photo-08.10.2019-18:30" author="isv" context="common">
+        <comment>Columns,new: plugin_photo_settings#linkPhotoToPlace,searchPlaceRadius</comment>
+        <sql>
+            ALTER TABLE plugin_photo_settings ADD COLUMN linkPhotoToPlace BOOLEAN NOT NULL DEFAULT FALSE;
+            ALTER TABLE plugin_photo_settings ADD COLUMN searchPlaceRadius INT NOT NULL DEFAULT 0;
+        </sql>
+        <rollback>
+            ALTER TABLE plugin_photo_settings DROP COLUMN searchPlaceRadius;
+            ALTER TABLE plugin_photo_settings DROP COLUMN linkPhotoToPlace;
+        </rollback>
+    </changeSet>
+
+    <changeSet id="plugin-photo-09.10.2019-13:46" author="isv" context="common">
+        <comment>Index,new: plugin_photo_places#customerId,LOWER(placeId)</comment>
+        <sql>
+            CREATE UNIQUE INDEX plugin_photo_places_uniq_idx ON plugin_photo_places(customerId, LOWER(placeId));
+        </sql>
+        <rollback>
+            DROP INDEX plugin_photo_places_uniq_idx;
+        </rollback>
+    </changeSet>
+
+    <changeSet id="plugin-photo-09.10.19-14:59" author="isv" context="common">
+        <comment>Table, new: plugin_photo_photo_places</comment>
+        <sql>
+            CREATE TABLE plugin_photo_photo_places (
+                id SERIAL NOT NULL CONSTRAINT plugin_photo_photo_places_pr_key PRIMARY KEY,
+                photoId INT NOT NULL REFERENCES plugin_photo_photo( id ) ON DELETE CASCADE,
+                pointId VARCHAR(1024) NOT NULL,
+                pointAddress TEXT NOT NULL
+            );
+            CREATE UNIQUE INDEX plugin_photo_photo_places_uniq_idx ON plugin_photo_photo_places(photoId);
+        </sql>
+        <rollback>
+            DROP INDEX plugin_photo_photo_places_uniq_idx;
+            DROP TABLE plugin_photo_photo_places;
+        </rollback>
+    </changeSet>
+
+    <changeSet id="plugin-photo-21.11.2019-13:12" author="isv" context="common">
+        <comment>Columns,new: plugin_photo_settings#nonTransmittedPaths,includeStandardImagePaths</comment>
+        <sql>
+            ALTER TABLE plugin_photo_settings ADD COLUMN nonTransmittedPaths TEXT;
+            ALTER TABLE plugin_photo_settings ADD COLUMN includeStandardImagePaths BOOLEAN NOT NULL DEFAULT FALSE;
+        </sql>
+        <rollback>
+            ALTER TABLE plugin_photo_settings DROP COLUMN nonTransmittedPaths;
+            ALTER TABLE plugin_photo_settings DROP COLUMN includeStandardImagePaths;
+        </rollback>
+    </changeSet>
+
+    <changeSet id="plugin-photo-22.05.2020-12:47" author="seva" context="common">
+        <comment>Fix user role permissions assuming admin and super-admin have fixed ids</comment>
+        <sql>
+            DELETE FROM userRolePermissions WHERE roleId=1 AND permissionId=(SELECT id FROM permissions WHERE name='plugin_photo_remove_photo');
+            INSERT INTO userRolePermissions VALUES (1, (SELECT id FROM permissions WHERE name='plugin_photo_remove_photo'));
+            DELETE FROM userRolePermissions WHERE roleId=2 AND permissionId=(SELECT id FROM permissions WHERE name='plugin_photo_remove_photo');
+            INSERT INTO userRolePermissions VALUES (2, (SELECT id FROM permissions WHERE name='plugin_photo_remove_photo'));
+
+        </sql>
+        <rollback>
+            DELETE FROM userRolePermissions WHERE roleId=1 AND permissionId=(SELECT id FROM permissions WHERE name='plugin_photo_remove_photo');
+            DELETE FROM userRolePermissions WHERE roleId=2 AND permissionId=(SELECT id FROM permissions WHERE name='plugin_photo_remove_photo');
+        </rollback>
+    </changeSet>
+
+    <changeSet id="plugin-photo-03.02.2021-11:18" author="seva" context="common">
+        <comment>Columns,new: plugin_photo_settings#fileTypes,directory,purgeDays</comment>
+        <sql>
+            ALTER TABLE plugin_photo_settings ADD COLUMN fileTypes TEXT;
+            ALTER TABLE plugin_photo_settings ADD COLUMN directory TEXT;
+            ALTER TABLE plugin_photo_settings ADD COLUMN purgeDays INT NOT NULL DEFAULT 0;
+        </sql>
+        <rollback>
+            ALTER TABLE plugin_photo_settings DROP COLUMN fileTypes;
+            ALTER TABLE plugin_photo_settings DROP COLUMN directory;
+            ALTER TABLE plugin_photo_settings DROP COLUMN directory;
+        </rollback>
+    </changeSet>
+
+    <changeSet id="plugin-photo-19.05.2021-10:55" author="seva" context="common">
+        <comment>Add permission to view photos</comment>
+        <sql>
+            INSERT INTO permissions (name, description) VALUES ('plugin_photo_access', 'Access to photo plugin');
+            INSERT INTO userRolePermissions (roleId, permissionId)
+            SELECT id, currval('permissions_id_seq')
+            FROM userroles;
+            UPDATE plugins SET settingsPermission='plugin_photo_access',
+                               functionsPermission='plugin_photo_access',
+                               deviceFunctionsPermission='plugin_photo_access'
+            WHERE identifier='photo';
+        </sql>
+        <rollback>
+            UPDATE plugins SET settingsPermission=null,
+            functionsPermission=null,
+            deviceFunctionsPermission=null
+            WHERE identifier='photo';
+            DELETE FROM permissions WHERE name='plugin_photo_access';
+        </rollback>
+    </changeSet>
+
+    <changeSet id="plugin-photo-19.11.2021-11:36" author="seva" context="common">
+        <comment>Columns,new: plugin_photo_settings#nameTemplate</comment>
+        <sql>
+            ALTER TABLE plugin_photo_settings ADD COLUMN nameTemplate TEXT;
+        </sql>
+        <rollback>
+            ALTER TABLE plugin_photo_settings DROP COLUMN nameTemplate;
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

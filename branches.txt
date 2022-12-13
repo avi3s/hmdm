@@ -1,0 +1,27 @@
+master - main branch
+------
+
+trial - branch including code for checking the trial key. Do not need to be updated. After checking out, merge latest changes to this branch from the master branch:
+-----
+
+git checkout trial
+git merge master
+git push
+
+plugin-dev - branch for new plugin development. The custom plugins are the git submodules. Ask Headwind MDM support how to develop a new plugin (there is a manual: plugin-development.txt). 
+----------
+
+plugin - branch containing stable plugins. Once plugin-dev branch gets a stable state of a plugin, merge this plugin with plugin-dev. After checking out, merge with master.
+------
+
+git checkout plugin
+git merge master
+
+plugin-trial - branch including trial code and custom plugins. After checking out, merge latest changes from master and plugin
+------------
+
+git checkout plugin-trial
+git merge master
+git merge plugin
+git push
+

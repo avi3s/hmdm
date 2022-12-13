@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~
+  ~ Headwind MDM: Open Source Android MDM Software
+  ~ https://h-mdm.com
+  ~
+  ~ Copyright (C) 2019 Headwind Solutions LLC (http://h-sms.com)
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~       http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  ~
+  -->
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd"
+        logicalFilePath="devicereset.changelog.xml">
+
+    <!--
+    The change set IDs MUST start with "plugin-<plugin identifier>" followed by dash symbol ALWAYS.
+    The database object names declared by plugin MUST always start with "plugin_<plugin identifier>" followed by underscore
+    symbol.
+    -->
+
+    <changeSet id="plugin-devicereset-28.10.2019-13:42" author="isv" context="common">
+        <comment>Plugin,new: devicereset</comment>
+        <sql>
+            INSERT INTO plugins (
+            identifier, name, description,
+            javascriptModuleFile,
+            functionsViewTemplate,
+            settingsViewTemplate,
+            namelocalizationkey,
+            settingsPermission, functionsPermission, deviceFunctionsPermission,
+            enabledForDevice
+            )
+            VALUES (
+            'devicereset', 'Сброс настроек', 'Сброс к заводским настройкам',
+            'app/components/plugins/devicereset/devicereset.module.js',
+            'app/components/plugins/devicereset/views/reset.html',
+            NULL,
+            'plugin.devicereset.localization.key.name',
+            'plugin_devicereset_access',
+            'plugin_devicereset_access',
+            'plugin_devicereset_access',
+            TRUE
+            );
+        </sql>
+        <rollback>
+            DELETE FROM plugins WHERE identifier = 'devicereset';
+        </rollback>
+    </changeSet>
+
+    <changeSet id="plugin-devicereset-28.10.2019-13:43" author="isv" context="common">
+        <comment>Permission,new: plugin_devicereset_access</comment>
+        <sql>
+            INSERT INTO permissions (name, description) VALUES ('plugin_devicereset_access', 'Имеет доступ к сбросу настроек устройств до заводских');
+            INSERT INTO userRolePermissions (roleId, permissionId)
+            SELECT id, currval('permissions_id_seq')
+            FROM userroles WHERE name IN ('Администратор', 'Супер-Администратор');
+        </sql>
+        <rollback>
+            DELETE FROM permissions WHERE name = 'plugin_devicereset_access';
+        </rollback>
+    </changeSet>
+
+    <changeSet id="plugin-devicereset-28.10.2019-13:44" author="isv" context="common">
+        <comment>Table,new: plugin_devicereset_status</comment>
+        <sql>
+            CREATE TABLE plugin_devicereset_status (
+                id serial NOT NULL CONSTRAINT plugin_devicereset_status_pr_key PRIMARY KEY,
+                deviceId INT NOT NULL REFERENCES devices (id) ON DELETE CASCADE,
+                statusResetRequested BIGINT NOT NULL,
+                statusResetConfirmed BIGINT
+            );
+            ALTER TABLE plugin_devicereset_status ADD CONSTRAINT plugin_devicereset_status_device_unique UNIQUE (deviceId);
+        </sql>
+        <rollback>
+            DROP TABLE plugin_devicereset_status;
+        </rollback>
+    </changeSet>
+
+    <changeSet id="plugin-devicereset-19.03.2020-11:21" author="seva" context="common">
+        <comment>Add new options: reboot, lock</comment>
+        <sql>
+            ALTER TABLE plugin_devicereset_status ALTER COLUMN statusResetRequested DROP NOT NULL;
+            ALTER TABLE plugin_devicereset_status ADD COLUMN rebootRequested BIGINT;
+            ALTER TABLE plugin_devicereset_status ADD COLUMN rebootConfirmed BIGINT;
+            ALTER TABLE plugin_devicereset_status ADD COLUMN deviceLocked BOOLEAN NOT NULL DEFAULT false;
+        </sql>
+        <rollback>
+            ALTER TABLE plugin_devicereset_status ALTER COLUMN statusResetRequested SET NOT NULL;
+            ALTER TABLE plugin_devicereset_status DROP COLUMN rebootRequested;
+            ALTER TABLE plugin_devicereset_status DROP COLUMN rebootConfirmed;
+            ALTER TABLE plugin_devicereset_status DROP COLUMN deviceLocked;
+        </rollback>
+    </changeSet>
+
+    <changeSet id="plugin-devicereset-19.03.2020-13:34" author="seva" context="common">
+        <comment>Add lock message</comment>
+        <sql>
+            ALTER TABLE plugin_devicereset_status ADD COLUMN lockMessage TEXT;
+        </sql>
+        <rollback>
+            ALTER TABLE plugin_devicereset_status DROP COLUMN lockMessage;
+        </rollback>
+    </changeSet>
+
+    <changeSet id="plugin-devicereset-20.05.2020-19:51" author="seva" context="common">
+        <comment>Add lock message</comment>
+        <sql>
+            ALTER TABLE plugin_devicereset_status ADD COLUMN password TEXT;
+        </sql>
+        <rollback>
+            ALTER TABLE plugin_devicereset_status DROP COLUMN password;
+        </rollback>
+    </changeSet>
+
+    <changeSet id="plugin-devicereset-22.05.2020-12:47" author="seva" context="common">
+        <comment>Fix user role permissions assuming admin and super-admin have fixed ids</comment>
+        <sql>
+            DELETE FROM userRolePermissions WHERE roleId=1 AND permissionId=(SELECT id FROM permissions WHERE name='plugin_devicereset_access');
+            INSERT INTO userRolePermissions VALUES (1, (SELECT id FROM permissions WHERE name='plugin_devicereset_access'));
+            DELETE FROM userRolePermissions WHERE roleId=2 AND permissionId=(SELECT id FROM permissions WHERE name='plugin_devicereset_access');
+            INSERT INTO userRolePermissions VALUES (2, (SELECT id FROM permissions WHERE name='plugin_devicereset_access'));
+
+        </sql>
+        <rollback>
+            DELETE FROM userRolePermissions WHERE roleId=1 AND permissionId=(SELECT id FROM permissions WHERE name='plugin_devicereset_access');
+            DELETE FROM userRolePermissions WHERE roleId=2 AND permissionId=(SELECT id FROM permissions WHERE name='plugin_devicereset_access');
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

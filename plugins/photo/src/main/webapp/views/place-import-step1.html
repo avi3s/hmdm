@@ -1,0 +1,88 @@
+<!--
+  ~
+  ~ Headwind MDM: Open Source Android MDM Software
+  ~ https://h-mdm.com
+  ~
+  ~ Copyright (C) 2019 Headwind Solutions LLC (http://h-sms.com)
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~       http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  ~
+  -->
+
+<div class="form-horizontal width-1000">
+
+    <div class='form-group'>
+        <label class='col-sm-4 control-label' localized>plugin.deviceimport.file.selection</label>
+        <div class='col-sm-8'>
+            <div class="btn btn-default full-width btn-upload" ng-if="!file.path"
+                 upload-button
+                 url="rest/plugins/photo/place/private/upload"
+                 on-upload="onStartedUpload(files)"
+                 on-success="fileUploaded( response )"></div>
+            <span ng-if="file.path && !invalidFile">{{fileName}}</span>
+            <button class="btn btn-default" ng-if="file.path" ng-click="clearFile()" localized>button.cleanup</button>
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <div class="col-sm-4 control-label">
+            <label for="fkjksjfskj" localized>plugin.photo.placeId.selection</label>
+        </div>
+        <div class="col-sm-8">
+            <select id="fkjksjfskj" class="form-control"
+                    ng-model="request.placeIdColumnIndex" ng-options="t.id as t.name for t in columnOptions"></select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-4 control-label">
+            <label for="kdjfhfgi8fiu" localized>plugin.photo.lat.selection</label>
+        </div>
+        <div class="col-sm-8">
+            <select id="kdjfhfgi8fiu" class="form-control"
+                    ng-model="request.latColumnIndex" ng-options="t.id as t.name for t in columnOptions"></select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-4 control-label">
+            <label for="gjkfiiern" localized>plugin.photo.lng.selection</label>
+        </div>
+        <div class="col-sm-8">
+            <select id="gjkfiiern" class="form-control"
+                    ng-model="request.lngColumnIndex" ng-options="t.id as t.name for t in columnOptions"></select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-4 control-label">
+            <label for="wifbeufbwb" localized>plugin.photo.address.selection</label>
+        </div>
+        <div class="col-sm-8">
+            <select id="wifbeufbwb" class="form-control"
+                    ng-model="request.addressColumnIndex" ng-options="t.id as t.name for t in columnOptions"></select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class='col-sm-offset-4 col-sm-8'>
+            <button type='submit' class='btn btn-default' ng-click='goMainScreen()' ng-disabled="loading"
+                    localized>button.plugin.photo.back</button>
+            <button type='submit' class='btn btn-default' ng-click='doPreview()' ng-disabled="loading"
+                    localized>button.plugin.photo.preview</button>
+        </div>
+    </div>
+</div>
+
+

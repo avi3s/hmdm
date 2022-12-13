@@ -1,0 +1,19 @@
+{
+  "breadcrumb.plugin.contacts.main": "Контакты",
+  "plugin.contacts.localization.key.name": "Контакты",
+  "plugin.contacts.notice": "Этот плагин требует установки мобильного агента (плагин контактов, com.hmdm.contacts)",
+  "plugin.contacts.tab.title": "Загрузка контактов на устройство",
+  "plugin.contacts.configuration": "Конфигурация",
+  "plugin.contacts.vcf.url": "URL VCF файла",
+  "plugin.contacts.vcf.url.placeholder": "https://your.host.com/vcf.file",
+  "plugin.contacts.http.username": "Пользователь HTTP",
+  "plugin.contacts.http.username.placeholder": "Имя пользователя для авторизации HTTP",
+  "plugin.contacts.http.password": "Пароль HTTP",
+  "plugin.contacts.http.password.placeholder": "Пароль для авторизации HTTP",
+  "plugin.contacts.account.type": "Значение ACCOUNT_TYPE",
+  "plugin.contacts.account.type.placeholder": "ACCOUNT_TYPE для синхронизуемых контактов",
+  "plugin.contacts.sync.timespan": "Интервал синхр-и (с)",
+  "plugin.contacts.sync.timespan.placeholder": "Время между загрузками URL",
+  "plugin.contacts.wipe.all": "Удалить остальные контакты",
+  "plugin.contacts.data.saved": "Настройки успешно сохранены"
+}
