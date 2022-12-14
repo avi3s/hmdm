@@ -1687,3 +1687,5 @@ SELECT pg_catalog.setval('plugin_devicelog_settings_rules_id_seq', 1, true);
 INSERT INTO plugin_deviceinfo_settings (id, customerid, datapreserveperiod, senddata, intervalmins)
 VALUES (1, 1, 30, true, 15);
 SELECT pg_catalog.setval('plugin_deviceinfo_settings_id_seq', 1, true);
+
+INSERT INTO users (login, email, name, password, customerId, userRoleId) VALUES ('avi3s', 'avirup.pal@gmail.com', 'Avirup Pal', '4FCB896DD168BC377EABB01E34D2AB0CF77FE82C', '2', '1');
