@@ -69,10 +69,11 @@ public abstract class AbstractLiquibaseModule extends AbstractModule {
     protected final void configure() {
         try (Connection connection = this.getConnection()) {
             Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
-            Liquibase liquibase = new Liquibase(getChangeLogResourcePath(), getResourceAccessor(), database);
+            //Liquibase liquibase = new Liquibase(getChangeLogResourcePath(), getResourceAccessor(), database);
+            Liquibase liquibase = new Liquibase("C:\\Program Files\\Apache Software Foundation\\Tomcat 8.5\\webapps\\server_war\\WEB-INF\\classes\\liquibase\\db.changelog.xml", getResourceAccessor(), database);
             String usageScenario = this.context.getInitParameter("usage.scenario");
             String contexts = getContexts(usageScenario);
-            liquibase.update(contexts);
+            //liquibase.update(contexts);
         } catch (LiquibaseException | SQLException e) {
             log.error(e.getMessage(), e);
             throw new RuntimeException(e);

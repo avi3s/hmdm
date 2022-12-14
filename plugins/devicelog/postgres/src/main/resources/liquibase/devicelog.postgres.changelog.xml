@@ -81,6 +81,7 @@
     <changeSet id="plugin-devicelog-12.07.2019-13:32" author="isv" context="common">
         <comment>Create plugin_devicelog_setting_rules</comment>
         <sql>
+            DROP TABLE plugin_devicelog_settings_rules;
             CREATE TABLE plugin_devicelog_settings_rules (
                 id serial NOT NULL CONSTRAINT plugin_devicelog_settings_rules_pr_key PRIMARY KEY,
                 settingId INT NOT NULL REFERENCES plugin_devicelog_settings( id ) ON DELETE CASCADE,
