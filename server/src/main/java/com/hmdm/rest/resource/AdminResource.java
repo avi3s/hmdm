@@ -185,4 +185,23 @@ public class AdminResource {
             return Response.INTERNAL_ERROR();
         }
     }
+
+    // =================================================================================================================
+    @ApiOperation(
+            value = "Get Kiosk Status",
+            notes = "Gets the Kiosk Status",
+            response = Kiosk.class
+    )
+    @GET
+    @Path("/kiosk")
+    @Consumes( MediaType.APPLICATION_JSON )
+    @Produces( MediaType.APPLICATION_JSON )
+    public Response getKioskStatus() {
+        try {
+            return Response.OK(null);
+        } catch (Exception e) {
+            log.error("Unexpected error when getting the Get Kiosk Status for current user", e);
+            return Response.INTERNAL_ERROR();
+        }
+    }
 }
