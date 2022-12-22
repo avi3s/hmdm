@@ -12,6 +12,7 @@ import java.io.Serializable;
 public class Kiosk implements Serializable {
 
     private String id;
-    private String kioskName;
-    private String status;
+    private String name;
+    private String statusOrder;
+    private String color;
 }

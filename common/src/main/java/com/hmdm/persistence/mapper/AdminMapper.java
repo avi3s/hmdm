@@ -23,6 +23,9 @@ package com.hmdm.persistence.mapper;
 
 import com.hmdm.persistence.domain.User;
 import com.hmdm.persistence.domain.UserRole;
+import com.hmdm.persistence.domain.admin.DistrictDetails;
+import com.hmdm.persistence.domain.admin.Kiosk;
+import com.hmdm.persistence.domain.admin.MandalDetails;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -94,4 +97,13 @@ public interface AdminMapper {
 
     @Insert("INSERT INTO userHints (userId, hintKey) SELECT #{id}, hintKey FROM userHintTypes")
     int insertHintsHistoryAll(@Param("id") Integer userId);*/
+
+    @Select("SELECT district_id as id,district_name as districtName FROM tbldistrict order by district_id")
+    List<DistrictDetails> getDistrictLists();
+
+    @Select("select distinct (state) as mandalName from tblleads where country = #{districtId} group by state, country")
+    List<MandalDetails> getMandalLists(@Param("districtId") int districtId);
+
+    @Select("SELECT id,name,statusorder,color FROM tblleads_status order by statusorder")
+    List<Kiosk> getKioskStatus();
 }

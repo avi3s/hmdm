@@ -160,7 +160,7 @@ public class AdminResource {
     @Produces( MediaType.APPLICATION_JSON )
     public Response getDistrictLists() {
         try {
-            return Response.OK(null);
+            return Response.OK(adminDAO.getDistrictLists());
         } catch (Exception e) {
             log.error("Unexpected error when getting the District List for current user", e);
             return Response.INTERNAL_ERROR();
@@ -179,7 +179,7 @@ public class AdminResource {
     @Produces( MediaType.APPLICATION_JSON )
     public Response getMandalLists(@PathParam("districtId") String districtId) {
         try {
-            return Response.OK(null);
+            return Response.OK(adminDAO.getMandalLists(districtId));
         } catch (Exception e) {
             log.error("Unexpected error when getting the Get Mandal List for current user", e);
             return Response.INTERNAL_ERROR();
@@ -198,7 +198,7 @@ public class AdminResource {
     @Produces( MediaType.APPLICATION_JSON )
     public Response getKioskStatus() {
         try {
-            return Response.OK(null);
+            return Response.OK(adminDAO.getKioskStatus());
         } catch (Exception e) {
             log.error("Unexpected error when getting the Get Kiosk Status for current user", e);
             return Response.INTERNAL_ERROR();

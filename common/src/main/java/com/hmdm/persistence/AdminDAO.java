@@ -79,10 +79,17 @@ public class AdminDAO {
     }
 
     public List<DistrictDetails> getDistrictLists() {
-        return null;
+
+        return adminMapper.getDistrictLists();
     }
 
     public List<MandalDetails> getMandalLists(String districtId) {
-        return null;
+
+        int id = Integer.valueOf(districtId);
+        return adminMapper.getMandalLists(id);
+    }
+
+    public List<Kiosk> getKioskStatus() {
+        return adminMapper.getKioskStatus();
     }
 }
