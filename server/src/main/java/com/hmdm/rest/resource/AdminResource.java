@@ -46,7 +46,7 @@ public class AdminResource {
     @Produces( MediaType.APPLICATION_JSON )
     public Response getDashboard(Input input) {
         try {
-            return Response.OK(null);
+            return Response.OK(adminDAO.getDashboard(input));
         } catch (Exception e) {
             log.error("Unexpected error when getting the dashboard for customer", e);
             return Response.INTERNAL_ERROR();

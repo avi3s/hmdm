@@ -23,9 +23,7 @@ package com.hmdm.persistence.mapper;
 
 import com.hmdm.persistence.domain.User;
 import com.hmdm.persistence.domain.UserRole;
-import com.hmdm.persistence.domain.admin.DistrictDetails;
-import com.hmdm.persistence.domain.admin.Kiosk;
-import com.hmdm.persistence.domain.admin.MandalDetails;
+import com.hmdm.persistence.domain.admin.*;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -97,6 +95,15 @@ public interface AdminMapper {
 
     @Insert("INSERT INTO userHints (userId, hintKey) SELECT #{id}, hintKey FROM userHintTypes")
     int insertHintsHistoryAll(@Param("id") Integer userId);*/
+
+    @Select("select count(*) as installed,country as districtId from tblleads where dateadded > TO_TIMESTAMP(#{startDate},'yyyy-MM-dd HH24:00:00') and dateadded < TO_TIMESTAMP(#{endDate},'yyyy-MM-dd HH24:00:00') and country = #{districtId} group by country order by country")
+    DashboardDetails getTotalInstalled(@Param("startDate") String startDate, @Param("endDate") String endDate, @Param("districtId") int districtId);
+
+    @Select("select count(*) as online,country as districtId from tblleads  where dateadded > TO_TIMESTAMP(#{startDate},'yyyy-MM-dd HH24:00:00') and dateadded < TO_TIMESTAMP(#{endDate},'yyyy-MM-dd HH24:00:00') and country = #{districtId} and status = 1 group by country order by country")
+    DashboardDetails getTotalOnline(@Param("startDate") String startDate, @Param("endDate") String endDate, @Param("districtId") int districtId);
+
+    @Select("select count(*) as offline,country as districtId from tblleads  where dateadded > TO_TIMESTAMP(#{startDate},'yyyy-MM-dd HH24:00:00') and dateadded < TO_TIMESTAMP(#{endDate},'yyyy-MM-dd HH24:00:00') and country = #{districtId} and status = 5 group by country order by country")
+    DashboardDetails getTotalOffline(@Param("startDate") String startDate, @Param("endDate") String endDate, @Param("districtId") int districtId);
 
     @Select("SELECT district_id as id,district_name as districtName FROM tbldistrict order by district_id")
     List<DistrictDetails> getDistrictLists();
