@@ -96,16 +96,20 @@ public interface AdminMapper {
     @Insert("INSERT INTO userHints (userId, hintKey) SELECT #{id}, hintKey FROM userHintTypes")
     int insertHintsHistoryAll(@Param("id") Integer userId);*/
 
-    @Select("select id,name as rbkId,city as rbkName,company as vaa,phonenumber as contact,status," +
+    @Select("select id, name as rbkId,city as rbkName,company as vaa,phonenumber as contact,status," +
             "country as districtName, state as mandalName, zip as secretariatCode, source as networkType, last_status_change as lastContact from tblleads order by lastContact")
     List<Report> getReport();
+
+    @Select("select id, name as rbkLoginId,city as rbkName,company as vaa,phonenumber as contact,status," +
+            "country as districtName, state as mandalName from tblleads where lastcontact = '2021-07-29 08:45:05' order by status asc")
+    List<RedList> getRedList();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /* RBK Queries Start */
     @Select("select count(*) from tblleads where country = #{districtId} and state = #{state}")
     Long getTotalRBKs(@Param("districtId") int districtId, @Param("state") String state);
 
-    @Select("select id,name as rbkLoginId,city as rbkName,company as vaa,phonenumber as contact,status,last_status_change as lastAccessed from tblleads where dateadded > TO_TIMESTAMP(#{startDate},'yyyy-MM-dd HH24:00:00') and dateadded < TO_TIMESTAMP(#{endDate},'yyyy-MM-dd HH24:00:00') and country = #{districtId} and state = #{state} order by state")
+    @Select("select id, name as rbkLoginId,city as rbkName,company as vaa,phonenumber as contact,status,last_status_change as lastAccessed from tblleads where dateadded > TO_TIMESTAMP(#{startDate},'yyyy-MM-dd HH24:00:00') and dateadded < TO_TIMESTAMP(#{endDate},'yyyy-MM-dd HH24:00:00') and country = #{districtId} and state = #{state} order by state")
     List<RBK> getRBKList(@Param("startDate") String startDate, @Param("endDate") String endDate, @Param("districtId") int districtId, @Param("state") String state);
 
     @Select("select id, name as rbkLoginId, email as emailAddress, phonenumber as phone, company as vaaName, city as rbkName, state as mandalName, country  as districtName, " +

@@ -135,7 +135,7 @@ public class AdminResource {
     @Produces( MediaType.APPLICATION_JSON )
     public Response getRedLists() {
         try {
-            return Response.OK(null);
+            return Response.OK(adminDAO.getRedLists());
         } catch (Exception e) {
             log.error("Unexpected error when getting the red list for current user", e);
             return Response.ERROR(e.getMessage());

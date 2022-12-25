@@ -368,7 +368,19 @@ public class AdminDAO {
     }
 
     public List<RedList> getRedLists() {
-        return null;
+
+        List<RedList> redLists = adminMapper.getRedList();
+        redLists.forEach(r -> {
+            if (Integer.valueOf(r.getStatus()) == 1) {
+                r.setStatus("Online");
+            } else if (Integer.valueOf(r.getStatus()) == 5) {
+                r.setStatus("Offline");
+            }
+            DistrictDetails districtDetails = adminMapper.getDistrictById(Integer.valueOf(r.getDistrictName()));
+            r.setDistrictName(districtDetails.getDistrictName());
+            r.setUnderMaintenance("No");
+        });
+        return redLists;
     }
 
     public RBKDetails getRBKDetails(String rbkId) {
