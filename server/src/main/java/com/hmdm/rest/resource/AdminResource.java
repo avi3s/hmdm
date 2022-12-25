@@ -113,9 +113,12 @@ public class AdminResource {
     @Produces( MediaType.APPLICATION_JSON )
     public Response getReports(Input input) {
         try {
-            return Response.OK(null);
+            return Response.OK(adminDAO.getReports(input));
+        } catch (ValidationException e) {
+            log.error("Validation Error", e);
+            return Response.ERROR(e.getMessage());
         } catch (Exception e) {
-            log.error("Unexpected error when getting the reports for current user", e);
+            log.error("Unexpected error when getting the Reports for current user", e);
             return Response.ERROR(e.getMessage());
         }
     }

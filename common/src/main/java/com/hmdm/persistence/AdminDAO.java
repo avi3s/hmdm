@@ -351,8 +351,10 @@ public class AdminDAO {
         }
     }
 
-    public List<Report> getReports() {
-        return null;
+    public List<Report> getReports(Input input) {
+
+        List<Report> reports = adminMapper.getReport();
+        return reports;
     }
 
     public List<RedList> getRedLists() {

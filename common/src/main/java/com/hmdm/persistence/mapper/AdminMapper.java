@@ -96,6 +96,10 @@ public interface AdminMapper {
     @Insert("INSERT INTO userHints (userId, hintKey) SELECT #{id}, hintKey FROM userHintTypes")
     int insertHintsHistoryAll(@Param("id") Integer userId);*/
 
+    @Select("select id,name as rbkId,city as rbkName,company as vaa,phonenumber as contact,status," +
+            "country as districtName, state as mandalName, zip as secretariatCode, source as networkType, last_status_change as lastContact from tblleads order by lastContact")
+    List<Report> getReport();
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /* RBK Queries Start */
     @Select("select count(*) from tblleads where country = #{districtId} and state = #{state}")
