@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import javax.validation.ValidationException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -394,14 +395,72 @@ public class AdminDAO {
             }
             DistrictDetails districtDetails = adminMapper.getDistrictById(Integer.valueOf(rbkDetails.getDistrictName()));
             rbkDetails.setDistrictName(districtDetails.getDistrictName());
-
-            // TODO
-            //RBK Details Page Created = 3 months ago and Last Contact = 8 minutes ago in Core JAVA
-
+            calculateMonthDiff(rbkDetails);
+            calculateMinDiff(rbkDetails);
             return rbkDetails;
         } catch (NumberFormatException e) {
             throw new ValidationException("Invalid RBKId");
         }
+    }
+
+    private void calculateMonthDiff(RBKDetails rbkDetails) {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date d1 = sdf.parse(rbkDetails.getCreated());
+            Date date = new Date();
+            Date d2 = sdf.parse(sdf.format(date));
+            rbkDetails.setCreated(checkTimeRange(d1, d2));
+        } catch (ParseException e) {
+            throw new ValidationException("Invalid Date");
+        }
+    }
+
+    private void calculateMinDiff(RBKDetails rbkDetails) {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date d1 = sdf.parse(rbkDetails.getLastContact());
+            Date date = new Date();
+            Date d2 = sdf.parse(sdf.format(date));
+            rbkDetails.setLastContact(checkTimeRange(d1, d2));
+        } catch (ParseException e) {
+            throw new ValidationException("Invalid Date");
+        }
+    }
+
+    private String checkTimeRange(Date d1, Date d2) {
+
+        String result = null;
+        long difference_In_Time = d2.getTime() - d1.getTime();
+        long difference_In_Years = TimeUnit.MILLISECONDS.toDays(difference_In_Time) / 365l;
+        if (difference_In_Years > 1) {
+            result = difference_In_Years + " years ago";
+            return result;
+        }
+
+        long difference_In_Days = TimeUnit.MILLISECONDS.toDays(difference_In_Time) % 365;
+        if (difference_In_Days > 30) {
+            result = difference_In_Days / 30 +" months ago";
+            return result;
+        } else if (difference_In_Days > 1) {
+            result = difference_In_Days +" days ago";
+            return result;
+        }
+
+        long difference_In_Hours = TimeUnit.MILLISECONDS.toHours(difference_In_Time) % 24;
+        if (difference_In_Hours > 24) {
+            result = difference_In_Hours +" hours ago";
+            return result;
+        }
+
+        long difference_In_Minutes = (difference_In_Time/ (1000 * 60)) % 60;
+        if (difference_In_Minutes > 60) {
+            result = difference_In_Minutes +" minutes ago";
+            return result;
+        }
+
+        long difference_In_Seconds = TimeUnit.MILLISECONDS.toSeconds(difference_In_Time) % 60;
+        result = difference_In_Seconds +" seconds ago";
+        return result;
     }
 
     public List<DistrictDetails> getDistrictLists() {
