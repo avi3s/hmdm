@@ -315,8 +315,40 @@ public class AdminDAO {
         }
     }
 
-    public List<RBK> getRBKDetailsLists(String mandalId) {
-        return null;
+    public RBKPage getRBKDetailsLists(Input input) {
+
+        validateRBKRequest(input);
+        AtomicReference<Long> functionalCount = new AtomicReference<>(0L);
+        AtomicReference<Long> onlineCount = new AtomicReference<>(0L);
+        AtomicReference<Long> offlineCount = new AtomicReference<>(0L);
+        AtomicReference<Long> nonfunctionalCount = new AtomicReference<>(0L);
+        List<RBK> rbkList = adminMapper.getRBKList(input.getStartDate(), input.getEndDate(), Integer.valueOf(input.getDistrictId()), input.getMandalName());
+        rbkList.forEach(rbk -> {
+            if (Integer.valueOf(rbk.getStatus()) == 1) {
+                rbk.setNonFunctional("No");
+                onlineCount.set(onlineCount.get() + 1);
+            } else if (Integer.valueOf(rbk.getStatus()) == 5) {
+                rbk.setNonFunctional("Yes");
+                offlineCount.set(offlineCount.get() + 1);
+            }
+        });
+        RBKPage rbkPage = new RBKPage();
+        rbkPage.setRbks(rbkList);
+        rbkPage.setTotalKioskCount(String.valueOf(rbkList.size()));
+        rbkPage.setOnlineCount(String.valueOf(onlineCount.get()));
+        rbkPage.setOfflineCount(String.valueOf(offlineCount.get()));
+        rbkPage.setFunctionalCount(String.valueOf(onlineCount.get() + offlineCount.get()));
+        rbkPage.setNonfunctionalCount(String.valueOf(rbkList.size() -  Long.valueOf(rbkPage.getFunctionalCount())));
+
+        return rbkPage;
+    }
+
+    private void validateRBKRequest(Input input) {
+
+        validateMandalRequest(input);
+        if (StringUtil.isEmpty(input.getMandalName())) {
+            throw new ValidationException("Please Provide Mandal Name");
+        }
     }
 
     public List<Report> getReports() {

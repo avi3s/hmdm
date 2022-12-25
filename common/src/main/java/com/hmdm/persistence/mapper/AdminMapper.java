@@ -97,6 +97,18 @@ public interface AdminMapper {
     int insertHintsHistoryAll(@Param("id") Integer userId);*/
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /* RBK Queries Start */
+    @Select("select count(*) from tblleads where country = #{districtId} and state = #{state}")
+    Long getTotalRBKs(@Param("districtId") int districtId, @Param("state") String state);
+
+    @Select("select id,name as rbkLoginId,city as rbkName,company as vaa,phonenumber as contact,status,last_status_change as lastAccessed from tblleads where dateadded > TO_TIMESTAMP(#{startDate},'yyyy-MM-dd HH24:00:00') and dateadded < TO_TIMESTAMP(#{endDate},'yyyy-MM-dd HH24:00:00') and country = #{districtId} and state = #{state} order by state")
+    List<RBK> getRBKList(@Param("startDate") String startDate, @Param("endDate") String endDate, @Param("districtId") int districtId, @Param("state") String state);
+
+    /* RBK Queries End */
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /* Mandal Queries Start */
     @Select("select count(*) from tblleads where country = #{districtId}")
     Long getTotalMandals(@Param("districtId") int districtId);

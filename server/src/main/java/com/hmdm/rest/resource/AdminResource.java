@@ -91,7 +91,10 @@ public class AdminResource {
     @Produces( MediaType.APPLICATION_JSON )
     public Response getRBKDetailsLists(Input input) {
         try {
-            return Response.OK(null);
+            return Response.OK(adminDAO.getRBKDetailsLists(input));
+        } catch (ValidationException e) {
+            log.error("Validation Error", e);
+            return Response.ERROR(e.getMessage());
         } catch (Exception e) {
             log.error("Unexpected error when getting the RBK List w.r.t Mandal Selected in Dashboard for current user", e);
             return Response.ERROR(e.getMessage());
