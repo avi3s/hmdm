@@ -355,6 +355,15 @@ public class AdminDAO {
     public List<Report> getReports(Input input) {
 
         List<Report> reports = adminMapper.getReport();
+        reports.forEach(r -> {
+            if (Integer.valueOf(r.getStatus()) == 1) {
+                r.setStatus("Online");
+            } else if (Integer.valueOf(r.getStatus()) == 5) {
+                r.setStatus("Offline");
+            }
+            DistrictDetails districtDetails = adminMapper.getDistrictById(Integer.valueOf(r.getDistrictName()));
+            r.setDistrictName(districtDetails.getDistrictName());
+        });
         return reports;
     }
 
@@ -365,7 +374,19 @@ public class AdminDAO {
     public RBKDetails getRBKDetails(String rbkId) {
 
         try {
-            return adminMapper.getRBKDetails(Integer.valueOf(rbkId));
+            RBKDetails rbkDetails = adminMapper.getRBKDetails(Integer.valueOf(rbkId));
+            if (Integer.valueOf(rbkDetails.getKioskStatus()) == 1) {
+                rbkDetails.setKioskStatus("Online");
+            } else if (Integer.valueOf(rbkDetails.getKioskStatus()) == 5) {
+                rbkDetails.setKioskStatus("Offline");
+            }
+            DistrictDetails districtDetails = adminMapper.getDistrictById(Integer.valueOf(rbkDetails.getDistrictName()));
+            rbkDetails.setDistrictName(districtDetails.getDistrictName());
+
+            // TODO
+            //RBK Details Page Created = 3 months ago and Last Contact = 8 minutes ago in Core JAVA
+
+            return rbkDetails;
         } catch (NumberFormatException e) {
             throw new ValidationException("Invalid RBKId");
         }
