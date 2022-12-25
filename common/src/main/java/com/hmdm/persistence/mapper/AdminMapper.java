@@ -104,6 +104,10 @@ public interface AdminMapper {
     @Select("select id,name as rbkLoginId,city as rbkName,company as vaa,phonenumber as contact,status,last_status_change as lastAccessed from tblleads where dateadded > TO_TIMESTAMP(#{startDate},'yyyy-MM-dd HH24:00:00') and dateadded < TO_TIMESTAMP(#{endDate},'yyyy-MM-dd HH24:00:00') and country = #{districtId} and state = #{state} order by state")
     List<RBK> getRBKList(@Param("startDate") String startDate, @Param("endDate") String endDate, @Param("districtId") int districtId, @Param("state") String state);
 
+    @Select("select id, name as rbkLoginId, email as emailAddress, phonenumber as phone, company as vaaName, city as rbkName, state as mandalName, country  as districtName, " +
+            "zip as secretariatCode, status as kioskStatus, source as networkType, dateadded as created, lastcontact as lastContact from tblleads " +
+            "where id = #{id}")
+    RBKDetails getRBKDetails(@Param("id") int id);
     /* RBK Queries End */
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

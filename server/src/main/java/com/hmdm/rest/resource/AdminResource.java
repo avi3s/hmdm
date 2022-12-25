@@ -151,7 +151,7 @@ public class AdminResource {
     @Produces( MediaType.APPLICATION_JSON )
     public Response getRBKDetails(@PathParam("rbkId") String rbkId) {
         try {
-            return Response.OK(null);
+            return Response.OK(adminDAO.getRBKDetails(rbkId));
         } catch (Exception e) {
             log.error("Unexpected error when getting the RBK Details for current user", e);
             return Response.ERROR(e.getMessage());

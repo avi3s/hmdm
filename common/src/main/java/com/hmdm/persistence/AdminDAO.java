@@ -360,7 +360,12 @@ public class AdminDAO {
     }
 
     public RBKDetails getRBKDetails(String rbkId) {
-        return null;
+
+        try {
+            return adminMapper.getRBKDetails(Integer.valueOf(rbkId));
+        } catch (NumberFormatException e) {
+            throw new ValidationException("Invalid RBKId");
+        }
     }
 
     public List<DistrictDetails> getDistrictLists() {

@@ -15,7 +15,6 @@ public class RBKDetails implements Serializable {
     private String rbkLoginId;
     private String rbkName;
     private String underMaintenance;
-    private String contact;
     private String mandalName;
     private String districtName;
     private String designation;
