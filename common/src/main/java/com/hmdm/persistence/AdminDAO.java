@@ -33,12 +33,11 @@ import javax.validation.ValidationException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @Singleton
 public class AdminDAO {
@@ -355,7 +354,47 @@ public class AdminDAO {
 
     public List<Report> getReports(Input input) {
 
-        List<Report> reports = adminMapper.getReport();
+        List<Report> reports = adminMapper.getReport().stream()
+                .filter(report -> {
+                    if (StringUtil.isEmpty(input.getMandalName())) {
+                        return true;
+                    } else {
+                        return report.getMandalName().equalsIgnoreCase(input.getMandalName());
+                    }
+                })
+                .filter(report -> {
+                    if (StringUtil.isEmpty(input.getKioskStatus())) {
+                        return true;
+                    } else {
+                        String statusArray[] = input.getKioskStatus().split(",");
+                        return Arrays.stream(statusArray).anyMatch(Predicate.isEqual(report.getStatus()));
+                    }
+                })
+                .filter(report -> {
+                    if (StringUtil.isEmpty(report.getLastContact())) {
+                        return true;
+                    }
+                    if (StringUtil.isEmpty(input.getStartDate()) && StringUtil.isEmpty(input.getEndDate())) {
+                        return true;
+                    } else {
+                        try {
+                            checkDateDifference(input);
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                            Date d1 = sdf.parse(input.getStartDate());
+                            Date d2 = sdf.parse(input.getEndDate());
+                            Date lastContact = sdf.parse(report.getLastContact());
+                            if (lastContact.after(d1) && lastContact.before(d2)) {
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        } catch (Exception e) {
+                            return false;
+                        }
+                    }
+                })
+                .collect(Collectors.toList());
+
         reports.forEach(r -> {
             if (Integer.valueOf(r.getStatus()) == 1) {
                 r.setStatus("Online");
