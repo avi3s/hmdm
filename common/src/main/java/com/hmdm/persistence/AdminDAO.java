@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import javax.validation.ValidationException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -378,7 +379,12 @@ public class AdminDAO {
     public List<MandalDetails> getMandalLists(String districtId) {
 
         try {
-            return adminMapper.getMandalLists(Integer.valueOf(districtId));
+            List<MandalDetails> mandalDetails = new ArrayList<>();
+            String districtArray[] = districtId.split(",");
+            for (String id:districtArray) {
+                mandalDetails.addAll(adminMapper.getMandalLists(Integer.valueOf(id)));
+            }
+            return mandalDetails;
         } catch (NumberFormatException e) {
             throw new ValidationException("Invalid DistrictId");
         }
