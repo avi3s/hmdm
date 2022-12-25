@@ -190,8 +190,129 @@ public class AdminDAO {
         return dashboard;
     }
 
-    public List<Mandal> getMandalDetailsLists(String districtId) {
-        return null;
+    public MandalPage getMandalDetailsLists(Input input) {
+
+        validateMandalRequest(input);
+        MandalPage result = new MandalPage();
+        AtomicReference<Long> totalKioskCount = new AtomicReference<>(0L);
+        AtomicReference<Long> functionalCount = new AtomicReference<>(0L);
+        AtomicReference<Long> onlineCount = new AtomicReference<>(0L);
+        AtomicReference<Long> offlineCount = new AtomicReference<>(0L);
+        AtomicReference<Long> nonfunctionalCount = new AtomicReference<>(0L);
+        List<Mandal> mandalList = new CopyOnWriteArrayList<>();
+        if (StringUtil.isEmpty(input.getMandalName())) {
+            List<MandalDetails> mandals = getMandalLists(input.getDistrictId());
+            mandals.forEach(dl -> {
+                input.setMandalId(dl.getId());
+                input.setMandalName(dl.getMandalName());
+                mandalCalculation(input, totalKioskCount, functionalCount, onlineCount, offlineCount, nonfunctionalCount, mandalList);
+            });
+        } else {
+            input.setDistrictName(adminMapper.getDistrictById(Integer.valueOf(input.getDistrictId())).getDistrictName());
+            mandalCalculation(input, totalKioskCount, functionalCount, onlineCount, offlineCount, nonfunctionalCount, mandalList);
+        }
+        result.setMandals(mandalList);
+        result.setTotalKioskCount(String.valueOf(totalKioskCount));
+        result.setFunctionalCount(String.valueOf(functionalCount));
+        result.setOnlineCount(String.valueOf(onlineCount));
+        result.setOfflineCount(String.valueOf(offlineCount));
+        result.setNonfunctionalCount(String.valueOf(nonfunctionalCount));
+
+        return result;
+    }
+
+    private void mandalCalculation(Input input, AtomicReference<Long> totalKioskCount, AtomicReference<Long> functionalCount, AtomicReference<Long> onlineCount, AtomicReference<Long> offlineCount, AtomicReference<Long> nonfunctionalCount, List<Mandal> mandalList) {
+
+        Mandal mandal = getMandalReportByDistrict(input);
+
+        // Calculation Of the Table Values
+        Long functional = Long.valueOf(mandal.getOnline()) + Long.valueOf(mandal.getOffline());
+        mandal.setFunctional(String.valueOf(functional));
+        Long nonFunctional = Long.valueOf(mandal.getInstalled()) - Long.valueOf(mandal.getFunctional());
+        mandal.setNonFunctional(String.valueOf(nonFunctional));
+        Double functionality = Double.valueOf(adminMapper.getTotalMandals(Integer.valueOf(input.getDistrictId()))) / Double.valueOf(mandal.getInstalled());
+        mandal.setFunctionality(String.valueOf(functionality));
+
+        // Calculation Of the Header Values
+        totalKioskCount.set(totalKioskCount.get() + Long.valueOf(mandal.getInstalled()));
+        functionalCount.set(functionalCount.get() + functional);
+        onlineCount.set(onlineCount.get() + Long.valueOf(mandal.getOnline()));
+        offlineCount.set(offlineCount.get() + Long.valueOf(mandal.getOffline()));
+        nonfunctionalCount.set(nonfunctionalCount.get() + nonFunctional);
+        mandalList.add(mandal);
+    }
+
+    private Mandal getMandalReportByDistrict(Input input) {
+
+        ExecutorService executorService = Executors.newFixedThreadPool(3);
+        Mandal mandal = new Mandal();
+        mandal.setMandalName(input.getMandalName());
+
+        Callable<Mandal> getTotalInstalled = () -> adminMapper.getTotalMandalInstalled(input.getStartDate(), input.getEndDate(), Integer.valueOf(input.getDistrictId()), input.getMandalName());
+        Future<Mandal> totalInstalled = executorService.submit(getTotalInstalled);
+        try {
+            if (Objects.nonNull(totalInstalled.get())) {
+                mandal.setInstalled(totalInstalled.get().getInstalled());
+            } else {
+                mandal.setInstalled("0");
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error Processing Getting Total installed Records");
+        }
+
+        Callable<Mandal> getTotalOnline = () -> adminMapper.getTotalMandalOnline(input.getStartDate(), input.getEndDate(), Integer.valueOf(input.getDistrictId()), input.getMandalName());
+        Future<Mandal> totalOnline = executorService.submit(getTotalOnline);
+        try {
+            if (Objects.nonNull(totalOnline.get())) {
+                mandal.setOnline(totalOnline.get().getOnline());
+            } else {
+                mandal.setOnline("0");
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error Processing Getting Online Records");
+        }
+
+        Callable<Mandal> getTotalOffline = () -> adminMapper.getTotalMandalOffline(input.getStartDate(), input.getEndDate(), Integer.valueOf(input.getDistrictId()), input.getMandalName());
+        Future<Mandal> totalOffline = executorService.submit(getTotalOffline);
+        try {
+            if (Objects.nonNull(totalOffline.get())) {
+                mandal.setOffline(totalOffline.get().getOffline());
+            } else {
+                mandal.setOffline("0");
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error Processing Getting Offline Records");
+        }
+        return mandal;
+    }
+
+    private void validateMandalRequest(Input input) {
+
+        if (Objects.isNull(input)) {
+            throw new ValidationException("Invalid Input");
+        } else {
+            if (StringUtil.isEmpty(input.getStartDate())) {
+                throw new ValidationException("Please provide StartDate");
+            }
+
+            if (StringUtil.isEmpty(input.getEndDate())) {
+                throw new ValidationException("Please provide EndDate");
+            }
+            checkDateDifference(input);
+
+            if (StringUtil.isEmpty(input.getDistrictId())) {
+                throw new ValidationException("Please Provide DistrictId");
+            } else {
+                try {
+                    Integer.valueOf(input.getDistrictId());
+                } catch (NumberFormatException e) {
+                    throw new ValidationException("Invalid DistrictId");
+                }
+            }
+        }
     }
 
     public List<RBK> getRBKDetailsLists(String mandalId) {

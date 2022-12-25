@@ -53,7 +53,7 @@ public class AdminResource {
             return Response.ERROR(e.getMessage());
         } catch (Exception e) {
             log.error("Unexpected error when getting the dashboard for customer", e);
-            return Response.INTERNAL_ERROR();
+            return Response.ERROR(e.getMessage());
         }
     }
 
@@ -69,10 +69,13 @@ public class AdminResource {
     @Produces( MediaType.APPLICATION_JSON )
     public Response getMandalDetailsLists(Input input) {
         try {
-            return Response.OK(null);
+            return Response.OK(adminDAO.getMandalDetailsLists(input));
+        } catch (ValidationException e) {
+            log.error("Validation Error", e);
+            return Response.ERROR(e.getMessage());
         } catch (Exception e) {
             log.error("Unexpected error when getting the Mandal List w.r.t District Selected in Dashboard for current user", e);
-            return Response.INTERNAL_ERROR();
+            return Response.ERROR(e.getMessage());
         }
     }
 
@@ -91,7 +94,7 @@ public class AdminResource {
             return Response.OK(null);
         } catch (Exception e) {
             log.error("Unexpected error when getting the RBK List w.r.t Mandal Selected in Dashboard for current user", e);
-            return Response.INTERNAL_ERROR();
+            return Response.ERROR(e.getMessage());
         }
     }
 
@@ -110,7 +113,7 @@ public class AdminResource {
             return Response.OK(null);
         } catch (Exception e) {
             log.error("Unexpected error when getting the reports for current user", e);
-            return Response.INTERNAL_ERROR();
+            return Response.ERROR(e.getMessage());
         }
     }
 
@@ -129,7 +132,7 @@ public class AdminResource {
             return Response.OK(null);
         } catch (Exception e) {
             log.error("Unexpected error when getting the red list for current user", e);
-            return Response.INTERNAL_ERROR();
+            return Response.ERROR(e.getMessage());
         }
     }
 
@@ -148,7 +151,7 @@ public class AdminResource {
             return Response.OK(null);
         } catch (Exception e) {
             log.error("Unexpected error when getting the RBK Details for current user", e);
-            return Response.INTERNAL_ERROR();
+            return Response.ERROR(e.getMessage());
         }
     }
 
@@ -167,7 +170,7 @@ public class AdminResource {
             return Response.OK(adminDAO.getDistrictLists());
         } catch (Exception e) {
             log.error("Unexpected error when getting the District List for current user", e);
-            return Response.INTERNAL_ERROR();
+            return Response.ERROR(e.getMessage());
         }
     }
 
@@ -189,7 +192,7 @@ public class AdminResource {
             return Response.ERROR(e.getMessage());
         } catch (Exception e) {
             log.error("Unexpected error when getting the Get Mandal List for current user", e);
-            return Response.INTERNAL_ERROR();
+            return Response.ERROR(e.getMessage());
         }
     }
 
@@ -208,7 +211,7 @@ public class AdminResource {
             return Response.OK(adminDAO.getKioskStatus());
         } catch (Exception e) {
             log.error("Unexpected error when getting the Get Kiosk Status for current user", e);
-            return Response.INTERNAL_ERROR();
+            return Response.ERROR(e.getMessage());
         }
     }
 }

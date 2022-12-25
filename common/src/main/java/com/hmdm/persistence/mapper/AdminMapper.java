@@ -96,6 +96,24 @@ public interface AdminMapper {
     @Insert("INSERT INTO userHints (userId, hintKey) SELECT #{id}, hintKey FROM userHintTypes")
     int insertHintsHistoryAll(@Param("id") Integer userId);*/
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /* Mandal Queries Start */
+    @Select("select count(*) from tblleads where country = #{districtId}")
+    Long getTotalMandals(@Param("districtId") int districtId);
+
+    @Select("select count(*) as installed,state as mandalName from tblleads where dateadded > TO_TIMESTAMP(#{startDate},'yyyy-MM-dd HH24:00:00') and dateadded < TO_TIMESTAMP(#{endDate},'yyyy-MM-dd HH24:00:00') and country = #{districtId} and state = #{state} group by state order by state")
+    Mandal getTotalMandalInstalled(@Param("startDate") String startDate, @Param("endDate") String endDate, @Param("districtId") int districtId, @Param("state") String state);
+
+    @Select("select count(*) as online,state as mandalName from tblleads  where dateadded > TO_TIMESTAMP(#{startDate},'yyyy-MM-dd HH24:00:00') and dateadded < TO_TIMESTAMP(#{endDate},'yyyy-MM-dd HH24:00:00') and country = #{districtId} and state = #{state} and status = 1 group by state order by state")
+    Mandal getTotalMandalOnline(@Param("startDate") String startDate, @Param("endDate") String endDate, @Param("districtId") int districtId, @Param("state") String state);
+
+    @Select("select count(*) as offline,state as mandalName from tblleads  where dateadded > TO_TIMESTAMP(#{startDate},'yyyy-MM-dd HH24:00:00') and dateadded < TO_TIMESTAMP(#{endDate},'yyyy-MM-dd HH24:00:00') and country = #{districtId} and state = #{state} and status = 5 group by state order by state")
+    Mandal getTotalMandalOffline(@Param("startDate") String startDate, @Param("endDate") String endDate, @Param("districtId") int districtId, @Param("state") String state);
+
+    /* Mandal Queries End */
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /* DashBoard Queries Start */
     @Select("select count(*) from tblleads")
     Long getTotalKiosks();
 
@@ -107,6 +125,9 @@ public interface AdminMapper {
 
     @Select("select count(*) as offline,country as districtId from tblleads  where dateadded > TO_TIMESTAMP(#{startDate},'yyyy-MM-dd HH24:00:00') and dateadded < TO_TIMESTAMP(#{endDate},'yyyy-MM-dd HH24:00:00') and country = #{districtId} and status = 5 group by country order by country")
     DashboardDetails getTotalOffline(@Param("startDate") String startDate, @Param("endDate") String endDate, @Param("districtId") int districtId);
+
+    /* DashBoard Queries End */
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Select("SELECT district_id as id,district_name as districtName FROM tbldistrict order by district_id")
     List<DistrictDetails> getDistrictLists();
