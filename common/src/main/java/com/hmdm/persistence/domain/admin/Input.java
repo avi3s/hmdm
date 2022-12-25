@@ -14,6 +14,7 @@ public class Input implements Serializable {
     private String startDate;
     private String endDate;
     private String districtId;
+    private String districtName;
     private String mandalId;
     private String kioskStatus;
 }

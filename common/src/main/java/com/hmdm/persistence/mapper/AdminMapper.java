@@ -96,6 +96,9 @@ public interface AdminMapper {
     @Insert("INSERT INTO userHints (userId, hintKey) SELECT #{id}, hintKey FROM userHintTypes")
     int insertHintsHistoryAll(@Param("id") Integer userId);*/
 
+    @Select("select count(*) from tblleads")
+    Long getTotalKiosks();
+
     @Select("select count(*) as installed,country as districtId from tblleads where dateadded > TO_TIMESTAMP(#{startDate},'yyyy-MM-dd HH24:00:00') and dateadded < TO_TIMESTAMP(#{endDate},'yyyy-MM-dd HH24:00:00') and country = #{districtId} group by country order by country")
     DashboardDetails getTotalInstalled(@Param("startDate") String startDate, @Param("endDate") String endDate, @Param("districtId") int districtId);
 
@@ -107,6 +110,9 @@ public interface AdminMapper {
 
     @Select("SELECT district_id as id,district_name as districtName FROM tbldistrict order by district_id")
     List<DistrictDetails> getDistrictLists();
+
+    @Select("SELECT district_id as id,district_name as districtName FROM tbldistrict where district_id = #{districtId}")
+    DistrictDetails getDistrictById(@Param("districtId") int districtId);
 
     @Select("select distinct (state) as mandalName from tblleads where country = #{districtId} group by state, country")
     List<MandalDetails> getMandalLists(@Param("districtId") int districtId);

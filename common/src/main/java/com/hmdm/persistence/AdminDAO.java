@@ -25,9 +25,14 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.hmdm.persistence.domain.admin.*;
 import com.hmdm.persistence.mapper.AdminMapper;
+import com.hmdm.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.validation.ValidationException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.*;
@@ -49,6 +54,7 @@ public class AdminDAO {
 
     public Dashboard getDashboard(Input input) {
 
+        validateRequest(input);
         Dashboard result = new Dashboard();
         AtomicReference<Long> totalKioskCount = new AtomicReference<>(0L);
         AtomicReference<Long> functionalCount = new AtomicReference<>(0L);
@@ -56,68 +62,17 @@ public class AdminDAO {
         AtomicReference<Long> offlineCount = new AtomicReference<>(0L);
         AtomicReference<Long> nonfunctionalCount = new AtomicReference<>(0L);
         List<DashboardDetails> dashboardList = new CopyOnWriteArrayList<>();
-        List<DistrictDetails> districtList = getDistrictLists();
-        ExecutorService executorService = Executors.newFixedThreadPool(10);
-        districtList.forEach(dl -> {
-            DashboardDetails dashboard = new DashboardDetails();
-            dashboard.setDistrictId(dl.getId());
-            dashboard.setDistrictName(dl.getDistrictName());
-
-            Callable<DashboardDetails> getTotalInstalled = () -> {
-                return adminMapper.getTotalInstalled(input.getStartDate(), input.getEndDate(), Integer.valueOf(dl.getId()));
-            };
-            Future<DashboardDetails> totalInstalled = executorService.submit(getTotalInstalled);
-            try {
-                if (Objects.nonNull(totalInstalled.get())) {
-                    dashboard.setInstalled(totalInstalled.get().getInstalled());
-                } else {
-                    dashboard.setInstalled("0");
-                }
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-            }
-
-            Callable<DashboardDetails> getTotalOnline = () -> {
-                return adminMapper.getTotalOnline(input.getStartDate(), input.getEndDate(), Integer.valueOf(dl.getId()));
-            };
-            Future<DashboardDetails> totalOnline = executorService.submit(getTotalOnline);
-            try {
-                if (Objects.nonNull(totalOnline.get())) {
-                    dashboard.setOnline(totalOnline.get().getOnline());
-                } else {
-                    dashboard.setOnline("0");
-                }
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-            }
-
-            Callable<DashboardDetails> getTotalOffline = () -> {
-                return adminMapper.getTotalOffline(input.getStartDate(), input.getEndDate(), Integer.valueOf(dl.getId()));
-            };
-            Future<DashboardDetails> totalOffline = executorService.submit(getTotalOffline);
-            try {
-                if (Objects.nonNull(totalOffline.get())) {
-                    dashboard.setOffline(totalOffline.get().getOffline());
-                } else {
-                    dashboard.setOffline("0");
-                }
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-            }
-            Long functional = Long.valueOf(dashboard.getOnline()) + Long.valueOf(dashboard.getOffline());
-            dashboard.setFunctional(String.valueOf(functional));
-            Long nonFunctional = Long.valueOf(dashboard.getInstalled()) - Long.valueOf(dashboard.getFunctional());
-            dashboard.setNonFunctional(String.valueOf(nonFunctional));
-            Double functionality = 9483.00 / Double.valueOf(dashboard.getInstalled());
-            dashboard.setFunctionality(String.valueOf(functionality));
-
-            totalKioskCount.set(totalKioskCount.get() + Long.valueOf(dashboard.getInstalled()));
-            functionalCount.set(functionalCount.get() + functional);
-            onlineCount.set(onlineCount.get() + Long.valueOf(dashboard.getOnline()));
-            offlineCount.set(offlineCount.get() + Long.valueOf(dashboard.getOffline()));
-            nonfunctionalCount.set(nonfunctionalCount.get() + nonFunctional);
-            dashboardList.add(dashboard);
-        });
+        if (StringUtil.isEmpty(input.getDistrictId())) {
+            List<DistrictDetails> districtList = getDistrictLists();
+            districtList.forEach(dl -> {
+                input.setDistrictId(dl.getId());
+                input.setDistrictName(dl.getDistrictName());
+                dashboardCalculation(input, totalKioskCount, functionalCount, onlineCount, offlineCount, nonfunctionalCount, dashboardList);
+            });
+        } else {
+            input.setDistrictName(adminMapper.getDistrictById(Integer.valueOf(input.getDistrictId())).getDistrictName());
+            dashboardCalculation(input, totalKioskCount, functionalCount, onlineCount, offlineCount, nonfunctionalCount, dashboardList);
+        }
         result.setDashboardDetails(dashboardList);
         result.setTotalKioskCount(String.valueOf(totalKioskCount));
         result.setFunctionalCount(String.valueOf(functionalCount));
@@ -126,6 +81,113 @@ public class AdminDAO {
         result.setNonfunctionalCount(String.valueOf(nonfunctionalCount));
 
         return result;
+    }
+
+    private void validateRequest(Input input) {
+
+        if (Objects.isNull(input)) {
+                throw new ValidationException("Invalid Input");
+        } else {
+            if (StringUtil.isEmpty(input.getStartDate())) {
+                throw new ValidationException("Please provide StartDate");
+            }
+
+            if (StringUtil.isEmpty(input.getEndDate())) {
+                throw new ValidationException("Please provide EndDate");
+            }
+            checkDateDifference(input);
+
+            if (!StringUtil.isEmpty(input.getDistrictId())) {
+                try {
+                    Integer.valueOf(input.getDistrictId());
+                } catch (NumberFormatException e) {
+                    throw new ValidationException("Invalid DistrictId");
+                }
+            }
+        }
+    }
+
+    private void checkDateDifference(Input input) {
+
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date d1 = sdf.parse(input.getStartDate());
+            Date d2 = sdf.parse(input.getEndDate());
+            if (d2.getTime() < d1.getTime()) {
+                throw new ValidationException("EndDate Must Be Greater Than StartDate");
+            }
+        } catch (ParseException e) {
+            throw new ValidationException("Invalid Date");
+        }
+    }
+
+    private void dashboardCalculation(Input input, AtomicReference<Long> totalKioskCount, AtomicReference<Long> functionalCount, AtomicReference<Long> onlineCount, AtomicReference<Long> offlineCount, AtomicReference<Long> nonfunctionalCount, List<DashboardDetails> dashboardList) {
+
+        DashboardDetails dashboard = getDashBoardReportByDistrict(input);
+
+        // Calculation Of the Table Values
+        Long functional = Long.valueOf(dashboard.getOnline()) + Long.valueOf(dashboard.getOffline());
+        dashboard.setFunctional(String.valueOf(functional));
+        Long nonFunctional = Long.valueOf(dashboard.getInstalled()) - Long.valueOf(dashboard.getFunctional());
+        dashboard.setNonFunctional(String.valueOf(nonFunctional));
+        Double functionality = Double.valueOf(adminMapper.getTotalKiosks()) / Double.valueOf(dashboard.getInstalled());
+        dashboard.setFunctionality(String.valueOf(functionality));
+
+        // Calculation Of the Header Values
+        totalKioskCount.set(totalKioskCount.get() + Long.valueOf(dashboard.getInstalled()));
+        functionalCount.set(functionalCount.get() + functional);
+        onlineCount.set(onlineCount.get() + Long.valueOf(dashboard.getOnline()));
+        offlineCount.set(offlineCount.get() + Long.valueOf(dashboard.getOffline()));
+        nonfunctionalCount.set(nonfunctionalCount.get() + nonFunctional);
+        dashboardList.add(dashboard);
+    }
+
+    private DashboardDetails getDashBoardReportByDistrict(Input input) {
+
+        ExecutorService executorService = Executors.newFixedThreadPool(3);
+        DashboardDetails dashboard = new DashboardDetails();
+        dashboard.setDistrictId(input.getDistrictId());
+        dashboard.setDistrictName(input.getDistrictName());
+
+        Callable<DashboardDetails> getTotalInstalled = () -> adminMapper.getTotalInstalled(input.getStartDate(), input.getEndDate(), Integer.valueOf(input.getDistrictId()));
+        Future<DashboardDetails> totalInstalled = executorService.submit(getTotalInstalled);
+        try {
+            if (Objects.nonNull(totalInstalled.get())) {
+                dashboard.setInstalled(totalInstalled.get().getInstalled());
+            } else {
+                dashboard.setInstalled("0");
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error Processing Getting Total installed Records");
+        }
+
+        Callable<DashboardDetails> getTotalOnline = () -> adminMapper.getTotalOnline(input.getStartDate(), input.getEndDate(), Integer.valueOf(input.getDistrictId()));
+        Future<DashboardDetails> totalOnline = executorService.submit(getTotalOnline);
+        try {
+            if (Objects.nonNull(totalOnline.get())) {
+                dashboard.setOnline(totalOnline.get().getOnline());
+            } else {
+                dashboard.setOnline("0");
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error Processing Getting Online Records");
+        }
+
+        Callable<DashboardDetails> getTotalOffline = () -> adminMapper.getTotalOffline(input.getStartDate(), input.getEndDate(), Integer.valueOf(input.getDistrictId()));
+        Future<DashboardDetails> totalOffline = executorService.submit(getTotalOffline);
+        try {
+            if (Objects.nonNull(totalOffline.get())) {
+                dashboard.setOffline(totalOffline.get().getOffline());
+            } else {
+                dashboard.setOffline("0");
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error Processing Getting Offline Records");
+        }
+        return dashboard;
     }
 
     public List<Mandal> getMandalDetailsLists(String districtId) {
@@ -155,8 +217,11 @@ public class AdminDAO {
 
     public List<MandalDetails> getMandalLists(String districtId) {
 
-        int id = Integer.valueOf(districtId);
-        return adminMapper.getMandalLists(id);
+        try {
+            return adminMapper.getMandalLists(Integer.valueOf(districtId));
+        } catch (NumberFormatException e) {
+            throw new ValidationException("Invalid DistrictId");
+        }
     }
 
     public List<Kiosk> getKioskStatus() {

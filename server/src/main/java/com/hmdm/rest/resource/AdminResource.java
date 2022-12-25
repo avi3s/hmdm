@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.validation.ValidationException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
@@ -47,6 +48,9 @@ public class AdminResource {
     public Response getDashboard(Input input) {
         try {
             return Response.OK(adminDAO.getDashboard(input));
+        } catch (ValidationException e) {
+            log.error("Validation Error", e);
+            return Response.ERROR(e.getMessage());
         } catch (Exception e) {
             log.error("Unexpected error when getting the dashboard for customer", e);
             return Response.INTERNAL_ERROR();
@@ -180,6 +184,9 @@ public class AdminResource {
     public Response getMandalLists(@PathParam("districtId") String districtId) {
         try {
             return Response.OK(adminDAO.getMandalLists(districtId));
+        } catch (ValidationException e) {
+            log.error("Validation Error", e);
+            return Response.ERROR(e.getMessage());
         } catch (Exception e) {
             log.error("Unexpected error when getting the Get Mandal List for current user", e);
             return Response.INTERNAL_ERROR();
