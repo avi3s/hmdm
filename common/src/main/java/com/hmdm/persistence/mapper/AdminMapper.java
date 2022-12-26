@@ -21,80 +21,14 @@
 
 package com.hmdm.persistence.mapper;
 
-import com.hmdm.persistence.domain.User;
-import com.hmdm.persistence.domain.UserRole;
 import com.hmdm.persistence.domain.admin.*;
-import org.apache.ibatis.annotations.*;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
 public interface AdminMapper {
-
-   /* User findByLogin(@Param("login") String login);
-
-    User findByEmail(@Param("email") String email);
-
-    User findByPasswordResetToken(@Param("token") String token);
-
-    User findById(@Param("userId") Integer userId);
-
-    List<User> findAll(@Param("customerId") Integer customerId);
-
-    List<User> findAllByFilter(@Param("customerId") Integer customerId, @Param("value") String value);
-
-    List<User> findAllWithOldPassword();
-
-    @Insert({"INSERT INTO users (login, email, name, password, customerId, userRoleId, " +
-            "allDevicesAvailable, allConfigAvailable, passwordReset, authToken, passwordResetToken) " +
-            "VALUES (#{login}, #{email}, #{name}, #{password}, #{customerId}, #{userRole.id}, " +
-            "#{allDevicesAvailable}, #{allConfigAvailable}, #{passwordReset}, #{authToken}, #{passwordResetToken})"})
-    @SelectKey( statement = "SELECT currval('users_id_seq')", keyColumn = "id", keyProperty = "id", before = false, resultType = int.class )
-    void insert(User user);
-
-    @Update({"UPDATE users " +
-            "SET name = #{name}, login=#{login}, email=#{email}, userRoleId=#{userRole.id}, allDevicesAvailable=#{allDevicesAvailable}, " +
-            "allConfigAvailable=#{allConfigAvailable}, passwordReset=#{passwordReset} " +
-            "WHERE id=#{id}"})
-    void updateUserMainDetails(User user);
-
-    @Update({"UPDATE users SET password=#{password}, passwordReset=#{passwordReset}, " +
-            "authToken=#{authToken}, passwordResetToken=#{passwordResetToken} WHERE id=#{id}"})
-    void updatePassword(User user);
-
-    @Update({"UPDATE users SET password=#{newPassword}, passwordReset=#{passwordReset}, " +
-            "authToken=#{authToken}, passwordResetToken=#{passwordResetToken} WHERE id=#{id}"})
-    void setNewPassword(User user);
-
-    @Delete({"DELETE FROM users WHERE id=#{id} AND userRoleId <> 1"})
-    void deleteUser(User user);
-
-    List<UserRole> findAllUserRoles(@Param("includeSuperAdmin") boolean inludeSuperAdmin);
-
-    @Delete({"DELETE FROM userDeviceGroupsAccess " +
-            "WHERE userId=#{id} " +
-            "AND groupId IN (SELECT groups.id FROM groups WHERE groups.customerId=#{customerId})"})
-    void removeDeviceGroupsAccessByUserId(@Param("customerId") int customerId, @Param("id") Integer userId);
-
-    void insertUserDeviceGroupsAccess(@Param("id") Integer userId, @Param("groups") List<Integer> groups);
-
-    @Delete({"DELETE FROM userConfigurationAccess " +
-            "WHERE userId=#{id} " +
-            "AND configurationId IN (SELECT configurations.id FROM configurations WHERE configurations.customerId=#{customerId})"})
-    void removeConfigurationAccessByUserId(@Param("customerId") int customerId, @Param("id") Integer userId);
-
-    void insertUserConfigurationAccess(@Param("id") Integer userId, @Param("configurations") List<Integer> configurations);
-
-    @Select("SELECT hintKey FROM userHints WHERE userId = #{id}")
-    List<String> getShownHints(@Param("id") Integer userId);
-
-    @Insert("INSERT INTO userHints (userId, hintKey) VALUES (#{userId}, #{hintKey})")
-    int insertShownHint(@Param("userId") Integer userId, @Param("hintKey") String hintKey);
-
-    @Delete("DELETE FROM userHints WHERE userId = #{id}")
-    int clearHintsHistory(@Param("id") Integer userId);
-
-    @Insert("INSERT INTO userHints (userId, hintKey) SELECT #{id}, hintKey FROM userHintTypes")
-    int insertHintsHistoryAll(@Param("id") Integer userId);*/
 
     @Select("select id, name as rbkId,city as rbkName,company as vaa,phonenumber as contact,status," +
             "country as districtName, state as mandalName, zip as secretariatCode, source as networkType, last_status_change as lastContact from tblleads order by lastContact")
@@ -164,4 +98,10 @@ public interface AdminMapper {
 
     @Select("SELECT id,name,statusorder,color FROM tblleads_status order by statusorder")
     List<Kiosk> getKioskStatus();
+
+    @Update({"UPDATE tblleads SET lastcontact=NOW() WHERE id=#{kioskId}"})
+    void updateDisplayStatus(@Param("kioskId") String kioskId);
+
+    @Update({"UPDATE tblleads SET lastcontact=NOW() WHERE id=#{kioskId}"})
+    void updateNetworkStatus(@Param("kioskId") String kioskId);
 }

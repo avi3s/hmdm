@@ -131,7 +131,6 @@ public class AdminResource {
     )
     @GET
     @Path("/redList")
-    @Consumes( MediaType.APPLICATION_JSON )
     @Produces( MediaType.APPLICATION_JSON )
     public Response getRedLists() {
         try {
@@ -150,7 +149,6 @@ public class AdminResource {
     )
     @GET
     @Path("/rbk-details/{rbkId}")
-    @Consumes( MediaType.APPLICATION_JSON )
     @Produces( MediaType.APPLICATION_JSON )
     public Response getRBKDetails(@PathParam("rbkId") String rbkId) {
         try {
@@ -169,7 +167,6 @@ public class AdminResource {
     )
     @GET
     @Path("/district")
-    @Consumes( MediaType.APPLICATION_JSON )
     @Produces( MediaType.APPLICATION_JSON )
     public Response getDistrictLists() {
         try {
@@ -188,7 +185,6 @@ public class AdminResource {
     )
     @GET
     @Path("/mandal/{districtId}")
-    @Consumes( MediaType.APPLICATION_JSON )
     @Produces( MediaType.APPLICATION_JSON )
     public Response getMandalLists(@PathParam("districtId") String districtId) {
         try {
@@ -210,13 +206,56 @@ public class AdminResource {
     )
     @GET
     @Path("/kiosk")
-    @Consumes( MediaType.APPLICATION_JSON )
     @Produces( MediaType.APPLICATION_JSON )
     public Response getKioskStatus() {
         try {
             return Response.OK(adminDAO.getKioskStatus());
         } catch (Exception e) {
             log.error("Unexpected error when getting the Get Kiosk Status for current user", e);
+            return Response.ERROR(e.getMessage());
+        }
+    }
+
+    // =================================================================================================================
+    @ApiOperation(
+            value = "Update Display Status",
+            notes = "Update Display Status w.r.t Kiosk ID",
+            response = String.class
+    )
+    @POST
+    @Path("/update-display-status")
+    @Consumes( MediaType.APPLICATION_JSON )
+    @Produces( MediaType.APPLICATION_JSON )
+    public Response updateDisplayStatus(Input input) {
+        try {
+            return Response.OK(adminDAO.updateDisplayStatus(input));
+        } catch (ValidationException e) {
+            log.error("Validation Error", e);
+            return Response.ERROR(e.getMessage());
+        } catch (Exception e) {
+            log.error("Unexpected error when Updating Display Status for current user", e);
+            return Response.ERROR(e.getMessage());
+        }
+    }
+
+    // =================================================================================================================
+    @ApiOperation(
+            value = "Update Network Status",
+            notes = "Update Network Status w.r.t Kiosk ID",
+            response = String.class
+    )
+    @POST
+    @Path("/update-network-status")
+    @Consumes( MediaType.APPLICATION_JSON )
+    @Produces( MediaType.APPLICATION_JSON )
+    public Response updateNetworkStatus(Input input) {
+        try {
+            return Response.OK(adminDAO.updateNetworkStatus(input));
+        } catch (ValidationException e) {
+            log.error("Validation Error", e);
+            return Response.ERROR(e.getMessage());
+        } catch (Exception e) {
+            log.error("Unexpected error when Updating Network Status for current user", e);
             return Response.ERROR(e.getMessage());
         }
     }

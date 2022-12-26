@@ -32,7 +32,6 @@ import org.slf4j.LoggerFactory;
 import javax.validation.ValidationException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -523,5 +522,17 @@ public class AdminDAO {
 
     public List<Kiosk> getKioskStatus() {
         return adminMapper.getKioskStatus();
+    }
+
+    public String updateDisplayStatus(Input input) {
+
+        adminMapper.updateDisplayStatus(input.getKioskId());
+        return "Updated";
+    }
+
+    public String updateNetworkStatus(Input input) {
+
+        adminMapper.updateNetworkStatus(input.getKioskId());
+        return "Updated";
     }
 }
