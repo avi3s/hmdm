@@ -17,8 +17,10 @@ angular.module('headwind-kiosk')
             dom: "<'row'><'row'<'col-md-7'lB><'col-md-5'f>>rt<'row'<'col-md-4'i>><'row'<'#colvis'><'.dt-page-jump'>p>",
             buttons: ['excel', 'pdf','csv','print']
         };
-
-
+        var table;
+        angular.element(document).ready(function () {
+           // table = $('.dt-table').DataTable(dtSettings);
+        });
 
 
         $scope.dashboardData = {};
@@ -27,6 +29,8 @@ angular.module('headwind-kiosk')
         $scope.endDate = '';
         $scope.getDashboardData = function (report_months){
             $scope.dashboardData = {};
+            if(table)
+            table.destroy();
             console.log(report_months);
             var date = new Date();
             if(report_months=='today'){
@@ -63,9 +67,11 @@ angular.module('headwind-kiosk')
                 spinnerService.close('spinner2');
                 console.log(response)
                 if (response.data) {
+
                     $scope.dashboardData = response.data;
                     setTimeout(function (){
-                        var table = $('.dt-table').DataTable(dtSettings);
+                         table = $('.dt-table').DataTable(dtSettings);
+
                     })
 
                 }
