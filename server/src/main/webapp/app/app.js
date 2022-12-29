@@ -261,6 +261,21 @@ angular.module('headwind-kiosk',
                 templateUrl: 'app/components/main/view/passwordRecovery.html',
                 controller: 'PasswordRecoveryController'
             })
+            .state('dashboard',{
+                url:'/dashboard',
+                templateUrl:'app/components/main/view/dashboard.html',
+                controller:'DashboardController'
+            })
+            .state('reports',{
+                url:'/reports',
+                templateUrl:'app/components/main/view/reports.html',
+                controller:'ReportsController'
+            })
+            .state('redlist',{
+                url:'/redlist',
+                templateUrl:'app/components/main/view/redlist.html',
+                controller:'RedlistController'
+            })
     })
 
     .config(function ($httpProvider) {

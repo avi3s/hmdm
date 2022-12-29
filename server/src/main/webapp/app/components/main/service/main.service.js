@@ -143,4 +143,9 @@ angular.module('headwind-kiosk')
             }
         }
     })
+    .factory('dashboardService',function ($resource){
+        return $resource('', {}, {
+            getDashboardData: {url: 'rest/private/dashboard', method: 'POST'}
+        })
+    })
 ;

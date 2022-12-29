@@ -82,4 +82,12 @@ angular.module( 'headwind-kiosk' )
             controller: 'AboutController'
         });
     };
+    $scope.isActiveMenu = function (path) {
+        if($state.current.name.indexOf(path) == 0){
+            return true;
+        }
+        if($state.current.controller==='TabController' && path==="home"){
+            return true;
+        }
+    }
 } );

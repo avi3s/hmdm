@@ -751,7 +751,7 @@ document.localization ['en_US'] = {
     'format.date.header': 'HH:mm dd/MM/yyyy',
 
     'menu.about': 'About',
-    'menu.profile': 'Profile',
+    'menu.profile': 'Profile test',
     'menu.panel.master': 'Master Panel',
     'menu.panel.main': 'Main panel',
     'menu.logout': 'Log out',

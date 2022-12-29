@@ -1,0 +1,148 @@
+<div class="content-wrapper fullscreen ng-scope">
+    <div class="row">
+        <div class="col-md-12">
+            <sarsha-spinner name="spinner2">
+                <div class="spinner">
+                    <div class="rect1"></div>
+                    <div class="rect2"></div>
+                    <div class="rect3"></div>
+                    <div class="rect4"></div>
+                    <div class="rect5"></div>
+                </div>
+            </sarsha-spinner>
+        </div>
+        <div class="panel_s">
+            <div class="panel-body">
+                <div class="panel-body">
+                        <div class="row mbot15">
+                            <div class="row" style="margin-bottom: 30px;">
+                                <div class="col-md-2 col-xs-6 border-right">
+                                    <div class="box_color" style="box-shadow: none;">
+                                        <h3 class="bold">
+                                            {{dashboardData.totalKioskCount}}</h3>
+                                        <span style="color:#060606" class="text-danger">
+											Total Kiosk's Installed </span>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 col-xs-6 border-right">
+                                    <div class="box_color" style="color:#426dd9">
+                                        <a href="#/dashboard">
+                                            <h3 class="bold">
+                                                {{dashboardData.functionalCount}} </h3>
+                                            <span style="color:#426dd9" class="text-danger">
+												Functional </span>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 col-xs-6 border-right">
+                                    <div class="box_color" style="color:#509623">
+                                        <h3 class="bold">
+                                            {{dashboardData.onlineCount}}											</h3>
+                                        <span>
+												Online </span>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-2 col-xs-6 border-right">
+                                    <div class="box_color" style="color:#d33d00">
+                                        <h3 class="bold">
+                                            {{dashboardData.offlineCount}}											</h3>
+                                        <span>
+												Offline </span>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 col-xs-6  border-right">
+                                    <div class="box_color" style="color:#426dd9">
+                                                    <a href="#/dashboard">
+                                        <h3 class="bold">
+                                            {{dashboardData.nonfunctionalCount}} </h3>
+
+                                        <span style="color:#000" class="text-danger">
+											 Non-Functional </span>
+                                    </a>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 form-group" id="report-time">
+                                    <div class="dropdown bootstrap-select bs3">
+                                        <select ng-model="report_months"  class="selectpicker form-control" name="report_months" id="report_months" data-width="100%" data-none-selected-text="Nothing selected" tabindex="-98">
+                                        <option value="today">Today(24hrs)</option>
+                                        <option value="this_week">This Week</option>
+                                        <option value="this_month">This Month</option>
+                                        <option value="3">Last 3 months</option>
+                                        <option value="6">Last 6 months</option>
+                                    </select>
+                                    </div>
+                                <div class="form-group">
+                                    <button type="button" id="new_bt_style" data-toggle="tooltip" class="btn btn-info mleft4" ng-click="getDashboardData(report_months)" >Submit</button>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+                    <table class="table tasks-overview dt-table scroll-responsive">
+                        <caption class="si_caption"> For Period {{startDate}} To {{endDate}}</caption>
+                        <thead>
+                        <tr>
+                            <th class="" id="bg_color_table">SL</th>
+                            <th class="" id="bg_color_table">District</th>
+                            <th class="" id="bg_color_table">Installed</th>
+                            <th class="" id="bg_color_table">Functional</th>
+                            <th class="" id="bg_color_table">Online</th>
+                            <th class="" id="bg_color_table">Offline</th>
+                            <th class="" id="bg_color_table"> Non-functional</th>
+                            <th class="" id="bg_color_table">Functionality %</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat='rowData in dashboardData.dashboardDetails'>
+                            <td>{{rowData.districtId}}</td>
+                            <td><a>{{rowData.districtName}}</a></td>
+                            <td>
+                                <span class="label label-default-light">
+                                    <a class="bold" disabled="">
+
+                                        {{rowData.installed}}
+                                    </a>
+                                </span>
+
+                            </td>
+                            <td>
+                                 <span class="label label-default-light">
+                                    <a class="bold" disabled="">
+
+                                        {{rowData.functional}}
+                                    </a>
+                                </span>
+
+                            </td>
+                            <td>
+                                <span class="label label-default-light"  style="color:#509623;border:1px solid #509623">{{rowData.online}}</span>
+
+                            </td>
+                            <td>
+                                <span class="label label-default-light"  style="color:#d33d00;border:1px solid #d33d00">{{rowData.offline}}</span>
+
+                            </td>
+                            <td>
+
+                                <span class="label label-default-light">
+                                    <a class="bold" disabled="">
+
+                                       {{rowData.nonFunctional}}
+                                    </a>
+                                </span>
+
+                            </td>
+                            <td>
+                                <span class="label label-success pull-left mright5">{{rowData.functionality}}</span>
+
+                            </td>
+                        </tr>
+                        </tbody>
+
+                    </table>
+
+            </div>
+        </div>
+    </div>
+    </div>
+</div>

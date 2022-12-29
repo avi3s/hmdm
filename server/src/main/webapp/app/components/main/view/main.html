@@ -1,6 +1,38 @@
 <!-- Localization completed -->
 <div ng-controller='HeaderController'>
     <div ng-include='"app/components/header/header.html"' ng-if='isAuth() && !isHidden()'></div>
+
+    <aside ng-if='isAuth() && !isHidden()' id="sidebar" class="sidebar">
+        <ul class="sidebar-nav" id="sidebar-nav">
+            <li class="nav-item">
+                <a ng-class="{active:isActiveMenu('home')}" class="nav-link" href="#/">
+                    <i class="bi bi-grid"></i>
+                    <span>Home</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a  ng-class="{active:isActiveMenu('dashboard')}" class="nav-link " href="#/dashboard">
+                    <i class="bi bi-grid"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a  ng-class="{active:isActiveMenu('reports')}" class="nav-link " href="#/reports">
+                    <i class="bi bi-grid"></i>
+                    <span>Reports</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a ng-class="{active:isActiveMenu('redlist')}" class="nav-link " href="#/redlist">
+                    <i class="bi bi-grid"></i>
+                    <span>Red List</span>
+                </a>
+            </li>
+
+        </ul>
+    </aside>
 </div>
 
-<div ui-view></div>
+
+
+<div class="main-container" ui-view></div>
