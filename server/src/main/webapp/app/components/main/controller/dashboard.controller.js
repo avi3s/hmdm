@@ -17,7 +17,8 @@ angular.module('headwind-kiosk')
             dom: "<'row'><'row'<'col-md-7'lB><'col-md-5'f>>rt<'row'<'col-md-4'i>><'row'<'#colvis'><'.dt-page-jump'>p>",
             buttons: ['excel', 'pdf','csv','print']
         };
-        var table = $('.dt-table').DataTable(dtSettings);
+
+
 
 
         $scope.dashboardData = {};
@@ -64,8 +65,7 @@ angular.module('headwind-kiosk')
                 if (response.data) {
                     $scope.dashboardData = response.data;
                     setTimeout(function (){
-                       // var table = $('.dt-table').DataTable(dtSettings);
-                        table.reload();
+                        var table = $('.dt-table').DataTable(dtSettings);
                     })
 
                 }
