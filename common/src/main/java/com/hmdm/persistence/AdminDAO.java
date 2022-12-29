@@ -65,9 +65,11 @@ public class AdminDAO {
         if (StringUtil.isEmpty(input.getDistrictId())) {
             List<DistrictDetails> districtList = getDistrictLists();
             districtList.forEach(dl -> {
-                input.setDistrictId(dl.getId());
-                input.setDistrictName(dl.getDistrictName());
-                dashboardCalculation(input, totalKioskCount, functionalCount, onlineCount, offlineCount, nonfunctionalCount, dashboardList);
+                if (!dl.getId().equalsIgnoreCase("27")) { // Skipping for "districtName": "RBK ID Mismatch"
+                    input.setDistrictId(dl.getId());
+                    input.setDistrictName(dl.getDistrictName());
+                    dashboardCalculation(input, totalKioskCount, functionalCount, onlineCount, offlineCount, nonfunctionalCount, dashboardList);
+                }
             });
         } else {
             input.setDistrictName(adminMapper.getDistrictById(Integer.valueOf(input.getDistrictId())).getDistrictName());
@@ -130,7 +132,10 @@ public class AdminDAO {
         dashboard.setFunctional(String.valueOf(functional));
         Long nonFunctional = Long.valueOf(dashboard.getInstalled()) - Long.valueOf(dashboard.getFunctional());
         dashboard.setNonFunctional(String.valueOf(nonFunctional));
-        Double functionality = Double.valueOf(adminMapper.getTotalKiosks()) / Double.valueOf(dashboard.getInstalled());
+        Double functionality = 0.0D;
+        if (!dashboard.getInstalled().equalsIgnoreCase("0")) {
+            functionality = Double.valueOf(adminMapper.getTotalKiosks()) / Double.valueOf(dashboard.getInstalled());
+        }
         dashboard.setFunctionality(String.valueOf(functionality));
 
         // Calculation Of the Header Values
