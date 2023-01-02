@@ -135,6 +135,7 @@ public class AdminDAO {
         Double functionality = 0.0D;
         if (!dashboard.getInstalled().equalsIgnoreCase("0")) {
             functionality = Double.valueOf(adminMapper.getTotalKiosks()) / Double.valueOf(dashboard.getInstalled());
+            functionality = (double) Math.round(functionality * 100) / 100;
         }
         dashboard.setFunctionality(String.valueOf(functionality));
 
