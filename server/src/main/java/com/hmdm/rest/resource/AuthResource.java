@@ -21,6 +21,7 @@
 
 package com.hmdm.rest.resource;
 
+import com.hmdm.persistence.AdminDAO;
 import com.hmdm.persistence.CustomerDAO;
 import com.hmdm.persistence.UnsecureDAO;
 import com.hmdm.persistence.UserDAO;
@@ -50,6 +51,8 @@ public class AuthResource {
     private final String sessionCredentials = "credentials";
 
     private UnsecureDAO userDAO;
+
+    private AdminDAO adminDAO;
     private CustomerDAO customerDAO;
     private BackgroundTaskRunnerService taskRunner;
 
@@ -63,10 +66,11 @@ public class AuthResource {
      * <p>Constructs new <code>AuthResource</code> instance. This implementation does nothing.</p>
      */
     @Inject
-    public AuthResource(UnsecureDAO userDAO, CustomerDAO customerDAO, BackgroundTaskRunnerService taskRunner) {
+    public AuthResource(UnsecureDAO userDAO, CustomerDAO customerDAO, BackgroundTaskRunnerService taskRunner, AdminDAO adminDAO) {
         this.userDAO = userDAO;
         this.customerDAO = customerDAO;
         this.taskRunner = taskRunner;
+        this.adminDAO = adminDAO;
     }
 
     /**
@@ -89,8 +93,17 @@ public class AuthResource {
 
         User user = userDAO.findByLoginOrEmail( credentials.getLogin() );
         if ( user == null ) {
-            Thread.sleep(1000);
-            return Response.ERROR();
+            // Check for Staff
+            user = adminDAO.login(credentials);
+            if ( user == null ) {
+                Thread.sleep(1000);
+                return Response.ERROR();
+            } else {
+                user.setUserType(false);
+                HttpSession userSession = req.getSession();
+                userSession.setAttribute( sessionCredentials, user );
+                return Response.OK(user);
+            }
         }
 
         // Web app sends MD5 hash, we need to re-hash it to compare with the DB value
@@ -100,8 +113,9 @@ public class AuthResource {
         }
 
         try {
+            User finalUser = user;
             this.taskRunner.submitTask(() -> {
-                this.customerDAO.recordLastLoginTime(user.getCustomerId(), System.currentTimeMillis());
+                this.customerDAO.recordLastLoginTime(finalUser.getCustomerId(), System.currentTimeMillis());
             });
 
             HttpSession userSession = req.getSession();

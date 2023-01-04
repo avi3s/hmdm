@@ -23,8 +23,11 @@ package com.hmdm.persistence;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.hmdm.persistence.domain.User;
+import com.hmdm.persistence.domain.UserRole;
 import com.hmdm.persistence.domain.admin.*;
 import com.hmdm.persistence.mapper.AdminMapper;
+import com.hmdm.rest.json.UserCredentials;
 import com.hmdm.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +55,30 @@ public class AdminDAO {
         this.adminMapper = adminMapper;
     }
 
+    public User login(UserCredentials credentials) {
+
+        User user = null;
+        StaffUser staffUser = adminMapper.login(credentials.getLogin());
+        if (Objects.nonNull(staffUser)) {
+            user = new User();
+            UserRole userRole = new UserRole();
+            user.setUserRole(userRole);
+            user.setEmail(credentials.getLogin());
+            user.setPassword(staffUser.getPassword());
+            user.setName(staffUser.getFirstname() + " " + staffUser.getLastname());
+            if (staffUser.getAdmin().equalsIgnoreCase("1")) {
+                user.setDistrictId(null);
+            } else {
+               String districtId = adminMapper.fetchStaffDistrict(Integer.parseInt(staffUser.getStaffId()));
+                if (!StringUtil.isEmpty(districtId)) {
+                    user.setDistrictId(districtId);
+                } else {
+                    user.setDistrictId(null);
+                }
+            }
+        }
+        return user;
+    }
     public Dashboard getDashboard(Input input) {
 
         validateRequest(input);

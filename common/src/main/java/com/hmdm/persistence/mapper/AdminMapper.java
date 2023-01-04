@@ -104,4 +104,10 @@ public interface AdminMapper {
 
     @Update({"UPDATE tblleads SET lastcontact=NOW() WHERE id=#{kioskId}"})
     void updateNetworkStatus(@Param("kioskId") String kioskId);
+
+    @Select("SELECT staff_id as staffId, email,firstname,lastname,phonenumber,password,last_login as lastLogin,admin FROM tblstaff where active = 1 and email = #{email}")
+    StaffUser login(@Param("email") String email);
+
+    @Select("SELECT district_id FROM tblstaff_district where staff_id = #{staffId}")
+    String fetchStaffDistrict(@Param("staffId") int staffId);
 }

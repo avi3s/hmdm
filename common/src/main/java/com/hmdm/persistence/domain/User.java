@@ -76,6 +76,12 @@ public class User implements CustomerData, Serializable {
     @ApiModelProperty(hidden = true)
     private boolean editable = false;
 
+    @ApiModelProperty("District Id for Staff")
+    private String districtId;
+
+    @ApiModelProperty("True Means Not Staff")
+    private boolean userType = true;
+
     public User() {
     }
 
@@ -225,6 +231,22 @@ public class User implements CustomerData, Serializable {
 
     public void setConfigurations(List<LookupItem> configurations) {
         this.configurations = configurations;
+    }
+
+    public String getDistrictId() {
+        return districtId;
+    }
+
+    public void setDistrictId(String districtId) {
+        this.districtId = districtId;
+    }
+
+    public boolean isUserType() {
+        return userType;
+    }
+
+    public void setUserType(boolean userType) {
+        this.userType = userType;
     }
 
     public String toString() {
