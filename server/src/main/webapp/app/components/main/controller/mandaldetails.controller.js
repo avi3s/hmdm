@@ -1,10 +1,13 @@
+
 angular.module('headwind-kiosk')
-    .controller('ReportsController', function ($scope, $rootScope, $state, $modal, $interval, $cookies, $window, $filter, $timeout,
-                                                 confirmModal, deviceService, groupService, settingsService, hintService,
-                                                 authService, pluginService, configurationService, alertService,
-                                                 spinnerService, localization, dashboardService) {
+    .controller('MandalDetailsController', function ($scope, $rootScope, $state, $stateParams, $modal, $interval, $cookies, $window, $filter, $timeout,
+                                                  confirmModal, deviceService, groupService, settingsService, hintService,
+                                                  authService, pluginService, configurationService, alertService,
+                                                  spinnerService, localization, dashboardService) {
 
-
+        console.log($stateParams.districtId);
+        $scope.districtId = $stateParams.districtId;
+        $scope.mandalName = $stateParams.mandalName;
         var dtSettings = {
             "retrieve": true,
             'paginate': true,
@@ -18,8 +21,9 @@ angular.module('headwind-kiosk')
         };
         var table;
         angular.element(document).ready(function () {
-            $scope.init();
+           // table = $('.dt-table').DataTable(dtSettings);
         });
+
 
         $scope.dashboardData = {};
         $scope.report_months = "today";
@@ -28,22 +32,22 @@ angular.module('headwind-kiosk')
         $scope.getDashboardData = function (report_months){
             $scope.dashboardData = {};
             if(table)
-                table.destroy();
+            table.destroy();
             console.log(report_months);
             var date = new Date();
             if(report_months=='today'){
                 date = date.setDate(date.getDate() - 1);
             }else if(report_months=='this_week'){
-                var d = new Date();
-                var day = d.getDay(),
-                    diff = d.getDate() - day + (day == 0 ? -6:1); // adjust when day is sunday
-                date =  new Date(d.setDate(diff));
+                    var d = new Date();
+                    var day = d.getDay(),
+                        diff = d.getDate() - day + (day == 0 ? -6:1); // adjust when day is sunday
+                    date =  new Date(d.setDate(diff));
             }else if(report_months=='this_month'){
                 var dm = new Date();
                 date = new Date(dm.getFullYear(), dm.getMonth(), 1);
             }else if(report_months=='3'){
                 var d3 = new Date();
-                date =  d3.setMonth(d3.getMonth() - 3);
+               date =  d3.setMonth(d3.getMonth() - 3);
             }else if(report_months=='6'){
                 var d6 = new Date();
                 date =  d6.setMonth(d6.getMonth() - 6);
@@ -58,17 +62,18 @@ angular.module('headwind-kiosk')
             var request = {
                 startDate: startDate+" 00:00:00.000000",
                 endDate: endDate+" 00:00:00.000000",
-                districtId: ""
+                districtId: $scope.districtId,
+                mandalName : $scope.mandalName
             };
             spinnerService.show('spinner2');
-            dashboardService.getReportData(request,function (response) {
+            dashboardService.getRKBData(request,function (response) {
                 spinnerService.close('spinner2');
                 console.log(response)
                 if (response.data) {
 
                     $scope.dashboardData = response.data;
                     setTimeout(function (){
-                        table = $('.dt-table').DataTable(dtSettings);
+                         table = $('.dt-table').DataTable(dtSettings);
 
                     })
 
@@ -76,9 +81,7 @@ angular.module('headwind-kiosk')
             });
         };
         $scope.init = function () {
-
-            $scope.getDashboardData('6');
+            $scope.getDashboardData('today');
         };
-
+        $scope.init();
     });
-

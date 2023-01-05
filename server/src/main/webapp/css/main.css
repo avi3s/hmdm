@@ -2742,9 +2742,19 @@ div.table-responsive>div.dataTables_wrapper>div.row>div[class^=col-]:last-child 
     font-weight: 400;
     padding: 0.3em 0.7em 0.3em;
 }
+
+a:hover, a:focus {
+    color: #23527c;
+    text-decoration: none;
+}
 .label-success {
     background: 0 0;
     border: 1px solid #84c529;
     color: #84c529;
+}
+.label-default-light {
+    background: 0 0;
+    border: 1px solid #d8d8d8;
+    color: #a5a5a5;
 }
 

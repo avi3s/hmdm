@@ -266,6 +266,16 @@ angular.module('headwind-kiosk',
                 templateUrl:'app/components/main/view/dashboard.html',
                 controller:'DashboardController'
             })
+            .state('mandal',{
+                url:'/mandal/{districtId}',
+                templateUrl:'app/components/main/view/mandal.html',
+                controller:'MandalController'
+            })
+            .state('mandalDetails',{
+                url:'/mandal/{districtId}/{mandalName}',
+                templateUrl:'app/components/main/view/mandalDetails.html',
+                controller:'MandalDetailsController'
+            })
             .state('reports',{
                 url:'/reports',
                 templateUrl:'app/components/main/view/reports.html',

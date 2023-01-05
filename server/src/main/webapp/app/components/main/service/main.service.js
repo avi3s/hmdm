@@ -145,7 +145,11 @@ angular.module('headwind-kiosk')
     })
     .factory('dashboardService',function ($resource){
         return $resource('', {}, {
-            getDashboardData: {url: 'rest/private/dashboard', method: 'POST'}
+            getDashboardData: {url: 'rest/private/dashboard', method: 'POST'},
+            getMandalData: {url: 'rest/private/mandal-details', method: 'POST'},
+            getRKBData: {url: 'rest/private/rbk', method: 'POST'},
+            getRKBListData: {url: 'rest/private/redList', method: 'GET'},
+            getReportData: {url: 'rest/private/report', method: 'POST'}
         })
     })
 ;

@@ -83,7 +83,7 @@
                         <thead>
                         <tr>
                             <th class="" id="bg_color_table">SL</th>
-                            <th class="" id="bg_color_table">District</th>
+                            <th class="" id="bg_color_table">Mandal</th>
                             <th class="" id="bg_color_table">Installed</th>
                             <th class="" id="bg_color_table">Functional</th>
                             <th class="" id="bg_color_table">Online</th>
@@ -93,9 +93,9 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr ng-repeat='rowData in dashboardData.dashboardDetails'>
-                            <td>{{rowData.districtId}}</td>
-                            <td><a href="#/mandal/{{rowData.districtId}}">{{rowData.districtName}}</a></td>
+                        <tr ng-repeat='rowData in dashboardData.mandals'>
+                            <td>{{$index + 1}}</td>
+                            <td><a href="#/mandal/{{districtId}}/{{rowData.mandalName}}">{{rowData.mandalName}}</a></td>
                             <td>
                                 <span class="label label-default-light">
                                     <a class="bold" disabled="">

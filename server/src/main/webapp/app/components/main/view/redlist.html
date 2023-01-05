@@ -1,3 +1,63 @@
-<h2 style="
-    padding-top: 84px;
-">Red List</h2>
+<div class="content-wrapper fullscreen ng-scope">
+    <div class="row">
+        <div class="col-md-12">
+            <sarsha-spinner name="spinner2">
+                <div class="spinner">
+                    <div class="rect1"></div>
+                    <div class="rect2"></div>
+                    <div class="rect3"></div>
+                    <div class="rect4"></div>
+                    <div class="rect5"></div>
+                </div>
+            </sarsha-spinner>
+        </div>
+        <div class="panel_s">
+            <div class="panel-body">
+                <div class="panel-body">
+                    <table class="table tasks-overview dt-table scroll-responsive">
+                        <thead>
+                        <tr>
+                            <th class="" id="bg_color_table">SL</th>
+                            <th class="" id="bg_color_table">RBK Login ID</th>
+                            <th class="" id="bg_color_table">RBK Name</th>
+                            <th class="" id="bg_color_table">Status</th>
+                            <th class="" id="bg_color_table">Under Maintenance</th>
+                            <th class="" id="bg_color_table">District</th>
+                            <th class="" id="bg_color_table">Mandal</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat='rowData in dashboardData'>
+                            <td>{{$index + 1}}</td>
+                            <td><a>{{rowData.rbkLoginId}}</a></td>
+                            <td>
+                                {{rowData.rbkName}}
+
+                            </td>
+                            <td>
+                                <span ng-if="rowData.status==='Offline'" class="label label-default-light"  style="color:#d33d00;border:1px solid #d33d00">{{rowData.status}}</span>
+                                <span ng-if="rowData.status==='Online'" class="label label-default-light"  style="color:#509623;border:1px solid #509623">{{rowData.status}}</span>
+                            </td>
+                            <td>
+                                {{rowData.underMaintenance}}
+
+                            </td>
+
+                            <td>
+                                {{rowData.districtName}}
+
+                            </td>
+                            <td>
+                                {{rowData.mandalName}}
+
+                            </td>
+                        </tr>
+                        </tbody>
+
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
