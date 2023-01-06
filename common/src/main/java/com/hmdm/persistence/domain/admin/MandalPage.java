@@ -18,4 +18,5 @@ public class MandalPage implements Serializable {
     private String onlineCount;
     private String offlineCount;
     private String nonfunctionalCount;
+    private String districtName;
 }

@@ -17,6 +17,7 @@ public class RBK implements Serializable {
     private String vaa;
     private String contact;
     private String status;
+    private String statusColour;
     private String lastAccessed;
     private String nonFunctional;
 }

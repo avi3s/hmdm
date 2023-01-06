@@ -250,6 +250,8 @@ public class AdminDAO {
         result.setOnlineCount(String.valueOf(onlineCount));
         result.setOfflineCount(String.valueOf(offlineCount));
         result.setNonfunctionalCount(String.valueOf(nonfunctionalCount));
+        DistrictDetails districtDetails = adminMapper.getDistrictById(Integer.valueOf(input.getDistrictId()));
+        result.setDistrictName(districtDetails.getDistrictName());
 
         return result;
     }
@@ -354,6 +356,7 @@ public class AdminDAO {
 
     public RBKPage getRBKDetailsLists(Input input) {
 
+        List<Kiosk> kiosks = getKioskStatus();
         validateRBKRequest(input);
         AtomicReference<Long> functionalCount = new AtomicReference<>(0L);
         AtomicReference<Long> onlineCount = new AtomicReference<>(0L);
@@ -362,9 +365,11 @@ public class AdminDAO {
         List<RBK> rbkList = adminMapper.getRBKList(input.getStartDate(), input.getEndDate(), Integer.valueOf(input.getDistrictId()), input.getMandalName());
         rbkList.forEach(rbk -> {
             if (Integer.valueOf(rbk.getStatus()) == 1) {
+                filteredKiosk(kiosks, rbk);
                 rbk.setNonFunctional("No");
                 onlineCount.set(onlineCount.get() + 1);
             } else if (Integer.valueOf(rbk.getStatus()) == 5) {
+                filteredKiosk(kiosks, rbk);
                 rbk.setNonFunctional("Yes");
                 offlineCount.set(offlineCount.get() + 1);
             }
@@ -461,6 +466,17 @@ public class AdminDAO {
     }
 
     private void filteredKiosk(List<Kiosk> kiosks, Report r) {
+        List<Kiosk> filteredKiosks = kiosks.stream().filter(kiosk -> {
+            if (kiosk.getId().equalsIgnoreCase(r.getStatus())) {
+                return true;
+            } else {
+                return false;
+            }
+        }).collect(Collectors.toList());
+        r.setStatusColour(filteredKiosks.get(0).getColor());
+    }
+
+    private void filteredKiosk(List<Kiosk> kiosks, RBK r) {
         List<Kiosk> filteredKiosks = kiosks.stream().filter(kiosk -> {
             if (kiosk.getId().equalsIgnoreCase(r.getStatus())) {
                 return true;
