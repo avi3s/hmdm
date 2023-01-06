@@ -451,8 +451,8 @@ public class AdminDAO {
             r.setDistrictName(filteredDistricts.get(0).getDistrictName());
 
             if (Integer.valueOf(r.getNetworkType()) == 1) {
-                r.setNetworkType("WIFI");
-            } else if (Integer.valueOf(r.getNetworkType()) == 5) {
+                r.setNetworkType("Wireless");
+            } else if (Integer.valueOf(r.getNetworkType()) == 2) {
                 r.setNetworkType("LAN");
             }
 
