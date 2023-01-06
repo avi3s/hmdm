@@ -20,6 +20,7 @@ public class Report implements Serializable {
     private String districtName;
     private String secretariatCode;
     private String status;
+    private String statusColour;
     private String networkType;
     private String lastContact;
 }

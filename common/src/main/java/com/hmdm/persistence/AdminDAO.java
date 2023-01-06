@@ -263,7 +263,11 @@ public class AdminDAO {
         mandal.setFunctional(String.valueOf(functional));
         Long nonFunctional = Long.valueOf(mandal.getInstalled()) - Long.valueOf(mandal.getFunctional());
         mandal.setNonFunctional(String.valueOf(nonFunctional));
-        Double functionality = Double.valueOf(adminMapper.getTotalMandals(Integer.valueOf(input.getDistrictId()))) / Double.valueOf(mandal.getInstalled());
+        Double functionality = 0.0D;
+        if (!mandal.getInstalled().equalsIgnoreCase("0")) {
+            functionality = Double.valueOf(adminMapper.getTotalKiosks()) / Double.valueOf(mandal.getInstalled());
+            functionality = (double) Math.round(functionality * 100) / 100;
+        }
         mandal.setFunctionality(String.valueOf(functionality));
 
         // Calculation Of the Header Values
@@ -386,6 +390,8 @@ public class AdminDAO {
 
     public List<Report> getReports(Input input) {
 
+        List<Kiosk> kiosks = getKioskStatus();
+        List<DistrictDetails> districtDetails = getDistrictLists();
         List<Report> reports = adminMapper.getReport().stream()
                 .filter(report -> {
                     if (StringUtil.isEmpty(input.getMandalName())) {
@@ -429,14 +435,40 @@ public class AdminDAO {
 
         reports.forEach(r -> {
             if (Integer.valueOf(r.getStatus()) == 1) {
+                filteredKiosk(kiosks, r);
                 r.setStatus("Online");
             } else if (Integer.valueOf(r.getStatus()) == 5) {
+                filteredKiosk(kiosks, r);
                 r.setStatus("Offline");
             }
-            DistrictDetails districtDetails = adminMapper.getDistrictById(Integer.valueOf(r.getDistrictName()));
-            r.setDistrictName(districtDetails.getDistrictName());
+            List<DistrictDetails> filteredDistricts = districtDetails.stream().filter(district -> {
+                if (district.getId().equalsIgnoreCase(r.getDistrictName())) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }).collect(Collectors.toList());
+            r.setDistrictName(filteredDistricts.get(0).getDistrictName());
+
+            if (Integer.valueOf(r.getNetworkType()) == 1) {
+                r.setNetworkType("WIFI");
+            } else if (Integer.valueOf(r.getNetworkType()) == 5) {
+                r.setNetworkType("LAN");
+            }
+
         });
         return reports;
+    }
+
+    private void filteredKiosk(List<Kiosk> kiosks, Report r) {
+        List<Kiosk> filteredKiosks = kiosks.stream().filter(kiosk -> {
+            if (kiosk.getId().equalsIgnoreCase(r.getStatus())) {
+                return true;
+            } else {
+                return false;
+            }
+        }).collect(Collectors.toList());
+        r.setStatusColour(filteredKiosks.get(0).getColor());
     }
 
     public List<RedList> getRedLists() {
