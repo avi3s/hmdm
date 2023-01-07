@@ -21,12 +21,12 @@
                                         <h3 class="bold">
                                             {{dashboardData.totalKioskCount}}</h3>
                                         <span style="color:#060606" class="text-danger">
-											Total Kiosk's Installed </span>
+											Total Kiosk's Installed at {{dashboardData.districtName}} </span>
                                     </div>
                                 </div>
                                 <div class="col-md-2 col-xs-6 border-right">
                                     <div class="box_color" style="color:#426dd9">
-                                        <a href="#/dashboard">
+                                        <a href="#/reports?status=6&report_months={{report_months}}&districtId={{districtId}}">
                                             <h3 class="bold">
                                                 {{dashboardData.functionalCount}} </h3>
                                             <span style="color:#426dd9" class="text-danger">
@@ -53,7 +53,7 @@
                                 </div>
                                 <div class="col-md-2 col-xs-6  border-right">
                                     <div class="box_color" style="color:#426dd9">
-                                                    <a href="#/dashboard">
+                                        <a href="#/reports?status=7&report_months={{report_months}}&districtId={{districtId}}">
                                         <h3 class="bold">
                                             {{dashboardData.nonfunctionalCount}} </h3>
 
@@ -64,7 +64,7 @@
                                 </div>
                                 <div class="col-md-2 form-group" id="report-time">
                                     <div class="dropdown bootstrap-select bs3">
-                                        <select ng-model="report_months"  class="selectpicker form-control" name="report_months" id="report_months" data-width="100%" data-none-selected-text="Nothing selected" tabindex="-98">
+                                        <select ng-model="report_months"  class="selectpicker form-control" name="report_months" id="report_months" data-width="86%" data-none-selected-text="Nothing selected" tabindex="-98">
                                         <option value="today">Today(24hrs)</option>
                                         <option value="this_week">This Week</option>
                                         <option value="this_month">This Month</option>

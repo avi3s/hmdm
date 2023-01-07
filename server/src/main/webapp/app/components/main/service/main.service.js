@@ -149,7 +149,10 @@ angular.module('headwind-kiosk')
             getMandalData: {url: 'rest/private/mandal-details', method: 'POST'},
             getRKBData: {url: 'rest/private/rbk', method: 'POST'},
             getRKBListData: {url: 'rest/private/redList', method: 'GET'},
-            getReportData: {url: 'rest/private/report', method: 'POST'}
+            getReportData: {url: 'rest/private/report', method: 'POST'},
+            getDistrictList: {url: 'rest/private/district', method: 'GET'},
+            getMandalList: {url: 'rest/private/mandal/:districtId', method: 'GET'},
+            getStatusList: {url: 'rest/private/kiosk', method: 'GET'}
         })
     })
 ;

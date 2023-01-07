@@ -68,6 +68,10 @@ angular.module('headwind-kiosk')
                 return (user && user.userRole.superAdmin);
             },
 
+            isJavaUser: function () {
+                return (user && user.userType);
+            },
+
             getUserName: function () {
                 return user ? user.name : undefined;
             },

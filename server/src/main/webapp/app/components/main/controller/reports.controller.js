@@ -1,35 +1,17 @@
 angular.module('headwind-kiosk')
-    .controller('ReportsController', function ($scope, $rootScope, $state, $modal, $interval, $cookies, $window, $filter, $timeout,
+    .controller('ReportsController', function ($scope, $rootScope, $state,$location, $modal, $interval, $cookies, $window, $filter, $timeout,
                                                  confirmModal, deviceService, groupService, settingsService, hintService,
                                                  authService, pluginService, configurationService, alertService,
                                                  spinnerService, localization, dashboardService) {
 
 
-        var dtSettings = {
-            "retrieve": true,
-            'paginate': true,
-            'searchDelay': 750,
-            "bDeferRender": true,
-            "responsive": true,
-            "autoWidth": false,
-            "pageLength":25,
-            dom: "<'row'><'row'<'col-md-7'lB><'col-md-5'f>>rt<'row'<'col-md-4'i>><'row'<'#colvis'><'.dt-page-jump'>p>",
-            buttons: ['excel', 'pdf','csv','print']
-        };
-        var table;
-        angular.element(document).ready(function () {
-            $scope.init();
-        });
-
-        $scope.dashboardData = {};
-        $scope.report_months = "today";
-        $scope.startDate = '';
-        $scope.endDate = '';
-        $scope.getDashboardData = function (report_months){
-            $scope.dashboardData = {};
-            if(table)
-                table.destroy();
-            console.log(report_months);
+       // console.log($location.search());
+        var districtId = $location.search().districtId ? $location.search().districtId:'';
+        var report_months = $location.search().report_months ? $location.search().report_months:'';
+        var status = $location.search().status ? $location.search().status:'';
+        $scope.dateFrom = new Date();
+        $scope.dateTo = new Date();
+        if(report_months) {
             var date = new Date();
             if(report_months=='today'){
                 date = date.setDate(date.getDate() - 1);
@@ -50,35 +32,149 @@ angular.module('headwind-kiosk')
             }else {
 
             }
+            $scope.dateFrom = date;
+        }
 
-            var startDate = new Date(date).toJSON().slice(0,10).replace(/-/g,'-');
-            var endDate = new Date().toJSON().slice(0,10).replace(/-/g,'-');;
+        $scope.dateFormat = "yyyy-MM-dd"
+        $scope.datePickerOptions = { 'show-weeks': false };
+        $scope.openDatePickers = {
+            'dateFrom': false,
+            'dateTo': false
+        };
+
+        $scope.openDateCalendar = function( $event, isStartDate ) {
+            $event.preventDefault();
+            $event.stopPropagation();
+
+            if ( isStartDate ) {
+                $scope.openDatePickers.dateFrom = true;
+            } else {
+                $scope.openDatePickers.dateTo = true;
+            }
+        };
+        $scope.districtId = [];
+        if(districtId){
+            $scope.districtId.push(districtId);
+        }
+        $scope.mandal = '';
+        $scope.status = [];
+        if(status){
+            $scope.status.push(status);
+        }
+        var dtSettings = {
+            "retrieve": true,
+            'paginate': true,
+            'searchDelay': 750,
+            "bDeferRender": true,
+            "responsive": true,
+            "autoWidth": false,
+            "pageLength":25,
+            dom: "<'row'><'row'<'col-md-7'lB><'col-md-5'f>>rt<'row'<'col-md-4'i>><'row'<'#colvis'><'.dt-page-jump'>p>",
+            buttons: ['excel', 'pdf','csv','print']
+        };
+        var table;
+        angular.element(document).ready(function () {
+            $scope.searchReport();
+            // $('#mandal').selectpicker();
+            $('.selectpicker').selectpicker();
+        });
+        $scope.districtList = [];
+        $scope.mandalList = [];
+        $scope.statusList = [];
+        $scope.dashboardData = {};
+        $scope.startDate = '';
+        $scope.endDate = '';
+        $scope.getDataFunCallInProgress = false;
+        $scope.getDashboardData = function () {
+            $scope.getDataFunCallInProgress = true;
+            $scope.dashboardData = {};
+            if(table)
+                table.destroy();
+
+
+            var startDate = new Date($scope.dateFrom).toJSON().slice(0,10).replace(/-/g,'-');
+            var endDate = new Date($scope.dateTo).toJSON().slice(0,10).replace(/-/g,'-');;
             $scope.startDate = startDate;
             $scope.endDate = endDate;
             var request = {
                 startDate: startDate+" 00:00:00.000000",
                 endDate: endDate+" 00:00:00.000000",
-                districtId: ""
+                districtId: $scope.districtId.length > 0 ? $scope.districtId.toString() :'',
+                mandalName: $scope.mandal,
+                kioskStatus: $scope.status.length > 0 ? $scope.status.toString() :'',
             };
             spinnerService.show('spinner2');
             dashboardService.getReportData(request,function (response) {
                 spinnerService.close('spinner2');
                 console.log(response)
                 if (response.data) {
-
                     $scope.dashboardData = response.data;
                     setTimeout(function (){
                         table = $('.dt-table').DataTable(dtSettings);
+                        $scope.getDataFunCallInProgress = false;
+                    },1000)
 
-                    })
+                }else {
+                    $scope.dashboardData = {};
+                    setTimeout(function (){
+                        table = $('.dt-table').DataTable(dtSettings);
+                    },1000)
 
                 }
             });
         };
-        $scope.init = function () {
+        $scope.getDistrictList = function () {
+            dashboardService.getDistrictList(function (response) {
+                if (response.data) {
+                    $scope.districtList = response.data;
+                    setTimeout(function () {
+                        $('#districtId').selectpicker('refresh');
+                    },100)
+                }
+            });
 
-            $scope.getDashboardData('6');
+        }
+        $scope.getMandalList = function (districtId) {
+            dashboardService.getMandalList({districtId:districtId},function (response) {
+                if (response.data) {
+                    $scope.mandalList = response.data;
+                    setTimeout(function () {
+                        $('#mandal').selectpicker('refresh');
+                    },100)
+                }
+            });
+        }
+        $scope.getStatusList = function () {
+            dashboardService.getStatusList(function (response) {
+                if (response.data) {
+                    $scope.statusList = response.data;
+                    setTimeout(function () {
+                        $('#status').selectpicker('refresh');
+                    },100)
+                }
+            });
+        }
+        $scope.searchReport = function (){
+            $scope.getDashboardData();
         };
+        $scope.clear = function () {
+            window.location.href = '#/reports';
+            window.location.reload();
+        }
+        $scope.districtChange = function (){
+           // console.log($scope.districtId);
+            $scope.mandalList = [];
+            $scope.mandal = '';
+            if($scope.districtId.length > 0){
+                $scope.getMandalList($scope.districtId);
+            }
+        }
+        $scope.init = function () {
+            $scope.getStatusList();
+            $scope.getDistrictList();
+        };
+        $scope.init();
+
 
     });
 

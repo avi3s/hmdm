@@ -1280,7 +1280,7 @@ td.app-desc span {
 }
 
 .date-picker-input {
-    width: 100px;
+    width: 112px;
     float: left;
     margin-right: 10px;
 }
@@ -2540,7 +2540,7 @@ h4.collapse-control {
     background-color: #3966d7;
     color: white;
 }
-#DataTables_Table_0_filter {
+.dataTables_filter {
     float: right;
 }
 table.dataTable {
@@ -2757,4 +2757,21 @@ a:hover, a:focus {
     border: 1px solid #d8d8d8;
     color: #a5a5a5;
 }
-
+.bootstrap-select .btn-default {
+    background: #fff!important;
+    color: #415164!important;
+    border: 1px solid #bfcbd9!important;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    padding: 4px 10px;
+    line-height: 2;
+    height: 36px;
+    text-transform: inherit;
+    padding-left: 10px;
+}
+#new_bt_style_2 {
+  margin-left: 40px;
+}
+.clearSubmitButton {
+    margin-top: 25px;
+}

@@ -20,6 +20,7 @@ angular.module('headwind-kiosk')
         var table;
         angular.element(document).ready(function () {
            // table = $('.dt-table').DataTable(dtSettings);
+            $('.selectpicker').selectpicker();
         });
 
 
