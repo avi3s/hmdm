@@ -27,7 +27,11 @@ angular.module('headwind-kiosk')
                 if (response.data.passwordReset) {
                     $state.transitionTo('passwordReset', {"token": response.data.passwordResetToken});
                 } else {
-                    $state.transitionTo('main');
+                    if(response.data.userType){
+                        $state.transitionTo('main');
+                    }else {
+                        $state.transitionTo('dashboard');
+                    }
                     $rootScope.$emit('aero_USER_AUTHENTICATED');
                 }
             } else if (response.status === 'ERROR') {
