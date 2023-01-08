@@ -44,7 +44,7 @@ public interface AdminMapper {
     @Select("select count(*) FROM tblleads where country = #{districtId} and state = #{state}")
     Long getTotalRBKs(@Param("districtId") int districtId, @Param("state") String state);
 
-    @Select("select id, name as rbkLoginId,city as rbkName,company as vaa,phonenumber as contact,status,last_status_change as lastAccessed FROM tblleads where dateadded > TO_TIMESTAMP(#{startDate},'yyyy-MM-dd HH24:00:00') and dateadded < TO_TIMESTAMP(#{endDate},'yyyy-MM-dd HH24:00:00') and country = #{districtId} and state = #{state} order by state")
+    @Select("select id, name as rbkLoginId,city as rbkName,company as vaa,phonenumber as contact,status,last_status_change as lastAccessed FROM tblleads where lastcontact > TO_TIMESTAMP(#{startDate},'yyyy-MM-dd HH24:00:00') and lastcontact < TO_TIMESTAMP(#{endDate},'yyyy-MM-dd HH24:00:00') and country = #{districtId} and state = #{state} order by state")
     List<RBK> getRBKList(@Param("startDate") String startDate, @Param("endDate") String endDate, @Param("districtId") int districtId, @Param("state") String state);
 
     @Select("select id, name as rbkLoginId, email as emailAddress, phonenumber as phone, company as vaaName, city as rbkName, state as mandalName, country  as districtName, " +
@@ -60,13 +60,13 @@ public interface AdminMapper {
     @Select("select count(*) FROM tblleads where country = #{districtId}")
     Long getTotalMandals(@Param("districtId") int districtId);
 
-    @Select("select count(*) as installed,state as mandalName FROM tblleads where dateadded > TO_TIMESTAMP(#{startDate},'yyyy-MM-dd HH24:00:00') and dateadded < TO_TIMESTAMP(#{endDate},'yyyy-MM-dd HH24:00:00') and country = #{districtId} and state = #{state} group by state order by state")
-    Mandal getTotalMandalInstalled(@Param("startDate") String startDate, @Param("endDate") String endDate, @Param("districtId") int districtId, @Param("state") String state);
+    @Select("select count(*) as installed,state as mandalName FROM tblleads where country = #{districtId} and state = #{state} group by state order by state")
+    Mandal getTotalMandalInstalled(@Param("districtId") int districtId, @Param("state") String state);
 
-    @Select("select count(*) as online,state as mandalName FROM tblleads  where dateadded > TO_TIMESTAMP(#{startDate},'yyyy-MM-dd HH24:00:00') and dateadded < TO_TIMESTAMP(#{endDate},'yyyy-MM-dd HH24:00:00') and country = #{districtId} and state = #{state} and status = 1 group by state order by state")
+    @Select("select count(*) as online,state as mandalName FROM tblleads  where lastcontact > TO_TIMESTAMP(#{startDate},'yyyy-MM-dd HH24:00:00') and lastcontact < TO_TIMESTAMP(#{endDate},'yyyy-MM-dd HH24:00:00') and country = #{districtId} and state = #{state} and status = 1 group by state order by state")
     Mandal getTotalMandalOnline(@Param("startDate") String startDate, @Param("endDate") String endDate, @Param("districtId") int districtId, @Param("state") String state);
 
-    @Select("select count(*) as offline,state as mandalName FROM tblleads  where dateadded > TO_TIMESTAMP(#{startDate},'yyyy-MM-dd HH24:00:00') and dateadded < TO_TIMESTAMP(#{endDate},'yyyy-MM-dd HH24:00:00') and country = #{districtId} and state = #{state} and status = 5 group by state order by state")
+    @Select("select count(*) as offline,state as mandalName FROM tblleads  where lastcontact > TO_TIMESTAMP(#{startDate},'yyyy-MM-dd HH24:00:00') and lastcontact < TO_TIMESTAMP(#{endDate},'yyyy-MM-dd HH24:00:00') and country = #{districtId} and state = #{state} and status = 5 group by state order by state")
     Mandal getTotalMandalOffline(@Param("startDate") String startDate, @Param("endDate") String endDate, @Param("districtId") int districtId, @Param("state") String state);
 
     /* Mandal Queries End */
@@ -76,13 +76,13 @@ public interface AdminMapper {
     @Select("select count(*) FROM tblleads")
     Long getTotalKiosks();
 
-    @Select("select count(*) as installed,country as districtId FROM tblleads where dateadded > TO_TIMESTAMP(#{startDate},'yyyy-MM-dd HH24:00:00') and dateadded < TO_TIMESTAMP(#{endDate},'yyyy-MM-dd HH24:00:00') and country = #{districtId} group by country order by country")
-    DashboardDetails getTotalInstalled(@Param("startDate") String startDate, @Param("endDate") String endDate, @Param("districtId") int districtId);
+    @Select("select count(*) as installed,country as districtId FROM tblleads where country = #{districtId} group by country order by country")
+    DashboardDetails getTotalInstalled( @Param("districtId") int districtId);
 
-    @Select("select count(*) as online,country as districtId FROM tblleads  where dateadded > TO_TIMESTAMP(#{startDate},'yyyy-MM-dd HH24:00:00') and dateadded < TO_TIMESTAMP(#{endDate},'yyyy-MM-dd HH24:00:00') and country = #{districtId} and status = 1 group by country order by country")
+    @Select("select count(*) as online,country as districtId FROM tblleads  where lastcontact > TO_TIMESTAMP(#{startDate},'yyyy-MM-dd HH24:00:00') and lastcontact < TO_TIMESTAMP(#{endDate},'yyyy-MM-dd HH24:00:00') and country = #{districtId} and status = 1 group by country order by country")
     DashboardDetails getTotalOnline(@Param("startDate") String startDate, @Param("endDate") String endDate, @Param("districtId") int districtId);
 
-    @Select("select count(*) as offline,country as districtId FROM tblleads  where dateadded > TO_TIMESTAMP(#{startDate},'yyyy-MM-dd HH24:00:00') and dateadded < TO_TIMESTAMP(#{endDate},'yyyy-MM-dd HH24:00:00') and country = #{districtId} and status = 5 group by country order by country")
+    @Select("select count(*) as offline,country as districtId FROM tblleads  where lastcontact > TO_TIMESTAMP(#{startDate},'yyyy-MM-dd HH24:00:00') and lastcontact < TO_TIMESTAMP(#{endDate},'yyyy-MM-dd HH24:00:00') and country = #{districtId} and status = 5 group by country order by country")
     DashboardDetails getTotalOffline(@Param("startDate") String startDate, @Param("endDate") String endDate, @Param("districtId") int districtId);
 
     /* DashBoard Queries End */
