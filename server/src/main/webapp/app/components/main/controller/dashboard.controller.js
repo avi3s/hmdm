@@ -34,6 +34,8 @@ angular.module('headwind-kiosk')
             table.destroy();
             console.log(report_months);
             var date = new Date();
+            var endDate = new Date();
+            endDate = endDate.setDate(endDate.getDate() + 1);
             if(report_months=='today'){
                 date = date.setDate(date.getDate() - 1);
             }else if(report_months=='this_week'){
@@ -55,7 +57,7 @@ angular.module('headwind-kiosk')
             }
 
             var startDate = new Date(date).toJSON().slice(0,10).replace(/-/g,'-');
-            var endDate = new Date().toJSON().slice(0,10).replace(/-/g,'-');;
+            var endDate = new Date(endDate).toJSON().slice(0,10).replace(/-/g,'-');;
             $scope.startDate = startDate;
             $scope.endDate = endDate;
             var request = {
