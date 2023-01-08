@@ -277,7 +277,7 @@ public class AdminDAO {
         mandal.setNonFunctional(String.valueOf(nonFunctional));
         Double functionality = 0.0D;
         if (!mandal.getInstalled().equalsIgnoreCase("0")) {
-            functionality = Double.valueOf(adminMapper.getTotalKiosks()) / Double.valueOf(mandal.getInstalled());
+            functionality = Double.valueOf(functional) / Double.valueOf(mandal.getInstalled()) * 100;
             functionality = (double) Math.round(functionality * 100) / 100;
         }
         mandal.setFunctionality(String.valueOf(functionality));
