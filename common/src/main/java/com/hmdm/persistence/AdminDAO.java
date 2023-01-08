@@ -403,7 +403,7 @@ public class AdminDAO {
 
         List<Kiosk> kiosks = getKioskStatus();
         List<DistrictDetails> districtDetails = getDistrictLists();
-        List<Report> reports = adminMapper.getReport().stream()
+        List<Report> reports = adminMapper.getReport().parallelStream()
                 .filter(report -> {
                     if (StringUtil.isEmpty(input.getMandalName())) {
                         return true;
@@ -438,13 +438,14 @@ public class AdminDAO {
                                 return false;
                             }
                         } catch (Exception e) {
+                            logger.error("Date Checking Exception For Lead id {} ==>> and LastContact Date {} ==>> ",report.getId(),report.getLastContact());
                             return false;
                         }
                     }
                 })
                 .collect(Collectors.toList());
 
-        reports.forEach(r -> {
+        reports.parallelStream().forEach(r -> {
             if (Integer.valueOf(r.getStatus()) == 1) {
                 filteredKiosk(kiosks, r);
                 r.setStatus("Online");
@@ -466,7 +467,6 @@ public class AdminDAO {
             } else if (Integer.valueOf(r.getNetworkType()) == 2) {
                 r.setNetworkType("LAN");
             }
-
         });
         return reports;
     }
