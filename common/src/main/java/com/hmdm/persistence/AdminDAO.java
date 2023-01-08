@@ -192,7 +192,7 @@ public class AdminDAO {
         dashboard.setDistrictId(input.getDistrictId());
         dashboard.setDistrictName(input.getDistrictName());
 
-        Callable<DashboardDetails> getTotalInstalled = () -> adminMapper.getTotalInstalled(input.getStartDate(), input.getEndDate(), Integer.valueOf(input.getDistrictId()));
+        Callable<DashboardDetails> getTotalInstalled = () -> adminMapper.getTotalInstalled(Integer.valueOf(input.getDistrictId()));
         Future<DashboardDetails> totalInstalled = executorService.submit(getTotalInstalled);
         try {
             if (Objects.nonNull(totalInstalled.get())) {
@@ -297,7 +297,7 @@ public class AdminDAO {
         Mandal mandal = new Mandal();
         mandal.setMandalName(input.getMandalName());
 
-        Callable<Mandal> getTotalInstalled = () -> adminMapper.getTotalMandalInstalled(input.getStartDate(), input.getEndDate(), Integer.valueOf(input.getDistrictId()), input.getMandalName());
+        Callable<Mandal> getTotalInstalled = () -> adminMapper.getTotalMandalInstalled(Integer.valueOf(input.getDistrictId()), input.getMandalName());
         Future<Mandal> totalInstalled = executorService.submit(getTotalInstalled);
         try {
             if (Objects.nonNull(totalInstalled.get())) {
