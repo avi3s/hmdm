@@ -79,7 +79,6 @@
     <changeSet id="plugin-deviceinfo-22.10.2019-13:38" author="isv" context="common">
         <comment>Table,new: plugin_deviceinfo_settings</comment>
         <sql>
-            DROP TABLE plugin_deviceinfo_settings;
             CREATE TABLE plugin_deviceinfo_settings (
                 id serial NOT NULL CONSTRAINT plugin_deviceinfo_settings_pr_key PRIMARY KEY,
                 customerId INT NOT NULL REFERENCES customers (id) ON DELETE CASCADE,

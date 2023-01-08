@@ -37,8 +37,6 @@
     <changeSet id="plugin-platform-07.02.2019-14:16" author="isv" context="common">
         <comment>Create plugins table</comment>
         <sql>
-            DROP TABLE pluginsDisabled;
-            DROP TABLE plugins;
             CREATE TABLE plugins (
                 id serial NOT NULL CONSTRAINT plugins_pr_key PRIMARY KEY,
                 identifier VARCHAR(50) NOT NULL CONSTRAINT plugin_identifier_unq UNIQUE,
