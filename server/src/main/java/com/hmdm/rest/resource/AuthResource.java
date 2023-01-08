@@ -100,6 +100,11 @@ public class AuthResource {
                 return Response.ERROR();
             } else {
                 user.setUserType(false);
+                // Web app sends MD5 hash, we need to re-hash it to compare with the DB value
+                if (!PasswordUtil.passwordMatch(credentials.getPassword(), user.getPassword())) {
+                    Thread.sleep(1000);
+                    return Response.ERROR();
+                }
                 return setSession(req, user);
             }
         }
@@ -124,6 +129,7 @@ public class AuthResource {
     }
 
     private Response setSession(@Context HttpServletRequest req, User user) {
+
         HttpSession userSession = req.getSession();
         userSession.setAttribute( sessionCredentials, user );
         if (user.getAuthToken() == null || user.getAuthToken().length() == 0) {

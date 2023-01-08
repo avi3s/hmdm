@@ -84,7 +84,6 @@ public class AdminDAO {
 
     public void setToken(User user) {
         adminMapper.setToken(user.getAuthToken(), user.getId());
-        //adminMapper.setNewPassword(user);
     }
     public Dashboard getDashboard(Input input) {
 

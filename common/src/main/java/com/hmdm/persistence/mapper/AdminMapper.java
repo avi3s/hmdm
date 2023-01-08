@@ -114,7 +114,4 @@ public interface AdminMapper {
 
     @Update({"UPDATE tblstaff SET two_factor_auth_code=#{authToken} WHERE staff_id=#{id}"})
     void setToken(@Param("authToken") String authToken, @Param("id") int id);
-
-    @Update({"UPDATE tblstaff SET two_factor_auth_code=#{authToken} WHERE staff_id=#{id}"})
-    void setNewPassword(User user);
 }
