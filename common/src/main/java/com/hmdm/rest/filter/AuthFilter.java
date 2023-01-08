@@ -23,8 +23,10 @@ package com.hmdm.rest.filter;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.hmdm.persistence.AdminDAO;
 import com.hmdm.persistence.UserDAO;
 import com.hmdm.persistence.domain.User;
+import com.hmdm.rest.json.UserCredentials;
 import com.hmdm.security.SecurityContext;
 
 import java.io.IOException;
@@ -45,12 +47,15 @@ public class AuthFilter implements Filter {
 
     private UserDAO userDAO;
 
+    private AdminDAO adminDAO;
+
     public AuthFilter() {
     }
 
     @Inject
-    public AuthFilter(UserDAO userDAO) {
+    public AuthFilter(UserDAO userDAO, AdminDAO adminDAO) {
         this.userDAO = userDAO;
+        this.adminDAO = adminDAO;
     }
 
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -86,17 +91,34 @@ public class AuthFilter implements Filter {
         // Set-up the security context
         try {
             SecurityContext.init(currentUser);
-            User dbUser = userDAO.getUserDetails(currentUser.getId());
-            if (dbUser.isPasswordReset() || dbUser.getAuthToken() == null || currentUser.getAuthToken() == null ||
-                    !currentUser.getAuthToken().equals(dbUser.getAuthToken())) {
-                ((HttpServletResponse)servletResponse).sendError(403);
-                return;
+            if (currentUser.isUserType()) {
+                User dbUser = userDAO.getUserDetails(currentUser.getId());
+                if (dbUser.isPasswordReset() || dbUser.getAuthToken() == null || currentUser.getAuthToken() == null ||
+                        !currentUser.getAuthToken().equals(dbUser.getAuthToken())) {
+                    ((HttpServletResponse)servletResponse).sendError(403);
+                    return;
+                }
+                // Avoid cookie-based penetration
+                // Changing user data in cookies may be used, for example, to elevate user's permissions to admin
+                SecurityContext.release();
+                SecurityContext.init(dbUser);
+                filterChain.doFilter(servletRequest, servletResponse);
+            } else {
+                UserCredentials credentials = new UserCredentials();
+                credentials.setLogin(currentUser.getEmail());
+                User dbUser = adminDAO.login(credentials);
+                if (dbUser.getAuthToken() == null || currentUser.getAuthToken() == null ||
+                        !currentUser.getAuthToken().equals(dbUser.getAuthToken())) {
+                    ((HttpServletResponse)servletResponse).sendError(403);
+                    return;
+                }
+                // Avoid cookie-based penetration
+                // Changing user data in cookies may be used, for example, to elevate user's permissions to admin
+                SecurityContext.release();
+                SecurityContext.init(dbUser);
+                filterChain.doFilter(servletRequest, servletResponse);
             }
-            // Avoid cookie-based penetration
-            // Changing user data in cookies may be used, for example, to elevate user's permissions to admin
-            SecurityContext.release();
-            SecurityContext.init(dbUser);
-            filterChain.doFilter(servletRequest, servletResponse);
+
         } finally {
             SecurityContext.release();
         }

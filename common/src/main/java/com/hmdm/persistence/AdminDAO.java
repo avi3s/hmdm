@@ -63,8 +63,10 @@ public class AdminDAO {
             user = new User();
             UserRole userRole = new UserRole();
             user.setUserRole(userRole);
+            user.setId(Integer.parseInt(staffUser.getStaffId()));
             user.setEmail(credentials.getLogin());
             user.setPassword(staffUser.getPassword());
+            user.setAuthToken(staffUser.getAuthToken());
             user.setName(staffUser.getFirstname() + " " + staffUser.getLastname());
             if (staffUser.getAdmin().equalsIgnoreCase("1")) {
                 user.setDistrictId(null);
@@ -78,6 +80,11 @@ public class AdminDAO {
             }
         }
         return user;
+    }
+
+    public void setToken(User user) {
+        adminMapper.setToken(user.getAuthToken(), user.getId());
+        //adminMapper.setNewPassword(user);
     }
     public Dashboard getDashboard(Input input) {
 

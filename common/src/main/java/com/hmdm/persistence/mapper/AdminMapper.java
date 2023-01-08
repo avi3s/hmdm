@@ -21,6 +21,7 @@
 
 package com.hmdm.persistence.mapper;
 
+import com.hmdm.persistence.domain.User;
 import com.hmdm.persistence.domain.admin.*;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -105,9 +106,15 @@ public interface AdminMapper {
     @Update({"UPDATE tblleads SET lastcontact=NOW() WHERE id=#{kioskId}"})
     void updateNetworkStatus(@Param("kioskId") String kioskId);
 
-    @Select("SELECT staff_id as staffId, email,firstname,lastname,phonenumber,password,last_login as lastLogin,admin FROM tblstaff where active = 1 and email = #{email}")
+    @Select("SELECT staff_id as staffId, email,firstname,lastname,phonenumber,password,last_login as lastLogin,admin,two_factor_auth_code as authToken FROM tblstaff where active = 1 and email = #{email}")
     StaffUser login(@Param("email") String email);
 
     @Select("SELECT district_id FROM tblstaff_district where staff_id = #{staffId}")
     String fetchStaffDistrict(@Param("staffId") int staffId);
+
+    @Update({"UPDATE tblstaff SET two_factor_auth_code=#{authToken} WHERE staff_id=#{id}"})
+    void setToken(@Param("authToken") String authToken, @Param("id") int id);
+
+    @Update({"UPDATE tblstaff SET two_factor_auth_code=#{authToken} WHERE staff_id=#{id}"})
+    void setNewPassword(User user);
 }

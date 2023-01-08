@@ -100,9 +100,7 @@ public class AuthResource {
                 return Response.ERROR();
             } else {
                 user.setUserType(false);
-                HttpSession userSession = req.getSession();
-                userSession.setAttribute( sessionCredentials, user );
-                return Response.OK(user);
+                return setSession(req, user);
             }
         }
 
@@ -118,22 +116,27 @@ public class AuthResource {
                 this.customerDAO.recordLastLoginTime(finalUser.getCustomerId(), System.currentTimeMillis());
             });
 
-            HttpSession userSession = req.getSession();
-            userSession.setAttribute( sessionCredentials, user );
-
-            if (user.getAuthToken() == null || user.getAuthToken().length() == 0) {
-                user.setAuthToken(PasswordUtil.generateToken());
-                user.setNewPassword(user.getPassword());        // copy value for setUserNewPasswordUnsecure
-                userDAO.setUserNewPasswordUnsecure(user);
-            }
-
-            user.setPassword(null);
-
-            return Response.OK( user );
+            return setSession(req, user);
         } catch (Exception e) {
             e.printStackTrace();
             return Response.INTERNAL_ERROR();
         }
+    }
+
+    private Response setSession(@Context HttpServletRequest req, User user) {
+        HttpSession userSession = req.getSession();
+        userSession.setAttribute( sessionCredentials, user );
+        if (user.getAuthToken() == null || user.getAuthToken().length() == 0) {
+            user.setAuthToken(PasswordUtil.generateToken());
+            if (user.isUserType()) {
+                user.setNewPassword(user.getPassword());        // copy value for setUserNewPasswordUnsecure
+                userDAO.setUserNewPasswordUnsecure(user);
+            } else {
+                adminDAO.setToken(user);
+            }
+        }
+        user.setPassword(null);
+        return Response.OK(user);
     }
 
     /**

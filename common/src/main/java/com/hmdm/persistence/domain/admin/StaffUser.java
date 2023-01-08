@@ -18,5 +18,6 @@ public class StaffUser implements Serializable {
     private String phonenumber;
     private String password;
     private String admin;
+    private String authToken;
     private String lastLogin;
 }
