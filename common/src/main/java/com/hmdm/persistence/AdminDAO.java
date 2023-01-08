@@ -71,10 +71,14 @@ public class AdminDAO {
             if (staffUser.getAdmin().equalsIgnoreCase("1")) {
                 user.setDistrictId(null);
             } else {
-               String districtId = adminMapper.fetchStaffDistrict(Integer.parseInt(staffUser.getStaffId()));
-                if (!StringUtil.isEmpty(districtId)) {
-                    user.setDistrictId(districtId);
-                } else {
+                try {
+                    String districtId = adminMapper.fetchStaffDistrict(Integer.parseInt(staffUser.getStaffId()));
+                    if (!StringUtil.isEmpty(districtId)) {
+                        user.setDistrictId(districtId);
+                    } else {
+                        user.setDistrictId(null);
+                    }
+                } catch(Exception e) {
                     user.setDistrictId(null);
                 }
             }
