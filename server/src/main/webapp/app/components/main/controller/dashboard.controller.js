@@ -61,7 +61,7 @@ angular.module('headwind-kiosk')
             var request = {
                 startDate: startDate+" 00:00:00.000000",
                 endDate: endDate+" 00:00:00.000000",
-                districtId: ""
+                districtId: authService.getDistrictId() ? authService.getDistrictId() :''
             };
             spinnerService.show('spinner2');
             dashboardService.getDashboardData(request,function (response) {
@@ -69,7 +69,10 @@ angular.module('headwind-kiosk')
                 console.log(response)
                 if (response.data) {
 
-                    $scope.dashboardData = response.data;
+                    $scope.dashboardData = response.data
+                    if($scope.dashboardData.dashboardDetails.length===1 && !authService.isJavaUser()){
+                        window.location.href = '#/mandal/'+ $scope.dashboardData.dashboardDetails[0].districtId;
+                    }
                     setTimeout(function (){
                          table = $('.dt-table').DataTable(dtSettings);
 

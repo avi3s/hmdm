@@ -71,6 +71,10 @@ angular.module('headwind-kiosk')
             isJavaUser: function () {
                 return (user && user.userType);
             },
+            getDistrictId: function () {
+                return (user && user.districtId);
+            },
+
 
             getUserName: function () {
                 return user ? user.name : undefined;
