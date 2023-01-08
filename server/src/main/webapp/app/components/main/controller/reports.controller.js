@@ -169,6 +169,22 @@ angular.module('headwind-kiosk')
                 $scope.getMandalList($scope.districtId);
             }
         }
+        $scope.rkbDetails = function (rkbId) {
+            console.log('rkbId',rkbId);
+            var modalInstance = $modal.open({
+                templateUrl: 'app/components/main/view/modal/rkbdetails.html',
+                controller: 'RKBDetailsModalController',
+                windowClass: 'rkb-modal-window',
+                resolve: {
+                    rkbId: function () {
+                        return rkbId;
+                    },
+                }
+            });
+            modalInstance.result.then(function () {
+
+            });
+        };
         $scope.init = function () {
             $scope.getStatusList();
             $scope.getDistrictList();
@@ -176,5 +192,21 @@ angular.module('headwind-kiosk')
         $scope.init();
 
 
+    }).controller('RKBDetailsModalController',
+    function ($scope, $modalInstance, rkbId, dashboardService, spinnerService) {
+        console.log('rkbId',rkbId);
+        $scope.rkbDetails = {};
+        if(rkbId){
+            spinnerService.show('spinner2');
+            dashboardService.getRKBDetails({rkbId:rkbId},function (response) {
+                spinnerService.close('spinner2');
+                if (response.data) {
+                    $scope.rkbDetails = response.data;
+                }
+            });
+        }
+        $scope.closeModal = function () {
+            $modalInstance.dismiss();
+        };
     });
 

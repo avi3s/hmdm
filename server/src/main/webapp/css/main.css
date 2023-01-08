@@ -2775,3 +2775,44 @@ a:hover, a:focus {
 .clearSubmitButton {
     margin-top: 25px;
 }
+
+.rkb-modal-window .modal-dialog {
+        width: 900px;
+}
+
+.rkb-details-modal .modal-header {
+    background: #226faa;
+    background: -webkit-gradient(linear,left top,right top,from(#226faa),color-stop(37%,#2989d8),to(#72c0d3));
+    background: linear-gradient(to right,#226faa 0,#2989d8 37%,#72c0d3 100%);
+    border-radius: 6px;
+    color: #fff;
+    padding: 18px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-color: transparent;
+}
+.rkb-details-modal .modal-header .close {
+    margin-top: -3px;
+    font-size: 40px !important;
+    font-weight: 400;
+    color: #fff;
+    opacity: .9;
+    width: 28px;
+    height: 28px;
+    padding-bottom: 0;
+    padding-left: 1px;
+}
+.rkb-details-modal button.close {
+    padding: 0;
+    cursor: pointer;
+    background: 0 0;
+    border: 0;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+.lead-info-heading {
+    padding: 7px;
+    border-radius: 3px;
+    margin-bottom: 15px;
+}
