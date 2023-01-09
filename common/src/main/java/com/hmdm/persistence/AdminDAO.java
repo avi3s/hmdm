@@ -180,7 +180,7 @@ public class AdminDAO {
         dashboard.setNonFunctional(String.valueOf(nonFunctional));
         Double functionality = 0.0D;
         if (!dashboard.getInstalled().equalsIgnoreCase("0")) {
-            functionality = Double.valueOf(adminMapper.getTotalKiosks()) / Double.valueOf(dashboard.getInstalled());
+            functionality = Double.valueOf(functional) / Double.valueOf(dashboard.getInstalled()) * 100;
             functionality = (double) Math.round(functionality * 100) / 100;
         }
         dashboard.setFunctionality(String.valueOf(functionality));
