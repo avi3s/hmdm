@@ -30,6 +30,8 @@ angular.module('headwind-kiosk')
         $scope.startDate = '';
         $scope.endDate = '';
         $scope.getDashboardData = function (report_months){
+            localStorage.setItem('report_months',report_months);
+            $scope.report_months = report_months;
             $scope.dashboardData = {};
             if(table)
             table.destroy();
@@ -81,7 +83,11 @@ angular.module('headwind-kiosk')
             });
         };
         $scope.init = function () {
-            $scope.getDashboardData('today');
+            var  report_months =  localStorage.getItem('report_months');
+            if(report_months==''){
+                report_months = 'today';
+            }
+            $scope.getDashboardData(report_months);
         };
         $scope.init();
     });
