@@ -14,12 +14,13 @@ angular.module('headwind-kiosk')
         if(report_months) {
             var date = new Date();
             if(report_months=='today'){
-                date = date.setDate(date.getDate() - 1);
+                //date = date.setDate(date.getDate() - 1);
             }else if(report_months=='this_week'){
-                var d = new Date();
-                var day = d.getDay(),
-                    diff = d.getDate() - day + (day == 0 ? -6:1); // adjust when day is sunday
-                date =  new Date(d.setDate(diff));
+                // var d = new Date();
+                // var day = d.getDay(),
+                //     diff = d.getDate() - day + (day == 0 ? -6:1); // adjust when day is sunday
+                // date =  new Date(d.setDate(diff));
+                date = date.setDate(date.getDate() - 7);
             }else if(report_months=='this_month'){
                 var dm = new Date();
                 date = new Date(dm.getFullYear(), dm.getMonth(), 1);
