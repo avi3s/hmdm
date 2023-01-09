@@ -27,6 +27,7 @@ angular.module('headwind-kiosk')
                 if (response.data.passwordReset) {
                     $state.transitionTo('passwordReset', {"token": response.data.passwordResetToken});
                 } else {
+                    localStorage.setItem('report_months','');
                     if(response.data.userType){
                         $state.transitionTo('main');
                     }else {
