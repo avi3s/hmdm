@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.validation.ValidationException;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -152,8 +153,16 @@ public class AdminDAO {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date d1 = sdf.parse(input.getStartDate());
             Date d2 = sdf.parse(input.getEndDate());
+            Calendar c = Calendar.getInstance();
+            c.setTime(d2);
+            c.add(Calendar.DATE, 1);
+            d2 = c.getTime();
             if (d2.getTime() < d1.getTime()) {
                 throw new ValidationException("EndDate Must Be Greater Than StartDate");
+            } else {
+                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String strDate = dateFormat.format(d2);
+                input.setEndDate(strDate);
             }
         } catch (ParseException e) {
             throw new ValidationException("Invalid Date");
