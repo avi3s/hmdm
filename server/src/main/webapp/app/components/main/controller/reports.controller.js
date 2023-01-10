@@ -97,6 +97,8 @@ angular.module('headwind-kiosk')
             var endDate = new Date($scope.dateTo).toJSON().slice(0,10).replace(/-/g,'-');;
             $scope.startDate = startDate;
             $scope.endDate = endDate;
+            $scope.dateFrom = startDate;
+
             var request = {
                 startDate: startDate+" 00:00:00.000000",
                 endDate: endDate+" 00:00:00.000000",
@@ -159,6 +161,7 @@ angular.module('headwind-kiosk')
             $scope.getDashboardData();
         };
         $scope.clear = function () {
+            localStorage.setItem('report_months','');
             window.location.href = '#/reports';
             window.location.reload();
         }
