@@ -9,8 +9,8 @@ angular.module('headwind-kiosk')
         var districtId = $location.search().districtId ? $location.search().districtId:'';
         var report_months = $location.search().report_months ? $location.search().report_months:'';
         var status = $location.search().status ? $location.search().status:'';
-        $scope.dateFrom = new Date();
-        $scope.dateTo = new Date();
+        $scope.dateFrom = '';
+        $scope.dateTo = '';
         if(report_months) {
             var date = new Date();
             if(report_months=='today'){
@@ -34,6 +34,7 @@ angular.module('headwind-kiosk')
 
             }
             $scope.dateFrom = date;
+            $scope.dateTo = new Date();
         }
 
         $scope.dateFormat = "yyyy-MM-dd"
@@ -91,17 +92,23 @@ angular.module('headwind-kiosk')
             $scope.dashboardData = {};
             if(table)
                 table.destroy();
+            var startDate = '';
+            var endDate = '';
+            if($scope.dateFrom){
+                startDate = new Date($scope.dateFrom).toJSON().slice(0,10).replace(/-/g,'-');
+                $scope.startDate = startDate;
+                $scope.dateFrom = startDate;
+            }
+            if($scope.dateTo){
+                 endDate = new Date($scope.dateTo).toJSON().slice(0,10).replace(/-/g,'-');;
+                $scope.endDate = endDate;
+                $scope.dateTo = endDate;
+            }
 
-
-            var startDate = new Date($scope.dateFrom).toJSON().slice(0,10).replace(/-/g,'-');
-            var endDate = new Date($scope.dateTo).toJSON().slice(0,10).replace(/-/g,'-');;
-            $scope.startDate = startDate;
-            $scope.endDate = endDate;
-            $scope.dateFrom = startDate;
 
             var request = {
-                startDate: startDate+" 00:00:00.000000",
-                endDate: endDate+" 00:00:00.000000",
+                startDate: startDate? startDate+" 00:00:00.000000":'',
+                endDate: endDate? endDate+" 00:00:00.000000":'',
                 districtId: $scope.districtId.length > 0 ? $scope.districtId.toString() :'',
                 mandalName: $scope.mandal,
                 kioskStatus: $scope.status.length > 0 ? $scope.status.toString() :'',
