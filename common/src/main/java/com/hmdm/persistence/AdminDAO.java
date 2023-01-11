@@ -385,10 +385,12 @@ public class AdminDAO {
         rbkList.forEach(rbk -> {
             if (Integer.valueOf(rbk.getStatus()) == 1) {
                 filteredKiosk(kiosks, rbk);
+                rbk.setStatus("Online");
                 rbk.setNonFunctional("No");
                 onlineCount.set(onlineCount.get() + 1);
             } else if (Integer.valueOf(rbk.getStatus()) == 5) {
                 filteredKiosk(kiosks, rbk);
+                rbk.setStatus("Offline");
                 rbk.setNonFunctional("Yes");
                 offlineCount.set(offlineCount.get() + 1);
             }
@@ -429,7 +431,11 @@ public class AdminDAO {
                         return true;
                     } else {
                         String statusArray[] = input.getKioskStatus().split(",");
-                        return Arrays.stream(statusArray).anyMatch(Predicate.isEqual(report.getStatus()));
+                        if (Arrays.stream(statusArray).anyMatch(Predicate.isEqual("7"))) {
+                            return true;
+                        } else {
+                            return Arrays.stream(statusArray).anyMatch(Predicate.isEqual(report.getStatus()));
+                        }
                     }
                 })
                 .filter(report -> {
@@ -621,7 +627,24 @@ public class AdminDAO {
     }
 
     public List<Kiosk> getKioskStatus() {
-        return adminMapper.getKioskStatus();
+
+        List<Kiosk> kiosks = new ArrayList<>();
+        for (Kiosk ks : adminMapper.getKioskStatus()) {
+            Kiosk kiosk = new Kiosk();
+            if(!ks.getId().equalsIgnoreCase("8")) {
+                if (ks.getId().equalsIgnoreCase("6")) {
+                    kiosk.setId("1,5");
+                } else {
+                    kiosk.setId(ks.getId());
+                }
+
+                kiosk.setName(ks.getName());
+                kiosk.setStatusOrder(ks.getStatusOrder());
+                kiosk.setColor(ks.getColor());
+                kiosks.add(kiosk);
+            }
+        }
+        return kiosks;
     }
 
     public String updateDisplayStatus(Input input) {
