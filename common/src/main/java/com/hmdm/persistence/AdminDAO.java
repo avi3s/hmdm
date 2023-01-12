@@ -439,6 +439,14 @@ public class AdminDAO {
                     }
                 })
                 .filter(report -> {
+                    if (StringUtil.isEmpty(input.getDistrictId())) {
+                        return true;
+                    } else {
+                        String districtArray[] = input.getDistrictId().split(",");
+                        return Arrays.stream(districtArray).anyMatch(Predicate.isEqual(report.getDistrictName()));
+                    }
+                })
+                .filter(report -> {
                     if (StringUtil.isEmpty(report.getLastContact())) {
                         return true;
                     }
