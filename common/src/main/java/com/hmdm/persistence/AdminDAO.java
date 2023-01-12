@@ -428,14 +428,6 @@ public class AdminDAO {
                     }
                 })
                 .filter(report -> {
-                    if (StringUtil.isEmpty(input.getKioskStatus())) {
-                        return true;
-                    } else {
-                        String statusArray[] = input.getKioskStatus().split(",");
-                        return Arrays.stream(statusArray).anyMatch(Predicate.isEqual(report.getStatus()));
-                    }
-                })
-                .filter(report -> {
                     if (StringUtil.isEmpty(input.getDistrictId())) {
                         return true;
                     } else {
@@ -469,7 +461,51 @@ public class AdminDAO {
                 })
                 .collect(Collectors.toList());
 
-        reports.parallelStream().forEach(r -> {
+        // Filtration for Kiosk Status which may come as (1,5,7)
+        List<Report> wholeList = new ArrayList<>();
+        if (!StringUtil.isEmpty(input.getKioskStatus())) {
+            String statusArray[] = input.getKioskStatus().split(",");
+            boolean containsOne = false;
+            boolean containsFive = false;
+            boolean containsSeven = false;
+            for (String s : statusArray) {
+                if (s.equalsIgnoreCase("1")) {
+                    containsOne = true;
+                } else if (s.equalsIgnoreCase("5")) {
+                    containsFive = true;
+                } else if (s.equalsIgnoreCase("7")) {
+                    containsSeven = true;
+                }
+            }
+            if (!containsSeven) { // No Seven so check for 1 and 5 only
+                reports.parallelStream().filter(r -> Arrays.stream(statusArray).anyMatch(Predicate.isEqual(r.getStatus()))).collect(Collectors.toList());
+                wholeList = reports;
+            } else {
+                if (containsSeven && !containsOne && !containsFive) { // Contains Only 7
+                    wholeList = adminMapper.getReport();
+                    String array[] = new String[]{"1","5"};
+                    reports.parallelStream().filter(r -> Arrays.stream(array).anyMatch(Predicate.isEqual(r.getStatus()))).collect(Collectors.toList());
+                    wholeList.removeAll(reports);
+                } else if (containsSeven && !containsOne && containsFive) { // Contains 7 and 5
+                    wholeList = adminMapper.getReport();
+                    String array[] = new String[]{"1"};
+                    reports.parallelStream().filter(r -> Arrays.stream(array).anyMatch(Predicate.isEqual(r.getStatus()))).collect(Collectors.toList());
+                    wholeList.removeAll(reports);
+                } else if (containsSeven && containsOne && !containsFive) { // Contains 7 and 1
+                    wholeList = adminMapper.getReport();
+                    String array[] = new String[]{"5"};
+                    reports.parallelStream().filter(r -> Arrays.stream(array).anyMatch(Predicate.isEqual(r.getStatus()))).collect(Collectors.toList());
+                    wholeList.removeAll(reports);
+                } else if (containsSeven && containsOne && containsFive) { // Contains 7, 1 and 5
+                    // TODO Do Nothing
+                    System.out.println("Do Nothing");
+                }
+            }
+        } else {
+            wholeList = reports;
+        }
+
+        wholeList.parallelStream().forEach(r -> {
             if (Integer.valueOf(r.getStatus()) == 1) {
                 filteredKiosk(kiosks, r);
                 r.setStatus("Online");
@@ -492,7 +528,7 @@ public class AdminDAO {
                 r.setNetworkType("LAN");
             }
         });
-        return reports;
+        return wholeList;
     }
 
     private void filteredKiosk(List<Kiosk> kiosks, Report r) {
