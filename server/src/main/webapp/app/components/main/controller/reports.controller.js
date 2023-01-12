@@ -78,7 +78,12 @@ angular.module('headwind-kiosk')
         angular.element(document).ready(function () {
             $scope.searchReport();
             // $('#mandal').selectpicker();
+
+            if($scope.districtId.length > 0){
+                $scope.getMandalList($scope.districtId);
+            }
             $('.selectpicker').selectpicker();
+
         });
         $scope.districtList = [];
         $scope.mandalList = [];
