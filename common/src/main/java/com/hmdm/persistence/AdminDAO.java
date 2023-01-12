@@ -381,7 +381,8 @@ public class AdminDAO {
         AtomicReference<Long> onlineCount = new AtomicReference<>(0L);
         AtomicReference<Long> offlineCount = new AtomicReference<>(0L);
         AtomicReference<Long> nonfunctionalCount = new AtomicReference<>(0L);
-        List<RBK> rbkList = adminMapper.getRBKList(input.getStartDate(), input.getEndDate(), Integer.valueOf(input.getDistrictId()), input.getMandalName());
+        //List<RBK> rbkList = adminMapper.getRBKList(input.getStartDate(), input.getEndDate(), Integer.valueOf(input.getDistrictId()), input.getMandalName());
+        List<RBK> rbkList = adminMapper.getRBKList(Integer.valueOf(input.getDistrictId()), input.getMandalName());
         rbkList.forEach(rbk -> {
             if (Integer.valueOf(rbk.getStatus()) == 1) {
                 filteredKiosk(kiosks, rbk);
@@ -431,11 +432,7 @@ public class AdminDAO {
                         return true;
                     } else {
                         String statusArray[] = input.getKioskStatus().split(",");
-                        if (Arrays.stream(statusArray).anyMatch(Predicate.isEqual("7"))) {
-                            return true;
-                        } else {
-                            return Arrays.stream(statusArray).anyMatch(Predicate.isEqual(report.getStatus()));
-                        }
+                        return Arrays.stream(statusArray).anyMatch(Predicate.isEqual(report.getStatus()));
                     }
                 })
                 .filter(report -> {
