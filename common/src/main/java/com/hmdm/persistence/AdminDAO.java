@@ -377,32 +377,27 @@ public class AdminDAO {
 
         List<Kiosk> kiosks = getKioskStatus();
         validateRBKRequest(input);
-        AtomicReference<Long> functionalCount = new AtomicReference<>(0L);
-        AtomicReference<Long> onlineCount = new AtomicReference<>(0L);
-        AtomicReference<Long> offlineCount = new AtomicReference<>(0L);
-        AtomicReference<Long> nonfunctionalCount = new AtomicReference<>(0L);
-        //List<RBK> rbkList = adminMapper.getRBKList(input.getStartDate(), input.getEndDate(), Integer.valueOf(input.getDistrictId()), input.getMandalName());
         List<RBK> rbkList = adminMapper.getRBKList(Integer.valueOf(input.getDistrictId()), input.getMandalName());
         rbkList.forEach(rbk -> {
             if (Integer.valueOf(rbk.getStatus()) == 1) {
                 filteredKiosk(kiosks, rbk);
                 rbk.setStatus("Online");
                 rbk.setNonFunctional("No");
-                onlineCount.set(onlineCount.get() + 1);
             } else if (Integer.valueOf(rbk.getStatus()) == 5) {
                 filteredKiosk(kiosks, rbk);
                 rbk.setStatus("Offline");
                 rbk.setNonFunctional("Yes");
-                offlineCount.set(offlineCount.get() + 1);
             }
         });
         RBKPage rbkPage = new RBKPage();
         rbkPage.setRbks(rbkList);
         rbkPage.setTotalKioskCount(String.valueOf(rbkList.size()));
-        rbkPage.setOnlineCount(String.valueOf(onlineCount.get()));
-        rbkPage.setOfflineCount("0");
-        rbkPage.setFunctionalCount(String.valueOf(onlineCount.get()));
-        rbkPage.setNonfunctionalCount(String.valueOf(offlineCount.get()));
+        Long onlineRBKCount = adminMapper.getOnlineRBKList(input.getStartDate(), input.getEndDate(), Integer.valueOf(input.getDistrictId()), input.getMandalName());
+        rbkPage.setOnlineCount(String.valueOf(onlineRBKCount));
+        Long offlineRBKCount = adminMapper.getOfflineRBKList(input.getStartDate(), input.getEndDate(), Integer.valueOf(input.getDistrictId()), input.getMandalName());
+        rbkPage.setOfflineCount(String.valueOf(offlineRBKCount));
+        rbkPage.setFunctionalCount(String.valueOf(onlineRBKCount + offlineRBKCount));
+        rbkPage.setNonfunctionalCount(String.valueOf(rbkList.size() - Long.valueOf(rbkPage.getFunctionalCount())));
 
         return rbkPage;
     }
