@@ -11,30 +11,46 @@ angular.module('headwind-kiosk')
         var status = $location.search().status ? $location.search().status:'';
         $scope.dateFrom = '';
         $scope.dateTo = '';
+        $scope.startDate = '';
+        $scope.endDate = '';
+        $scope.formatDate = function (date) {
+            var d = new Date(date),
+                month = '' + (d.getMonth() + 1),
+                day = '' + d.getDate(),
+                year = d.getFullYear();
+
+            if (month.length < 2)
+                month = '0' + month;
+            if (day.length < 2)
+                day = '0' + day;
+
+            return [year, month, day].join('-');
+        };
         if(report_months) {
             var date = new Date();
             if(report_months=='today'){
-                //date = date.setDate(date.getDate() - 1);
+                //  date = new Date(date.setDate(date.getDate() - 1));
             }else if(report_months=='this_week'){
-                // var d = new Date();
-                // var day = d.getDay(),
-                //     diff = d.getDate() - day + (day == 0 ? -6:1); // adjust when day is sunday
-                // date =  new Date(d.setDate(diff));
-                date = date.setDate(date.getDate() - 7);
+                var d = new Date();
+                var day = d.getDay(),
+                    diff = d.getDate() - day + (day == 0 ? -6:1); // adjust when day is sunday
+                date =  new Date(d.setDate(diff));
             }else if(report_months=='this_month'){
                 var dm = new Date();
                 date = new Date(dm.getFullYear(), dm.getMonth(), 1);
             }else if(report_months=='3'){
                 var d3 = new Date();
-                date =  d3.setMonth(d3.getMonth() - 3);
+                date =  new Date(d3.setMonth(d3.getMonth() - 3));
             }else if(report_months=='6'){
                 var d6 = new Date();
-                date =  d6.setMonth(d6.getMonth() - 6);
+                date =  new Date(d6.setMonth(d6.getMonth() - 6));
             }else {
 
             }
-            $scope.dateFrom = date;
-            $scope.dateTo = new Date();
+            $scope.startDate = $scope.formatDate(date);
+            $scope.endDate = $scope.formatDate((new Date()));
+           // $scope.dateFrom = date;
+           // $scope.dateTo = new Date();
         }
 
         $scope.dateFormat = "yyyy-MM-dd"
@@ -72,7 +88,11 @@ angular.module('headwind-kiosk')
             "autoWidth": false,
             "pageLength":25,
             dom: "<'row'><'row'<'col-md-7'lB><'col-md-5'f>>rt<'row'<'col-md-4'i>><'row'<'#colvis'><'.dt-page-jump'>p>",
-            buttons: ['excel', 'pdf','csv','print']
+            buttons: ['excel', 'pdf','csv','print',{
+                extend: 'pdfHtml5',
+                orientation: 'landscape',
+                pageSize: 'LEGAL'
+            }]
         };
         var table;
         angular.element(document).ready(function () {
@@ -89,8 +109,7 @@ angular.module('headwind-kiosk')
         $scope.mandalList = [];
         $scope.statusList = [];
         $scope.dashboardData = {};
-        $scope.startDate = '';
-        $scope.endDate = '';
+
         $scope.getDataFunCallInProgress = false;
         $scope.getDashboardData = function () {
             $scope.getDataFunCallInProgress = true;
@@ -99,17 +118,21 @@ angular.module('headwind-kiosk')
                 table.destroy();
             var startDate = '';
             var endDate = '';
-            if($scope.dateFrom){
-                startDate = new Date($scope.dateFrom).toJSON().slice(0,10).replace(/-/g,'-');
-                $scope.startDate = startDate;
-                $scope.dateFrom = startDate;
+            if(report_months && ($scope.dateFrom==='' || $scope.dateTo==='')){
+                startDate = $scope.startDate;
+                endDate = $scope.endDate;
+            }else {
+                if ($scope.dateFrom) {
+                    startDate = $scope.formatDate($scope.dateFrom);
+                    $scope.startDate = startDate;
+                    $scope.dateFrom = startDate;
+                }
+                if ($scope.dateTo) {
+                    endDate = $scope.formatDate($scope.dateTo);
+                    $scope.endDate = endDate;
+                    $scope.dateTo = endDate;
+                }
             }
-            if($scope.dateTo){
-                 endDate = new Date($scope.dateTo).toJSON().slice(0,10).replace(/-/g,'-');;
-                $scope.endDate = endDate;
-                $scope.dateTo = endDate;
-            }
-
 
             var request = {
                 startDate: startDate? startDate+" 00:00:00.000000":'',
