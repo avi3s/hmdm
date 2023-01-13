@@ -400,9 +400,9 @@ public class AdminDAO {
         rbkPage.setRbks(rbkList);
         rbkPage.setTotalKioskCount(String.valueOf(rbkList.size()));
         rbkPage.setOnlineCount(String.valueOf(onlineCount.get()));
-        rbkPage.setOfflineCount(String.valueOf(offlineCount.get()));
-        rbkPage.setFunctionalCount(String.valueOf(onlineCount.get() + offlineCount.get()));
-        rbkPage.setNonfunctionalCount(String.valueOf(rbkList.size() -  Long.valueOf(rbkPage.getFunctionalCount())));
+        rbkPage.setOfflineCount("0");
+        rbkPage.setFunctionalCount(String.valueOf(onlineCount.get()));
+        rbkPage.setNonfunctionalCount(String.valueOf(offlineCount.get()));
 
         return rbkPage;
     }
