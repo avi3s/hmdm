@@ -129,11 +129,11 @@
 }
 
 .header a {
-    color: #ffffff !important;
+    color: #333 !important;
 }
 
 .header .open a, .header .open .dropdown-menu {
-    background-color: #7a9ab9 !important;
+    background-color: #f7f7f7 !important;
 }
 
 .header .open .dropdown-menu {
@@ -2350,7 +2350,7 @@ h4.collapse-control {
 }
 .sidebar {
     position: fixed;
-    top: 60px;
+    top: 125px;
     left: 0;
     bottom: 0;
     width: 200px;
@@ -2365,9 +2365,9 @@ h4.collapse-control {
 }
 
 @media (max-width: 1199px) {
-    .sidebar {
-        left: -300px;
-    }
+    /*.sidebar {*/
+    /*    left: -300px;*/
+    /*}*/
 }
 
 .sidebar::-webkit-scrollbar {
