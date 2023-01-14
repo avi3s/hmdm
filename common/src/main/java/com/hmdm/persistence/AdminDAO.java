@@ -412,6 +412,7 @@ public class AdminDAO {
 
     public List<Report> getReports1(Input input) {
 
+        checkDateDifference(input);
         List<Kiosk> kiosks = getKioskStatus();
         List<DistrictDetails> districtDetails = getDistrictLists();
         List<Report> reports = adminMapper.getReport1(input.getStartDate(), input.getEndDate(), input.getMandalName()).parallelStream()
