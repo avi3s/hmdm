@@ -113,7 +113,7 @@ public class AdminResource {
     @Produces( MediaType.APPLICATION_JSON )
     public Response getReports(Input input) {
         try {
-            return Response.OK(adminDAO.getReports(input));
+            return Response.OK(adminDAO.getReports1(input));
         } catch (ValidationException e) {
             log.error("Validation Error", e);
             return Response.ERROR(e.getMessage());
