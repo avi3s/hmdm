@@ -410,6 +410,102 @@ public class AdminDAO {
         }
     }
 
+    public List<Report> getReports1(Input input) {
+
+        List<Kiosk> kiosks = getKioskStatus();
+        List<DistrictDetails> districtDetails = getDistrictLists();
+        List<Report> reports = adminMapper.getReport1(input.getStartDate(), input.getEndDate(), input.getMandalName()).parallelStream()
+                .filter(report -> {
+                    if (StringUtil.isEmpty(input.getDistrictId())) {
+                        return true;
+                    } else {
+                        String districtArray[] = input.getDistrictId().split(",");
+                        return Arrays.stream(districtArray).anyMatch(Predicate.isEqual(report.getDistrictName()));
+                    }
+                })
+                .collect(Collectors.toList());
+
+        // Filtration for Kiosk Status which may come as (1,5,7)
+        List<Report> wholeList;
+        if (!StringUtil.isEmpty(input.getKioskStatus())) {
+            String[] statusArray = input.getKioskStatus().split(",");
+            boolean containsOne = false;
+            boolean containsFive = false;
+            boolean containsSeven = false;
+            for (String s : statusArray) {
+                if (s.equalsIgnoreCase("1")) {
+                    containsOne = true;
+                } else if (s.equalsIgnoreCase("5")) {
+                    containsFive = true;
+                } else if (s.equalsIgnoreCase("7")) {
+                    containsSeven = true;
+                }
+            }
+
+            if (!containsSeven) { // No Seven so check for 1 and 5 only
+                wholeList = reports;
+            } else {
+                wholeList = adminMapper.getReport().parallelStream().filter(report -> {
+                            if (StringUtil.isEmpty(input.getDistrictId())) {
+                                return true;
+                            } else {
+                                String districtArray[] = input.getDistrictId().split(",");
+                                return Arrays.stream(districtArray).anyMatch(Predicate.isEqual(report.getDistrictName()));
+                            }
+                        })
+                        .filter(report -> {
+                            if (StringUtil.isEmpty(input.getMandalName())) {
+                                return true;
+                            } else {
+                                return report.getMandalName().equalsIgnoreCase(input.getMandalName());
+                            }
+                        })
+                        .collect(Collectors.toList());
+                if (containsSeven && !containsOne && !containsFive) { // Contains Only 7
+                    wholeList.removeAll(reports);
+                } else if (containsSeven && !containsOne && containsFive) { // Contains 7 and 5
+                    String array[] = new String[]{"1"};
+                    reports.parallelStream().filter(r -> Arrays.stream(array).anyMatch(Predicate.isEqual(r.getStatus()))).collect(Collectors.toList());
+                    wholeList.removeAll(reports);
+                } else if (containsSeven && containsOne && !containsFive) { // Contains 7 and 1
+                    String array[] = new String[]{"5"};
+                    reports.parallelStream().filter(r -> Arrays.stream(array).anyMatch(Predicate.isEqual(r.getStatus()))).collect(Collectors.toList());
+                    wholeList.removeAll(reports);
+                } else if (containsSeven && containsOne && containsFive) { // Contains 7, 1 and 5
+                    // TODO Do Nothing
+                    System.out.println("Do Nothing");
+                }
+            }
+        } else {
+            wholeList = reports;
+        }
+
+        wholeList.parallelStream().forEach(r -> {
+            if (Integer.valueOf(r.getStatus()) == 1) {
+                filteredKiosk(kiosks, r);
+                r.setStatus("Online");
+            } else if (Integer.valueOf(r.getStatus()) == 5) {
+                filteredKiosk(kiosks, r);
+                r.setStatus("Offline");
+            }
+            List<DistrictDetails> filteredDistricts = districtDetails.stream().filter(district -> {
+                if (district.getId().equalsIgnoreCase(r.getDistrictName())) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }).collect(Collectors.toList());
+            r.setDistrictName(filteredDistricts.get(0).getDistrictName());
+
+            if (Integer.valueOf(r.getNetworkType()) == 1) {
+                r.setNetworkType("Wireless");
+            } else if (Integer.valueOf(r.getNetworkType()) == 2) {
+                r.setNetworkType("LAN");
+            }
+        });
+        return wholeList;
+    }
+
     public List<Report> getReports(Input input) {
 
         List<Kiosk> kiosks = getKioskStatus();
