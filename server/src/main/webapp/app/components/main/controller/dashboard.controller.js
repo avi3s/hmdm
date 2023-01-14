@@ -37,28 +37,28 @@ angular.module('headwind-kiosk')
             console.log(report_months);
             var date = new Date();
             if(report_months=='today'){
-              //  date = date.setDate(date.getDate() - 1);
+              //  date = new Date(date.setDate(date.getDate() - 1));
             }else if(report_months=='this_week'){
-                    // var d = new Date();
-                    // var day = d.getDay(),
-                    //     diff = d.getDate() - day + (day == 0 ? -6:1); // adjust when day is sunday
-                    // date =  new Date(d.setDate(diff));
-                date = date.setDate(date.getDate() - 7);
+                    var d = new Date();
+                    var day = d.getDay(),
+                        diff = d.getDate() - day + (day == 0 ? -6:1); // adjust when day is sunday
+                    date =  new Date(d.setDate(diff));
             }else if(report_months=='this_month'){
                 var dm = new Date();
                 date = new Date(dm.getFullYear(), dm.getMonth(), 1);
             }else if(report_months=='3'){
                 var d3 = new Date();
-               date =  d3.setMonth(d3.getMonth() - 3);
+               date =  new Date(d3.setMonth(d3.getMonth() - 3));
             }else if(report_months=='6'){
                 var d6 = new Date();
-                date =  d6.setMonth(d6.getMonth() - 6);
+                date =  new Date(d6.setMonth(d6.getMonth() - 6));
             }else {
 
             }
-
-            var startDate = new Date(date).toJSON().slice(0,10).replace(/-/g,'-');
-            var endDate = new Date().toJSON().slice(0,10).replace(/-/g,'-');;
+            // console.log($scope.formatDate(date));
+            // console.log($scope.formatDate(new Date()))
+            var startDate = $scope.formatDate(date);
+            var endDate = $scope.formatDate((new Date()));
             $scope.startDate = startDate;
             $scope.endDate = endDate;
             var request = {
@@ -84,6 +84,19 @@ angular.module('headwind-kiosk')
                 }
             });
         };
+         $scope.formatDate = function (date) {
+            var d = new Date(date),
+                month = '' + (d.getMonth() + 1),
+                day = '' + d.getDate(),
+                year = d.getFullYear();
+
+            if (month.length < 2)
+                month = '0' + month;
+            if (day.length < 2)
+                day = '0' + day;
+
+            return [year, month, day].join('-');
+        }
         $scope.init = function () {
             var  report_months =  localStorage.getItem('report_months');
             if(report_months==''){
