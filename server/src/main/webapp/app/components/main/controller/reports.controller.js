@@ -88,11 +88,19 @@ angular.module('headwind-kiosk')
             "autoWidth": false,
             "pageLength":25,
             dom: "<'row'><'row'<'col-md-7'lB><'col-md-5'f>>rt<'row'<'col-md-4'i>><'row'<'#colvis'><'.dt-page-jump'>p>",
-            buttons: ['excel', 'pdf','csv','print',{
-                extend: 'pdfHtml5',
-                orientation: 'landscape',
-                pageSize: 'LEGAL'
-            }]
+            buttons: [
+                {
+                    extend: 'collection',
+                    text: 'Download',
+                    buttons: [
+                        'excel','csv','print',
+                        {
+                            extend: 'pdfHtml5',
+                            orientation: 'landscape',
+                            pageSize: 'LEGAL'
+                        }
+                    ]
+                }]
         };
         var table;
         angular.element(document).ready(function () {
