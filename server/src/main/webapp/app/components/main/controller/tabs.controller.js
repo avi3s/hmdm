@@ -3,6 +3,9 @@ angular.module('headwind-kiosk')
     .controller('TabController', function ($scope, $rootScope, $timeout, userService, authService, openTab, $state,
                                            pluginService, localization, hintService) {
 
+        if(!authService.isJavaUser()) {
+            $state.transitionTo('dashboard');
+        }
         $scope.localization = localization;
 
         var routes = {
