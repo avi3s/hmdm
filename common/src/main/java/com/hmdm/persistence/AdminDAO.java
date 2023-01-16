@@ -48,6 +48,7 @@ public class AdminDAO {
     private static final Logger logger = LoggerFactory.getLogger(AdminDAO.class);
 
     private final AdminMapper adminMapper;
+
     /**
      * <p>Constructs new <code>AdminDAO</code> instance. This implementation does nothing.</p>
      */
@@ -79,7 +80,7 @@ public class AdminDAO {
                     } else {
                         user.setDistrictId(null);
                     }
-                } catch(Exception e) {
+                } catch (Exception e) {
                     user.setDistrictId(null);
                 }
             }
@@ -90,6 +91,7 @@ public class AdminDAO {
     public void setToken(User user) {
         adminMapper.setToken(user.getAuthToken(), user.getId());
     }
+
     public Dashboard getDashboard(Input input) {
 
         validateRequest(input);
@@ -126,7 +128,7 @@ public class AdminDAO {
     private void validateRequest(Input input) {
 
         if (Objects.isNull(input)) {
-                throw new ValidationException("Invalid Input");
+            throw new ValidationException("Invalid Input");
         } else {
             if (StringUtil.isEmpty(input.getStartDate())) {
                 throw new ValidationException("Please provide StartDate");
@@ -382,11 +384,11 @@ public class AdminDAO {
             if (Integer.valueOf(rbk.getStatus()) == 1) {
                 filteredKiosk(kiosks, rbk);
                 rbk.setStatus("Online");
-                rbk.setNonFunctional("No");
+                rbk.setNonFunctional(checkFunctionality(rbk.getLastAccessed(), input));
             } else if (Integer.valueOf(rbk.getStatus()) == 5) {
                 filteredKiosk(kiosks, rbk);
                 rbk.setStatus("Offline");
-                rbk.setNonFunctional("Yes");
+                rbk.setNonFunctional(checkFunctionality(rbk.getLastAccessed(), input));
             }
         });
         RBKPage rbkPage = new RBKPage();
@@ -402,6 +404,26 @@ public class AdminDAO {
         return rbkPage;
     }
 
+    private String checkFunctionality(String date, Input input) {
+
+        if (StringUtil.isEmpty(date)) {
+            return "Yes";
+        }
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date d1 = sdf.parse(input.getStartDate());
+            Date d2 = sdf.parse(input.getEndDate());
+            Date d3 = sdf.parse(date);
+            if (d3.after(d1) && d3.before(d2)) {
+                return "No";
+            } else {
+                return "Yes";
+            }
+        } catch (ParseException e) {
+            return "No";
+        }
+    }
+
     private void validateRBKRequest(Input input) {
 
         validateMandalRequest(input);
@@ -412,6 +434,13 @@ public class AdminDAO {
 
     public List<Report> getReports1(Input input) {
 
+        List<Report> wholeList;
+        if (StringUtil.isEmpty(input.getStartDate()) && StringUtil.isEmpty(input.getEndDate())) {
+            input.setStartDate("2020-01-01 00:00:00.000000");
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date date = new Date();
+            input.setEndDate(formatter.format(date));
+        }
         checkDateDifference(input);
         List<Kiosk> kiosks = getKioskStatus();
         List<DistrictDetails> districtDetails = getDistrictLists();
@@ -427,7 +456,6 @@ public class AdminDAO {
                 .collect(Collectors.toList());
 
         // Filtration for Kiosk Status which may come as (1,5,7)
-        List<Report> wholeList;
         if (!StringUtil.isEmpty(input.getKioskStatus())) {
             String[] statusArray = input.getKioskStatus().split(",");
             boolean containsOne = false;
@@ -444,6 +472,13 @@ public class AdminDAO {
             }
 
             if (!containsSeven) { // No Seven so check for 1 and 5 only
+                if (containsOne) {
+                    String array[] = new String[]{"1"};
+                    reports = reports.parallelStream().filter(r -> Arrays.stream(array).anyMatch(Predicate.isEqual(r.getStatus()))).collect(Collectors.toList());
+                } else if (containsFive) {
+                    String array[] = new String[]{"5"};
+                    reports = reports.parallelStream().filter(r -> Arrays.stream(array).anyMatch(Predicate.isEqual(r.getStatus()))).collect(Collectors.toList());
+                }
                 wholeList = reports;
             } else {
                 wholeList = adminMapper.getReport().parallelStream().filter(report -> {
@@ -466,11 +501,11 @@ public class AdminDAO {
                     wholeList.removeAll(reports);
                 } else if (containsSeven && !containsOne && containsFive) { // Contains 7 and 5
                     String array[] = new String[]{"1"};
-                    reports.parallelStream().filter(r -> Arrays.stream(array).anyMatch(Predicate.isEqual(r.getStatus()))).collect(Collectors.toList());
+                    reports = reports.parallelStream().filter(r -> Arrays.stream(array).anyMatch(Predicate.isEqual(r.getStatus()))).collect(Collectors.toList());
                     wholeList.removeAll(reports);
                 } else if (containsSeven && containsOne && !containsFive) { // Contains 7 and 1
                     String array[] = new String[]{"5"};
-                    reports.parallelStream().filter(r -> Arrays.stream(array).anyMatch(Predicate.isEqual(r.getStatus()))).collect(Collectors.toList());
+                    reports = reports.parallelStream().filter(r -> Arrays.stream(array).anyMatch(Predicate.isEqual(r.getStatus()))).collect(Collectors.toList());
                     wholeList.removeAll(reports);
                 } else if (containsSeven && containsOne && containsFive) { // Contains 7, 1 and 5
                     // TODO Do Nothing
@@ -546,7 +581,7 @@ public class AdminDAO {
                                 return false;
                             }
                         } catch (Exception e) {
-                            logger.error("Date Checking Exception For Lead id {} ==>> and LastContact Date {} ==>> ",report.getId(),report.getLastContact());
+                            logger.error("Date Checking Exception For Lead id {} ==>> and LastContact Date {} ==>> ", report.getId(), report.getLastContact());
                             return false;
                         }
                     }
@@ -575,7 +610,7 @@ public class AdminDAO {
             } else {
                 if (containsSeven && !containsOne && !containsFive) { // Contains Only 7
                     wholeList = adminMapper.getReport();
-                    String array[] = new String[]{"1","5"};
+                    String array[] = new String[]{"1", "5"};
                     reports.parallelStream().filter(r -> Arrays.stream(array).anyMatch(Predicate.isEqual(r.getStatus()))).collect(Collectors.toList());
                     wholeList.removeAll(reports);
                 } else if (containsSeven && !containsOne && containsFive) { // Contains 7 and 5
@@ -716,27 +751,27 @@ public class AdminDAO {
 
         long difference_In_Days = TimeUnit.MILLISECONDS.toDays(difference_In_Time) % 365;
         if (difference_In_Days > 30) {
-            result = difference_In_Days / 30 +" months ago";
+            result = difference_In_Days / 30 + " months ago";
             return result;
         } else if (difference_In_Days > 1) {
-            result = difference_In_Days +" days ago";
+            result = difference_In_Days + " days ago";
             return result;
         }
 
         long difference_In_Hours = TimeUnit.MILLISECONDS.toHours(difference_In_Time) % 24;
         if (difference_In_Hours > 24) {
-            result = difference_In_Hours +" hours ago";
+            result = difference_In_Hours + " hours ago";
             return result;
         }
 
-        long difference_In_Minutes = (difference_In_Time/ (1000 * 60)) % 60;
+        long difference_In_Minutes = (difference_In_Time / (1000 * 60)) % 60;
         if (difference_In_Minutes > 60) {
-            result = difference_In_Minutes +" minutes ago";
+            result = difference_In_Minutes + " minutes ago";
             return result;
         }
 
         long difference_In_Seconds = TimeUnit.MILLISECONDS.toSeconds(difference_In_Time) % 60;
-        result = difference_In_Seconds +" seconds ago";
+        result = difference_In_Seconds + " seconds ago";
         return result;
     }
 
@@ -750,7 +785,7 @@ public class AdminDAO {
         try {
             List<MandalDetails> mandalDetails = new ArrayList<>();
             String districtArray[] = districtId.split(",");
-            for (String id:districtArray) {
+            for (String id : districtArray) {
                 mandalDetails.addAll(adminMapper.getMandalLists(Integer.valueOf(id)));
             }
             return mandalDetails;
@@ -764,7 +799,7 @@ public class AdminDAO {
         List<Kiosk> kiosks = new ArrayList<>();
         for (Kiosk ks : adminMapper.getKioskStatus()) {
             Kiosk kiosk = new Kiosk();
-            if(!ks.getId().equalsIgnoreCase("8")) {
+            if (!ks.getId().equalsIgnoreCase("8")) {
                 if (ks.getId().equalsIgnoreCase("6")) {
                     kiosk.setId("1,5");
                 } else {
