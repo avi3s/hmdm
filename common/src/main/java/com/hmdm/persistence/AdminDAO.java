@@ -472,11 +472,14 @@ public class AdminDAO {
             }
 
             if (!containsSeven) { // No Seven so check for 1 and 5 only
-                if (containsOne) {
+                if (containsOne && !containsFive) {
                     String array[] = new String[]{"1"};
                     reports = reports.parallelStream().filter(r -> Arrays.stream(array).anyMatch(Predicate.isEqual(r.getStatus()))).collect(Collectors.toList());
-                } else if (containsFive) {
+                } else if (containsFive && !containsOne) {
                     String array[] = new String[]{"5"};
+                    reports = reports.parallelStream().filter(r -> Arrays.stream(array).anyMatch(Predicate.isEqual(r.getStatus()))).collect(Collectors.toList());
+                } else if (containsFive && containsOne) {
+                    String array[] = new String[]{"1","5"};
                     reports = reports.parallelStream().filter(r -> Arrays.stream(array).anyMatch(Predicate.isEqual(r.getStatus()))).collect(Collectors.toList());
                 }
                 wholeList = reports;
