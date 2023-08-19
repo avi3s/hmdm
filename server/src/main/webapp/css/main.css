@@ -2361,7 +2361,7 @@ h4.collapse-control {
     scrollbar-width: thin;
     scrollbar-color: #aab7cf transparent;
     box-shadow: 0px 0px 20px rgba(1, 41, 112, 0.1);
-    background-color: #fff;
+    background-color: #626f80;
 }
 
 @media (max-width: 1199px) {
@@ -2434,7 +2434,7 @@ h4.collapse-control {
     display: flex;
     align-items: center;
     font-size: 15px;
-    color: #337ab7;
+    color: #fff;
     transition: 0.3;
     padding: 10px 15px;
     border-radius: 4px;
@@ -2531,6 +2531,19 @@ h4.collapse-control {
 #new_bt_style {
     margin-top: 18px;
     width: 100%;
+    border-radius: 20px;
+    background-color: #dae4fd;
+    color: black;
+    height: 50px;
+    width: 100%;
+    border: none;
+}
+
+#new_bt_style_1 ,#new_bt_style_2 {
+    border-radius: 20px;
+    background-color: #dae4fd;
+    color: black;
+    border: none;
 }
 .dataTables_length {
     float: left;
