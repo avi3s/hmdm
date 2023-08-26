@@ -23,4 +23,5 @@ public class Report implements Serializable {
     private String statusColour;
     private String networkType;
     private String lastContact;
+    private String phase;
 }

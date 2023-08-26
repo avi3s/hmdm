@@ -32,12 +32,12 @@ import java.util.List;
 public interface AdminMapper {
 
     @Select("select id, name as rbkId,city as rbkName,company as vaa,phonenumber as contact,status,country as districtName, state as mandalName, zip as secretariatCode, source as networkType, " +
-            "lastcontact as lastContact FROM tblleads where lastcontact > TO_TIMESTAMP(#{startDate},'yyyy-MM-dd HH24:00:00') and lastcontact < TO_TIMESTAMP(#{endDate},'yyyy-MM-dd HH24:00:00') " +
-            "and state in (CASE WHEN #{state} = '' THEN state ELSE #{state} END) order by lastContact desc")
-    List<Report> getReport1(@Param("startDate") String startDate, @Param("endDate") String endDate, @Param("state") String state);
+            "lastcontact as lastContact, phase as phase FROM tblleads where lastcontact > TO_TIMESTAMP(#{startDate},'yyyy-MM-dd HH24:00:00') and lastcontact < TO_TIMESTAMP(#{endDate},'yyyy-MM-dd HH24:00:00') " +
+            "and state in (CASE WHEN #{state} = '' THEN state ELSE #{state} END) and phase in (CASE WHEN #{phase} = '' THEN phase ELSE #{phase} END) order by lastContact desc")
+    List<Report> getReport1(@Param("startDate") String startDate, @Param("endDate") String endDate, @Param("state") String state, @Param("phase") String phase);
 
     @Select("select id, name as rbkId,city as rbkName,company as vaa,phonenumber as contact,status," +
-            "country as districtName, state as mandalName, zip as secretariatCode, source as networkType, lastcontact as lastContact FROM tblleads order by lastContact desc")
+            "country as districtName, state as mandalName, zip as secretariatCode, source as networkType, lastcontact as lastContact, phase as phase FROM tblleads order by lastContact desc")
     List<Report> getReport();
 
     @Select("select id, name as rbkLoginId,city as rbkName,company as vaa,phonenumber as contact,status," +

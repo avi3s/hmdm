@@ -444,7 +444,7 @@ public class AdminDAO {
         checkDateDifference(input);
         List<Kiosk> kiosks = getKioskStatus();
         List<DistrictDetails> districtDetails = getDistrictLists();
-        List<Report> reports = adminMapper.getReport1(input.getStartDate(), input.getEndDate(), input.getMandalName()).parallelStream()
+        List<Report> reports = adminMapper.getReport1(input.getStartDate(), input.getEndDate(), input.getMandalName(), input.getPhase()).parallelStream()
                 .filter(report -> {
                     if (StringUtil.isEmpty(input.getDistrictId())) {
                         return true;
@@ -484,7 +484,8 @@ public class AdminDAO {
                 }
                 wholeList = reports;
             } else {
-                wholeList = adminMapper.getReport().parallelStream().filter(report -> {
+                wholeList = adminMapper.getReport().parallelStream()
+                        .filter(report -> {
                             if (StringUtil.isEmpty(input.getDistrictId())) {
                                 return true;
                             } else {
@@ -497,6 +498,13 @@ public class AdminDAO {
                                 return true;
                             } else {
                                 return report.getMandalName().equalsIgnoreCase(input.getMandalName());
+                            }
+                        })
+                        .filter(report -> {
+                            if (StringUtil.isEmpty(input.getPhase())) {
+                                return true;
+                            } else {
+                                return report.getPhase().equalsIgnoreCase(input.getPhase());
                             }
                         })
                         .collect(Collectors.toList());
