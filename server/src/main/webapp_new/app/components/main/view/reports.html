@@ -1,0 +1,151 @@
+<div class="content-wrapper fullscreen ng-scope">
+    <div class="row">
+        <div class="col-md-12">
+            <sarsha-spinner name="spinner2">
+                <div class="spinner">
+                    <div class="rect1"></div>
+                    <div class="rect2"></div>
+                    <div class="rect3"></div>
+                    <div class="rect4"></div>
+                    <div class="rect5"></div>
+                </div>
+            </sarsha-spinner>
+        </div>
+        <div class="panel_s">
+            <div class="panel-body">
+                <form id="si_form_lead_filter" method="post" accept-charset="utf-8" >
+                    <h4 class="pull-left">Reports <small class="text-success"></small>
+                    </h4>
+                    <div class="clearfix"></div>
+                    <hr>
+                    <div class="row mbot15">
+
+                        <div class="col-md-2 border-right">
+                            <label for="rel_type" class="control-label">District</label>
+                            <div class="form-group no-mbot" >
+                                    <select ng-model='districtId'  id="districtId" name="districtId" class="selectpicker" multiple data-width="100%" data-size="10"  title="All" data-live-search="true" ng-change="districtChange()" >
+                                        <option ng-repeat="option in districtList" value="{{option.id}}">{{option.districtName}}</option>
+                                    </select>
+
+                            </div>
+                        </div>
+                        <!--end counry select-->
+                        <!--start states -->
+                        <div class="col-md-2 border-right">
+                            <label for="states" class="control-label">Mandal</label>
+                            <select ng-model='mandal' id="mandal"  name="mandal" class="selectpicker" data-width="100%" title="All"  data-size="10">
+                                <option ng-repeat="option in mandalList" value="{{option.mandalName}}">{{option.mandalName}}</option>
+                            </select>
+                        </div>
+
+                        <div id="date-range" class="col-md-4 mbot15 fadeIn">
+                            <div class="row">
+                                <div class="col-md-6 border-right">
+                                    <label for="report_from" class="control-label">From Date</label>
+                                    <div class="input-group date">
+                                        <div class='min-padding date-picker date-picker-input'>
+                                            <input class='form-control' datepicker-popup='{{dateFormat}}'
+                                                   ng-model='dateFrom' is-open='openDatePickers.dateFrom' show-button-bar='false'
+                                                   datepicker-options='datePickerOptions'/>
+                                        </div>
+                                        <div class='min-padding date-picker date-picker-button'>
+                                            <button type='button' class='btn btn-default' ng-click='openDateCalendar( $event, true )'>
+                                                <span class='glyphicon glyphicon-calendar'></span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 border-right">
+                                    <label for="report_to" class="control-label">To Date</label>
+                                    <div class="input-group date">
+                                        <div class='min-padding date-picker date-picker-input'>
+                                            <input  class='form-control' datepicker-popup='{{dateFormat}}'
+                                                   ng-model='dateTo' is-open='openDatePickers.dateTo' show-button-bar='false'
+                                                   datepicker-options='datePickerOptions'/>
+                                        </div>
+                                        <div class='min-padding date-picker date-picker-button'>
+                                            <button type='button' class='btn btn-default' ng-click='openDateCalendar( $event, false )'>
+                                                <span class='glyphicon glyphicon-calendar'></span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2 text-center1 border-right">
+                            <label for="status" class="control-label">Kiosk Status</label>
+                            <div class="form-group no-mbot" app-field-wrapper="status">
+                                <div class="dropdown bootstrap-select show-tick bs3" style="width: 100%;">
+                                    <select ng-model='status' id="status" name="status" class="selectpicker" multiple data-actions-box=" true"  data-width="100%" title="All" data-live-search="true" >
+                                        <option ng-repeat="option in statusList" value="{{option.id}}">{{option.name}}</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2 text-center1 border-right clearSubmitButton">
+                            <button type="button" id="new_bt_style_1" class=" pull-left btn btn-info mleft4" ng-click="searchReport($event)">Submit</button>
+                            <button type="button" id="new_bt_style_2" class=" pull-left btn btn-info mleft4" ng-click="clear()">Clear</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="panel-body">
+                <div class="panel-body">
+                    <table class="table tasks-overview dt-table scroll-responsive">
+                        <caption class="si_caption"> For Period {{startDate}} To {{endDate}}</caption>
+                        <thead>
+                        <tr>
+                            <th class="" id="bg_color_table">SL</th>
+                            <th class="" id="bg_color_table">RBK ID</th>
+                            <th class="" id="bg_color_table">VAA</th>
+                            <th class="" id="bg_color_table">Contact</th>
+                            <th class="" id="bg_color_table">RBK Name</th>
+                            <th class="" id="bg_color_table">Mandal</th>
+                            <th class="" id="bg_color_table">District</th>
+                            <th class="" id="bg_color_table">Secretariat Code</th>
+                            <th class="" id="bg_color_table">Status</th>
+                            <th class="" id="bg_color_table">Network type</th>
+                            <th class="" id="bg_color_table">Last Contact</th>
+                        </tr>
+                        </thead>
+                        <tbody ng-if="dashboardData.length > 0">
+                        <tr ng-repeat='rowData in dashboardData'>
+                            <td>{{$index + 1}}</td>
+                            <td><a ng-click="rkbDetails(rowData.id)">{{rowData.rbkId}}</a></td>
+                            <td>
+                                {{rowData.vaa}}
+                            </td>
+                            <td>
+                                {{rowData.contact}}
+                            </td>
+                            <td>
+                                {{rowData.rbkName}}
+                            </td>
+                            <td>
+                                {{rowData.mandalName}}
+                            </td>
+                            <td>
+                                {{rowData.districtName}}
+                            </td>
+                            <td>
+                                {{rowData.secretariatCode}}
+                            </td>
+                            <td>
+                                <span  class="label label-default-light"  style="color:{{rowData.statusColour}};border:1px solid {{rowData.statusColour}}">{{rowData.status}}</span>
+                            </td>
+                            <td>
+                                {{rowData.networkType}}
+                            </td>
+                            <td>
+                                {{rowData.lastContact}}
+                            </td>
+                        </tr>
+                        </tbody>
+
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

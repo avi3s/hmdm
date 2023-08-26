@@ -1,0 +1,19 @@
+{
+"breadcrumb.plugin.contacts.main": " الاتصال",
+  "plugin.contacts.localization.key.name": "جهات الاتصال" ,
+  "plugin.contacts.notice": "يتطلب هذا الاعداد الإضافي تثبيت وكيل جوال (ملحق جهات الاتصال , com.hmdm.contacts)" ,
+  "plugin.contacts.tab.title": "تحميل جهات الاتصال على الجهاز" ,
+  "plugin.contacts.configuration": "الاعداد" ,
+  "plugin.contacts.vcf.url": "VCF لملف URL عنوان" ,
+  "plugin.contacts.vcf.url.placeholder": "https://your.host.com/vcf.file" ,
+  "plugin.contacts.http.username": "HTTP اسم مستخدم" ,
+  "plugin.contacts.http.username.placeholder": "HTTP اسم المستخدم لترخيص",
+  "plugin.contacts.http.password": "HTTP كلمة مرور" ,
+  "plugin.contacts.http.password.placeholder": "HTTP كلمة مرور لترخيص" ,
+  "plugin.contacts.account.type": "ACCOUNT_TYPE قيمة",
+  "plugin.contacts.account.type.placeholder": "لجهات الاتصال المتزامنة ACCOUNT_TYPE",
+  "plugin.contacts.sync.timespan": "فاصل (فترات) المزامنة",
+  "plugin.contacts.sync.timespan.placeholder": "URL الفترة الزمنية بين عمليات إعادة تحميل",
+  "plugin.contacts.wipe.all": "مسح كافة جهات الاتصال" ,
+  "plugin.contacts.data.saved": "تم حفظ الإعدادات بنجاح"
+}

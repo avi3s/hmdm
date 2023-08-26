@@ -19,4 +19,5 @@ public class Input implements Serializable {
     private String mandalName;
     private String kioskStatus;
     private String kioskId;
+    private String phase;
 }

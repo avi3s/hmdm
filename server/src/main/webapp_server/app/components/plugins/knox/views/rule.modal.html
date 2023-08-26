@@ -1,0 +1,47 @@
+<!-- Localization completed -->
+<div ng-show='errorMessage' class='modal-header'>
+    <div ng-show='errorMessage' class='error'><span>{{errorMessage}}</span></div>
+</div>
+<div class='modal-body'>
+    <form class='form-horizontal'>
+
+        <div class='form-group'>
+            <label class='col-sm-3 control-label' localized>plugin.knox.form.rule.pattern</label>
+            <div class='col-sm-9'>
+                <input ng-model='rule.rule' required type='text' class='form-control'
+                       localized-placeholder='plugin.knox.form.rule.pattern.placeholder'>
+                <div localized>plugin.knox.pattern.hint</div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class='col-sm-3 control-label' localized>plugin.knox.form.rule.table.type</label>
+            <div class='col-sm-9'>
+                <select name="tableType" required ng-model="rule.tableType" class="form-control">
+                    <option ng-value="'OUTGOING_CALL'" ng-selected="rule.tableType === 'OUTGOING_CALL'" localized>plugin.knox.search.table.type.outgoing.call</option>
+                    <option ng-value="'INCOMING_CALL'" ng-selected="rule.tableType === 'INCOMING_CALL'" localized>plugin.knox.search.table.type.incoming.call</option>
+                    <option ng-value="'OUTGOING_SMS'" ng-selected="rule.tableType === 'OUTGOING_SMS'" localized>plugin.knox.search.table.type.outgoing.sms</option>
+                    <option ng-value="'INCOMING_SMS'" ng-selected="rule.tableType === 'INCOMING_SMS'" localized>plugin.knox.search.table.type.incoming.sms</option>
+                    <option ng-value="'URL'" ng-selected="rule.tableType === 'URL'" localized>plugin.knox.search.table.type.url</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class='col-sm-3 control-label' localized>plugin.knox.form.rule.type</label>
+            <div class='col-sm-9'>
+                <select name="ruleType" required ng-model="rule.ruleType" class="form-control">
+                    <option ng-value="'WHITELIST'" ng-selected="rule.ruleType === 'WHITELIST'" localized>plugin.knox.search.rule.type.whitelist</option>
+                    <option ng-value="'BLACKLIST'" ng-selected="rule.ruleType === 'BLACKLIST'" localized>plugin.knox.search.rule.type.blacklist</option>
+                </select>
+            </div>
+        </div>
+
+        <div class='form-group'>
+            <div class='col-sm-offset-3 col-sm-9'>
+                <button type='submit' class='btn btn-default' ng-click='save()' ng-disabled="saving" localized>button.save</button>
+                <button type='button' class='btn btn-default' ng-click='closeModal()' localized>button.cancel</button>
+            </div>
+        </div>
+    </form>
+</div>

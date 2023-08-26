@@ -1,0 +1,29 @@
+<div class='modal-body'>
+    <form class='form-horizontal'>
+
+        <div class='form-group'>
+            <label class='col-sm-6 control-label' localized>plugin.knox.copy.source</label>
+            <div class='col-sm-6'>
+                <select class='form-control' required
+                        ng-model='request.configSrc'
+                        ng-options="configuration.id as configuration.name for configuration in configurations">
+                </select>
+            </div>
+        </div>
+
+        <div class='form-group'>
+            <label class='col-sm-6 control-label' localized>plugin.knox.copy.remove.existing</label>
+            <div class='col-sm-6'>
+                <input ng-model='request.removeExisting' value="true"
+                       type='checkbox' class='form-control'>
+            </div>
+        </div>
+
+        <div class='form-group'>
+            <div class='col-sm-offset-3 col-sm-8'>
+                <button type='submit' class='btn btn-default' ng-click='copy()' ng-disabled="saving" localized>plugin.knox.copy.button</button>
+                <button type='button' class='btn btn-default' ng-click='closeModal()' localized>button.cancel</button>
+            </div>
+        </div>
+    </form>
+</div>

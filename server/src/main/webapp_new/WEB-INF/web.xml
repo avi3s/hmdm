@@ -1,0 +1,210 @@
+<!DOCTYPE web-app PUBLIC
+        "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+        "http://java.sun.com/dtd/web-app_2_3.dtd" >
+
+<web-app>
+    <display-name>Headwind MDM</display-name>
+
+    <filter>
+        <filter-name>guice-filter</filter-name>
+        <filter-class>com.google.inject.servlet.GuiceFilter</filter-class>
+    </filter>
+
+    <filter>
+        <filter-name>HMDMApplication</filter-name>
+        <filter-class>org.glassfish.jersey.servlet.ServletContainer</filter-class>
+        <init-param>
+            <param-name>javax.ws.rs.Application</param-name>
+            <param-value>com.hmdm.HMDMApplication</param-value>
+        </init-param>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>guice-filter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>HMDMApplication</filter-name>
+        <url-pattern>/rest/*</url-pattern>
+    </filter-mapping>
+
+    <listener>
+        <listener-class>com.hmdm.guice.Initializer</listener-class>
+    </listener>
+
+    <session-config>
+        <session-timeout>1440</session-timeout>
+    </session-config>
+
+    <context-param>
+        <param-name>files.directory</param-name>
+        <param-value>"C:\Users\aviru\IdeaProjects\android-kiosk-web-master\temp\hmdm\files"</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>plugins.files.directory</param-name>
+        <param-value>"C:\Users\aviru\IdeaProjects\android-kiosk-web-master\temp\hmdm\plugins"</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>initialization.completion.signal.file</param-name>
+        <param-value>"C:\Users\aviru\IdeaProjects\android-kiosk-web-master\temp\hmdm\initialized.txt"</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>aapt.command</param-name>
+        <param-value>"C:\Software\android-9\aapt.exe"</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>log4j.config</param-name>
+        <param-value>"C:\Users\aviru\IdeaProjects\android-kiosk-web-master\install\log4j_template.xml"</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>sql.init.script.path</param-name>
+        <param-value>C:\Users\aviru\IdeaProjects\android-kiosk-web-master\install\sql\hmdm_init.en.sql</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>JDBC.driver</param-name>
+        <param-value>org.postgresql.Driver</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>JDBC.url</param-name>
+        <param-value>jdbc:postgresql://localhost:5432/hmdm</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>JDBC.username</param-name>
+        <param-value>hmdm</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>JDBC.password</param-name>
+        <param-value>topsecret</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>usage.scenario</param-name>
+        <param-value>private</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>base.url</param-name>
+        <param-value>http://localhost:9080</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>hash.secret</param-name>
+        <param-value>12345</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>role.orgadmin.id</param-name>
+        <param-value>2</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>plugin.photo.enable.places</param-name>
+        <param-value>true</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>plugin.devicelog.persistence.config.class</param-name>
+        <param-value>com.hmdm.plugins.devicelog.persistence.postgres.DeviceLogPostgresPersistenceConfiguration
+        </param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>plugin.audit.display.forwarded.ip</param-name>
+        <param-value>true</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>mqtt.server.uri</param-name>
+        <param-value>localhost:31000</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>mqtt.auth</param-name>
+        <param-value>true</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>mqtt.message.delay</param-name>
+        <param-value>1000</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>device.fast.search.chars</param-name>
+        <param-value>5</param-value>
+    </context-param>
+    <context-param>
+        <param-name>rebranding.name</param-name>
+        <param-value>My MDM</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>rebranding.vendor.name</param-name>
+        <param-value>My Company</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>rebranding.vendor.link</param-name>
+        <param-value>https://mycompany.com</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>rebranding.logo</param-name>
+        <param-value>/home/launcher/logo.png</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>rebranding.mobile.name</param-name>
+        <param-value>My MDM</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>rebranding.signup.link</param-name>
+        <param-value>https://mycompany.com/signup/</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>smtp.host</param-name>
+        <param-value>smtp.mailgun.org</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>smtp.port</param-name>
+        <param-value>25</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>smtp.ssl</param-name>
+        <param-value>0</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>smtp.starttls</param-name>
+        <param-value>0</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>smtp.username</param-name>
+        <param-value>myacct@example.com</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>smtp.password</param-name>
+        <param-value>skcbh252235as</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>smtp.from</param-name>
+        <param-value>noreply@example.com</param-value>
+    </context-param>
+
+</web-app>

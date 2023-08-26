@@ -1,0 +1,107 @@
+<!-- Localization completed -->
+<div class="content-wrapper width-1000" ng-controller="PluginKnoxRulesTabController" style="padding">
+
+    <div ncy-breadcrumb></div>
+
+    <div class="text-center">
+        <h4>{{translations.title}}</h4>
+    </div>
+
+    <div class='form-group'>
+        <div ng-show='errorMessage' class='error'><span>{{errorMessage}}</span></div>
+    </div>
+
+    <div class='form-group' style="margin: 0 10px 0 -15px">
+        <div class="col-sm-3">
+            <input type="text"
+                   ng-model="paging.patternFilter"
+                   ng-enter='search()'
+                   localized-placeholder="plugin.knox.search.placeholder.pattern"
+                   class="form-control">
+        </div>
+
+        <div class="col-sm-3">
+            <select name="tableTypeFilter" ng-model="paging.tableTypeFilter" class="form-control">
+                <option ng-value="'null'" ng-selected="paging.tableTypeFilter === null" localized>plugin.knox.search.table.type.all</option>
+                <option ng-value="'OUTGOING_CALL'" ng-selected="paging.tableTypeFilter === 'OUTGOING_CALL'" localized>plugin.knox.search.table.type.outgoing.call</option>
+                <option ng-value="'INCOMING_CALL'" ng-selected="paging.tableTypeFilter === 'INCOMING_CALL'" localized>plugin.knox.search.table.type.incoming.call</option>
+                <option ng-value="'OUTGOING_SMS'" ng-selected="paging.tableTypeFilter === 'OUTGOING_SMS'" localized>plugin.knox.search.table.type.outgoing.sms</option>
+                <option ng-value="'INCOMING_SMS'" ng-selected="paging.tableTypeFilter === 'INCOMING_SMS'" localized>plugin.knox.search.table.type.incoming.sms</option>
+                <option ng-value="'URL'" ng-selected="paging.tableTypeFilter === 'URL'" localized>plugin.knox.search.table.type.url</option>
+            </select>
+        </div>
+
+        <div class="col-sm-3">
+            <select name="ruleTypeFilter" ng-model="paging.ruleTypeFilter" class="form-control">
+                <option ng-value="'null'" ng-selected="paging.ruleTypeFilter === null" localized>plugin.knox.search.rule.type.all</option>
+                <option ng-value="'WHITELIST'" ng-selected="paging.ruleTypeFilter === 'WHITELIST'" localized>plugin.knox.search.rule.type.whitelist</option>
+                <option ng-value="'BLACKLIST'" ng-selected="paging.ruleTypeFilter === 'BLACKLIST'" localized>plugin.knox.search.rule.type.blacklist</option>
+            </select>
+        </div>
+
+        <div class='col-sm-2'>
+            <button type='button' class='btn btn-default' ng-click='search()' localized>button.search</button>
+        </div>
+       <div class='col-sm-1 text-right'>
+            <button type='button' class='btn btn-default' ng-click='addRule()' localized>plugin.knox.add.rule</button>
+        </div>
+    </div>
+
+    <div class='form-group' style="margin-top: 60px">
+        <div class="text-center" ng-if="paging.totalItems > paging.pageSize">
+            <pagination
+                    boundary-links='true' class='pagination-sm'
+                    max-size='3'
+                    ng-model='paging.pageNum'
+                    total-items='paging.totalItems'
+                    items-per-page='paging.pageSize'
+                    previous-text='&lsaquo;' next-text='&rsaquo;' first-text='&laquo;'
+                    last-text='&raquo;'></pagination>
+        </div>
+
+        <table ng-if='rules && rules.length > 0' class='table'>
+        <thead>
+        <tr>
+            <th localized>plugin.knox.table.heading.rule.pattern</th>
+            <th localized>plugin.knox.table.heading.rule.table.type</th>
+            <th localized>plugin.knox.table.heading.rule.type</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat='rule in rules'>
+            <td>{{rule.rule}}</td>
+            <td>{{rule.tableType}}</td>
+            <td>{{rule.ruleType}}</td>
+            <td class="text-right">
+                <div>
+                    <button type='button' class='btn btn-default' localized-title="plugin.knox.edit.rule"
+                                ng-click='editRule(rule)'>
+                        <span class='glyphicon glyphicon-pencil'></span>
+                    </button>
+                    <button type='button' class='btn btn-default' localized-title="plugin.knox.remove.rule"
+                                ng-click='removeRule(rule)'>
+                        <span class='glyphicon glyphicon-trash'></span>
+                    </button>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+        </table>
+
+        <div ng-if='rules && rules.length == 0' class='center' style="margin-top: 60px" localized>plugin.knox.no.rules</div>
+
+        <div class="text-center" ng-if="paging.totalItems > paging.pageSize">
+            <pagination
+                    boundary-links='true' class='pagination-sm'
+                    max-size='3'
+                    ng-model='paging.pageNum'
+                    total-items='paging.totalItems'
+                    items-per-page='paging.pageSize'
+                    previous-text='&lsaquo;' next-text='&rsaquo;' first-text='&laquo;'
+                    last-text='&raquo;'></pagination>
+        </div>
+    </div>
+
+</div>
+

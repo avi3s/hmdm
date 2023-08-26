@@ -1,0 +1,189 @@
+<!-- Localization completed -->
+<div class="width-1000" ng-controller="PluginPhotoSettingsController">
+    <div class="text-center">
+        <h4 localized>plugin.photo.settings.title</h4>
+    </div>
+
+    <div ng-if="!importModeOn">
+        <form class='form-horizontal'>
+            <div class='form-group'>
+                <div ng-show='successMessage' class='success'><span>{{successMessage}}</span></div>
+            </div>
+
+            <div class='form-group'>
+                <label class='col-sm-5 control-label' for="c0" localized>plugin.photo.settings.transmit.to.server</label>
+                <div class='col-sm-1'>
+                    <input id="c0" ng-model='settings.sendPhoto' type='checkbox' class='form-control'/>
+                </div>
+            </div>
+
+            <div class='form-group'>
+                <label class='col-sm-5 control-label' for="c1" localized>plugin.photo.settings.paths.to.images</label>
+                <div class='col-sm-7'>
+                    <input id="c1" ng-model='settings.imagePaths' type='text' class='form-control' maxlength="4096"/>
+                </div>
+            </div>
+
+            <div class='form-group'>
+                <label class='col-sm-5 control-label' for="c12" localized>plugin.photo.settings.paths.non.transmitted</label>
+                <div class='col-sm-7'>
+                    <input id="c12" ng-model='settings.nonTransmittedPaths' type='text' class='form-control' maxlength="4096"/>
+                </div>
+            </div>
+
+            <div class='form-group'>
+                <label class='col-sm-5 control-label' for="c13" localized>plugin.photo.settings.paths.standard.include</label>
+                <div class='col-sm-1'>
+                    <input id="c13" ng-model='settings.includeStandardImagePaths' type='checkbox' class='form-control'/>
+                </div>
+            </div>
+
+            <div class='form-group'>
+                <label class='col-sm-5 control-label' for="c14" localized>plugin.photo.settings.other.files</label>
+                <div class='col-sm-7'>
+                    <input id="c14" ng-model='settings.fileTypes' type='text' class='form-control'
+                           localized-placeholder="plugin.photo.settings.other.files.hint" maxlength="4096"/>
+                </div>
+            </div>
+
+            <div class='form-group'>
+                <label class='col-sm-5 control-label' for="c15" localized>plugin.photo.settings.directory.structure</label>
+                <div class='col-sm-7'>
+                    <input id="c15" ng-model='settings.directory' type='text' class='form-control'
+                           localized-placeholder="plugin.photo.settings.directory.structure.hint" maxlength="4096"/>
+                </div>
+            </div>
+
+            <div class='form-group'>
+                <label class='col-sm-5 control-label' for="c16" localized>plugin.photo.settings.purge.days</label>
+                <div class='col-sm-7'>
+                    <input id="c16" ng-model='settings.purgeDays' type='number' class='form-control' maxlength="4"/>
+                </div>
+            </div>
+
+            <div class='form-group'>
+                <label class='col-sm-5 control-label' for="c2" localized>plugin.photo.settings.delete.images</label>
+                <div class='col-sm-7'>
+                    <select id="c2" ng-model='settings.imageDeletionDelay' class='form-control'>
+                        <option value="0" ng-selected="settings.imageDeletionDelay === 0" localized>plugin.photo.settings.delete.images.immediately</option>
+                        <option value="900" ng-selected="settings.imageDeletionDelay === 900" localized>plugin.photo.settings.delete.images.15mins</option>
+                        <option value="3600" ng-selected="settings.imageDeletionDelay === 3600" localized>plugin.photo.settings.delete.images.1hour</option>
+                        <option value="21600" ng-selected="settings.imageDeletionDelay === 21600" localized>plugin.photo.settings.delete.images.6hours</option>
+                        <option value="86400" ng-selected="settings.imageDeletionDelay === 86400" localized>plugin.photo.settings.delete.images.1day</option>
+                        <option value="259200" ng-selected="settings.imageDeletionDelay === 259200" localized>plugin.photo.settings.delete.images.3days</option>
+                        <option value="604800" ng-selected="settings.imageDeletionDelay === 604800" localized>plugin.photo.settings.delete.images.7days</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class='form-group'>
+                <label class='col-sm-5 control-label' for="c3" localized>plugin.photo.settings.images.geolocation</label>
+                <div class='col-sm-1'>
+                    <input id="c3" ng-model='settings.trackLocation' type='checkbox' class='form-control' maxlength="4096"/>
+                </div>
+            </div>
+
+            <div class='form-group'>
+                <label class='col-sm-5 control-label' localized>plugin.photo.settings.warning.geolocation.off</label>
+                <div class='col-sm-7'>
+                    <input ng-model='settings.trackingOffWarning' type='text' class='form-control'
+                           ng-disabled="!settings.trackLocation"
+                           localized-placeholder='plugin.photo.settings.placeholder.warning.text'/>
+                </div>
+            </div>
+
+            <div class='form-group'>
+                <label class='col-sm-5 control-label' for="c22320" localized>plugin.photo.settings.add.text</label>
+                <div class='col-sm-1'>
+                    <input id="c22320" ng-model='settings.addText' type='checkbox' class='form-control'/>
+                </div>
+            </div>
+
+            <div class='form-group'>
+                <label class='col-sm-5 control-label' localized>plugin.photo.settings.design.color.text</label>
+                <div class='col-sm-7'>
+                    <input ng-model='settings.textColor' name="n6" colorpicker type='text' class='form-control'
+                           ng-disabled="!settings.addText"
+                           localized-placeholder='plugin.photo.settings.design.color.text.placeholder'/>
+                </div>
+            </div>
+
+            <div class='form-group'>
+                <label class='col-sm-5 control-label' localized>plugin.photo.settings.design.color.background</label>
+                <div class='col-sm-7'>
+                    <input ng-model='settings.backgroundColor' name="n5" colorpicker type='text' class='form-control'
+                           ng-disabled="!settings.addText"
+                           localized-placeholder='plugin.photo.settings.design.color.background.placeholder'/>
+                </div>
+            </div>
+
+            <div class='form-group'>
+                <label class='col-sm-5 control-label' for="n52213" localized>plugin.photo.settings.transparency</label>
+                <div class='col-sm-6'>
+                    <input ng-model='settings.transparency' id="n52213" name="n52213" type='range' class='form-control'
+                           min="0" max="100" step="1"
+                           ng-disabled="!settings.addText"/>
+                </div>
+                <div class='col-sm-1'>
+                    <span class="form-control">{{settings.transparency}}</span>
+                </div>
+            </div>
+
+            <div class='form-group'>
+                <label class='col-sm-5 control-label' for="n52223" localized>plugin.photo.settings.text</label>
+                <div class='col-sm-7'>
+                    <textarea ng-model='settings.textContent' id="n52223" name="n52223" class='form-control'
+                              maxlength="256"
+                              localized-title="plugin.photo.settings.text.placeholder"
+                              localized-placeholder="plugin.photo.settings.text.placeholder"
+                              ng-disabled="!settings.addText"></textarea>
+                </div>
+            </div>
+
+            <div class="form-group" ng-if="settings.featurePlacesEnabled">
+                <label class='col-sm-5 control-label' for="c0dd" localized>plugin.photo.settings.link.photo.to.place</label>
+                <div class='col-sm-1'>
+                    <input id="c0dd" ng-model='settings.linkPhotoToPlace' type='checkbox' class='form-control'/>
+                </div>
+            </div>
+
+            <div class="form-group" ng-if="settings.featurePlacesEnabled && settings.linkPhotoToPlace">
+                <label class='col-sm-5 control-label' for="c0cc" localized>plugin.photo.settings.search.place.radius</label>
+                <div class='col-sm-7'>
+                    <input id="c0cc" ng-model='settings.searchPlaceRadius' type='number' min="0" class='form-control'/>
+                </div>
+            </div>
+
+            <div class='form-group'>
+                <div class='col-sm-offset-5 col-sm-7 padding-left'>
+                    <button type='button' class='btn btn-default'
+                            ng-if="settings.featurePlacesEnabled && settings.linkPhotoToPlace"
+                            ng-click='viewPlaces()' localized>button.plugin.photo.places</button>
+                    <button type='button' class='btn btn-default'
+                            ng-if="settings.featurePlacesEnabled && settings.linkPhotoToPlace"
+                            ng-click='importPlaces()' localized>button.plugin.photo.import.places</button>
+                    <button type='submit' class='btn btn-default' ng-click='save()' localized>button.save</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div ng-controller="PluginPhotoPlaceImportController" ng-if="importModeOn">
+        <div class="text-center">
+            <h4 localized>plugin.photo.placeimport.tab.title</h4>
+        </div>
+
+        <div>
+            <div class='form-group'>
+                <div ng-show='errorMessage' class='error'><span>{{errorMessage}}</span></div>
+                <div ng-show='successMessage' class='success'><span>{{successMessage}}</span></div>
+            </div>
+        </div>
+
+        <div ng-include='"app/components/plugins/photo/views/place-import-step1.html"' ng-if="step === 1"></div>
+        <div ng-include='"app/components/plugins/photo/views/place-import-step2.html"' ng-if="step === 2"></div>
+        <div ng-include='"app/components/plugins/photo/views/place-import-step3.html"' ng-if="step === 3"></div>
+
+    </div>
+</div>
+

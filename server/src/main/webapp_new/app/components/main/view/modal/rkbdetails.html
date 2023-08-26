@@ -1,0 +1,123 @@
+<div class="modal-content data rkb-details-modal">
+    <div class="modal-header">
+        <button ng-click='closeModal()' type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true" style="font-size: 35px;">×</span>
+        </button>
+        <h4 class="modal-title"> #{{rkbDetails.id}} - {{rkbDetails.rbkLoginId}} </h4>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="tab-content mtop20">
+                    <!-- from leads modal -->
+                    <div role="tabpanel" class="tab-pane active" id="tab_lead_profile">
+                        <div class="lead-wrapper">
+                            <div class="clearfix no-margin"></div>
+                            <div class="row mbot15">
+                                <hr class="no-margin">
+                            </div>
+                            <form  id="lead_form" method="post" accept-charset="utf-8" novalidate="novalidate">
+                                <div class="row">
+                                    <div class="lead-view" id="leadViewWrapper">
+                                        <div class="col-md-4 col-xs-12 lead-information-col">
+                                            <div class="lead-info-heading">
+                                                <h4 class="no-margin font-medium-xs bold"> Kiosk Information </h4>
+                                            </div>
+                                            <p class="text-muted lead-field-heading no-mtop">RBK Login ID</p>
+                                            <p class="bold font-medium-xs lead-name">{{rkbDetails.rbkLoginId}}</p>
+                                            <p class="text-muted lead-field-heading">Designation</p>
+                                            <p class="bold font-medium-xs">{{rkbDetails.designation}}</p>
+                                            <p class="text-muted lead-field-heading">Email Address</p>
+                                            <p class="bold font-medium-xs">{{rkbDetails.emailAddress}}</p>
+                                            <p class="text-muted lead-field-heading">OTA URL</p>
+                                            <p class="bold font-medium-xs">{{rkbDetails.otaURL}}</p>
+                                            <p class="text-muted lead-field-heading">Phone</p>
+                                            <p class="bold font-medium-xs">
+                                                <a href="tel:9346685337">{{rkbDetails.phone}}</a>
+                                            </p>
+                                            <p class="text-muted lead-field-heading">unique value</p>
+                                            <p class="bold font-medium-xs">{{rkbDetails.uniqueValue}}</p>
+                                            <p class="text-muted lead-field-heading">VAA Name</p>
+                                            <p class="bold font-medium-xs">{{rkbDetails.vaaName}}</p>
+                                            <p class="text-muted lead-field-heading">Address</p>
+                                            <p class="bold font-medium-xs">{{rkbDetails.vaaAddress}}</p>
+                                            <p class="text-muted lead-field-heading">RBK Name</p>
+                                            <p class="bold font-medium-xs">{{rkbDetails.rbkName}}</p>
+                                            <p class="text-muted lead-field-heading">Mandal</p>
+                                            <p class="bold font-medium-xs">{{rkbDetails.mandalName}}</p>
+                                            <p class="text-muted lead-field-heading">District</p>
+                                            <p class="bold font-medium-xs">{{rkbDetails.districtName}}</p>
+                                            <p class="text-muted lead-field-heading">Secretariat Code</p>
+                                            <p class="bold font-medium-xs">{{rkbDetails.secretariatCode}}</p>
+                                        </div>
+                                        <div class="col-md-4 col-xs-12 lead-information-col">
+                                            <div class="lead-info-heading">
+                                                <h4 class="no-margin font-medium-xs bold"> General Information </h4>
+                                            </div>
+                                            <p class="text-muted lead-field-heading no-mtop">Kiosk Status</p>
+                                            <p class="bold font-medium-xs mbot15">{{rkbDetails.kioskStatus}}</p>
+                                            <p class="text-muted lead-field-heading">Network type</p>
+                                            <p class="bold font-medium-xs mbot15">{{rkbDetails.networkType}}</p>
+                                            <p class="text-muted lead-field-heading">Assigned</p>
+                                            <p class="bold font-medium-xs mbot15">{{rkbDetails.assigned}}</p>
+                                            <p class="text-muted lead-field-heading">ADA Sub Division</p>
+                                            <p class="bold font-medium-xs mbot10">{{rkbDetails.adaSubDivision}} </p>
+                                            <p class="text-muted lead-field-heading">Created</p>
+                                            <p class="bold font-medium-xs">
+                                                <span class="text-has-action" data-toggle="tooltip" >{{rkbDetails.created}}</span>
+                                            </p>
+                                            <p class="text-muted lead-field-heading">Last Contact</p>
+                                            <p class="bold font-medium-xs">
+                                                <span class="text-has-action" data-toggle="tooltip" >{{rkbDetails.lastContact}}</span>
+                                            </p>
+                                            <p class="text-muted lead-field-heading">Active</p>
+                                            <p class="bold font-medium-xs mbot15"> {{rkbDetails.active}} </p>
+                                        </div>
+                                        <div class="col-md-4 col-xs-12 lead-information-col">
+                                            <div class="lead-info-heading">
+                                                <h4 class="no-margin font-medium-xs bold"> Custom fields </h4>
+                                            </div>
+                                            <p class="text-muted lead-field-heading no-mtop">Cfms-ID</p>
+                                            <p class="bold font-medium-xs">{{rkbDetails.cfmsID}}</p>
+                                            <p class="text-muted lead-field-heading no-mtop">Latitude</p>
+                                            <p class="bold font-medium-xs">{{rkbDetails.latitude}}</p>
+                                            <p class="text-muted lead-field-heading no-mtop">Longitude</p>
+                                            <p class="bold font-medium-xs">{{rkbDetails.longitude}}</p>
+                                            <p class="text-muted lead-field-heading no-mtop">Unique-ID</p>
+                                            <p class="bold font-medium-xs">{{rkbDetails.uniqueID}}</p>
+                                            <p class="text-muted lead-field-heading no-mtop">Ethernet-macid</p>
+                                            <p class="bold font-medium-xs">{{rkbDetails.ethernetMACId}}</p>
+                                            <p class="text-muted lead-field-heading no-mtop">wifi-macid</p>
+                                            <p class="bold font-medium-xs">{{rkbDetails.wifiMACId}}</p>
+                                            <p class="text-muted lead-field-heading no-mtop">device fingerpint</p>
+                                            <p class="bold font-medium-xs">{{rkbDetails.deviceFingerpint}}</p>
+                                            <p class="text-muted lead-field-heading no-mtop">Name of MAO</p>
+                                            <p class="bold font-medium-xs">{{rkbDetails.nameOfMAO}}</p>
+                                            <p class="text-muted lead-field-heading no-mtop">MAO Contact</p>
+                                            <p class="bold font-medium-xs">{{rkbDetails.maoContact}}</p>
+                                            <p class="text-muted lead-field-heading no-mtop">speed of existing network</p>
+                                            <p class="bold font-medium-xs">{{rkbDetails.speedOfExistingNetwork}}</p>
+                                            <p class="text-muted lead-field-heading no-mtop">AP Fibernet available or not</p>
+                                            <p class="bold font-medium-xs">{{rkbDetails.apFibernetAvailableOrNot}}</p>
+                                            <p class="text-muted lead-field-heading no-mtop">IMEI No</p>
+                                            <p class="bold font-medium-xs">{{rkbDetails.imeiNo}}</p>
+                                            <p class="text-muted lead-field-heading no-mtop">Default launcher</p>
+                                            <p class="bold font-medium-xs">{{rkbDetails.defaultLauncher}}</p>
+                                        </div>
+                                        <div class="clearfix"></div>
+                                        <div class="col-md-12">
+                                            <p class="text-muted lead-field-heading">Address</p>
+                                            <p class="bold font-medium-xs">
+                                                {{rkbDetails.secretariatAddress}}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>

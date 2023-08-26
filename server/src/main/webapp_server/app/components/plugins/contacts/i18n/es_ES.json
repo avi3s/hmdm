@@ -1,0 +1,19 @@
+{
+  "breadcrumb.plugin.contacts.main": "Contactos",
+  "plugin.contacts.localization.key.name": "Contactos",
+  "plugin.contacts.notice": "Este plugin requiere la instalacion de un agente mobile (Contacts Plugin, com.hmdm.contacts)",
+  "plugin.contacts.tab.title": "Subir contactos al dispositivo",
+  "plugin.contacts.configuration": "Configuracion",
+  "plugin.contacts.vcf.url": "URL del archivo VCF",
+  "plugin.contacts.vcf.url.placeholder": "https://your.host.com/vcf.file",
+  "plugin.contacts.http.username": "Usuario HTTP",
+  "plugin.contacts.http.username.placeholder": "Usuario para autorizacion HTTP",
+  "plugin.contacts.http.password": "Contraseña HTTP",
+  "plugin.contacts.http.password.placeholder": "Contraseña para autorizacion HTTP",
+  "plugin.contacts.account.type": "ACCOUNT_TYPE value",
+  "plugin.contacts.account.type.placeholder": "ACCOUNT_TYPE para contactos sincronizados",
+  "plugin.contacts.sync.timespan": "Intervalo de sincronizacion (s)",
+  "plugin.contacts.sync.timespan.placeholder": "Tiempo de espera entre refresco de URL",
+  "plugin.contacts.wipe.all": "Eliminar todos los contactos",
+  "plugin.contacts.data.saved": "Configuraciones fueron guardadas satisfactoriamente"
+}
