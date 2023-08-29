@@ -75,6 +75,7 @@ angular.module('headwind-kiosk')
             $scope.districtId.push(districtId);
         }
         $scope.mandal = '';
+        $scope.phase = '';
         $scope.status = [];
         if(status){
             $scope.status.push(status);
@@ -147,6 +148,7 @@ angular.module('headwind-kiosk')
                 endDate: endDate? endDate+" 00:00:00.000000":'',
                 districtId: $scope.districtId.length > 0 ? $scope.districtId.toString() :'',
                 mandalName: $scope.mandal,
+                phase: $scope.phase,
                 kioskStatus: $scope.status.length > 0 ? $scope.status.toString() :'',
             };
             spinnerService.show('spinner2');

@@ -87,6 +87,16 @@
                             <button type="button" id="new_bt_style_2" class=" pull-left btn btn-info mleft4" ng-click="clear()">Clear</button>
                         </div>
                     </div>
+                    <div class="row mbot15">
+                        <div class="col-md-2 border-right">
+                            <label for="states" class="control-label">Phase</label>
+                            <select ng-model='phase' id="phase"  name="phase" class="selectpicker" data-width="100%" title="All"  data-size="10">
+                                <option value="">All</option>
+                                <option value="Phase 1">Phase 1</option>
+                                <option value="Phase 2">Phase 2</option>
+                            </select>
+                        </div>
+                    </div>
                 </form>
             </div>
             <div class="panel-body">
@@ -106,6 +116,7 @@
                             <th class="" id="bg_color_table">Status</th>
                             <th class="" id="bg_color_table">Network type</th>
                             <th class="" id="bg_color_table">Last Contact</th>
+                            <th class="" id="bg_color_table">Phase</th>
                         </tr>
                         </thead>
                         <tbody ng-if="dashboardData.length > 0">
@@ -138,6 +149,9 @@
                             </td>
                             <td>
                                 {{rowData.lastContact}}
+                            </td>
+                            <td>
+                                {{rowData.phase}}
                             </td>
                         </tr>
                         </tbody>
