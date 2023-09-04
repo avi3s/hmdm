@@ -218,44 +218,22 @@ public class AdminResource {
 
     // =================================================================================================================
     @ApiOperation(
-            value = "Update Display Status",
-            notes = "Update Display Status w.r.t Kiosk ID",
+            value = "Update LastContact",
+            notes = "Update LastContact w.r.t Kiosk ID",
             response = String.class
     )
-    @POST
-    @Path("/update-display-status")
+    @PUT
+    @Path("/update-last-contact")
     @Consumes( MediaType.APPLICATION_JSON )
     @Produces( MediaType.APPLICATION_JSON )
-    public Response updateDisplayStatus(Input input) {
+    public Response updateDisplayStatus() {
         try {
-            return Response.OK(adminDAO.updateDisplayStatus(input));
+            return Response.OK(adminDAO.updateLastContact());
         } catch (ValidationException e) {
             log.error("Validation Error", e);
             return Response.ERROR(e.getMessage());
         } catch (Exception e) {
-            log.error("Unexpected error when Updating Display Status for current user", e);
-            return Response.ERROR(e.getMessage());
-        }
-    }
-
-    // =================================================================================================================
-    @ApiOperation(
-            value = "Update Network Status",
-            notes = "Update Network Status w.r.t Kiosk ID",
-            response = String.class
-    )
-    @POST
-    @Path("/update-network-status")
-    @Consumes( MediaType.APPLICATION_JSON )
-    @Produces( MediaType.APPLICATION_JSON )
-    public Response updateNetworkStatus(Input input) {
-        try {
-            return Response.OK(adminDAO.updateNetworkStatus(input));
-        } catch (ValidationException e) {
-            log.error("Validation Error", e);
-            return Response.ERROR(e.getMessage());
-        } catch (Exception e) {
-            log.error("Unexpected error when Updating Network Status for current user", e);
+            log.error("Unexpected error when Updating Last Contact", e);
             return Response.ERROR(e.getMessage());
         }
     }

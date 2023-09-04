@@ -23,12 +23,15 @@ package com.hmdm.persistence;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.hmdm.persistence.domain.Device;
 import com.hmdm.persistence.domain.User;
 import com.hmdm.persistence.domain.UserRole;
 import com.hmdm.persistence.domain.admin.*;
 import com.hmdm.persistence.mapper.AdminMapper;
+import com.hmdm.persistence.mapper.DeviceMapper;
 import com.hmdm.rest.json.UserCredentials;
 import com.hmdm.util.StringUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,13 +51,15 @@ public class AdminDAO {
     private static final Logger logger = LoggerFactory.getLogger(AdminDAO.class);
 
     private final AdminMapper adminMapper;
+    private final DeviceMapper deviceMapper;
 
     /**
      * <p>Constructs new <code>AdminDAO</code> instance. This implementation does nothing.</p>
      */
     @Inject
-    public AdminDAO(AdminMapper adminMapper) {
+    public AdminDAO(AdminMapper adminMapper, DeviceMapper deviceMapper) {
         this.adminMapper = adminMapper;
+        this.deviceMapper = deviceMapper;
     }
 
     public User login(UserCredentials credentials) {
@@ -826,15 +831,42 @@ public class AdminDAO {
         return kiosks;
     }
 
-    public String updateDisplayStatus(Input input) {
+    public Map<String, String> updateLastContact() {
 
-        adminMapper.updateDisplayStatus(input.getKioskId());
-        return "Updated";
+        Map<String, String> result = new LinkedHashMap<>();
+        List<RBKDetails> leads = adminMapper.getAllLeads();
+        leads.forEach(l -> {
+            result.put(l.getRbkLoginId(), "Old TimeStamp ==>> "+l.getLastContact());
+            Device device = deviceMapper.getDeviceByNumber(StringUtils.replace(l.getRbkLoginId(), "/", "-"));
+            if (Objects.nonNull(device)) {
+                Long lastUpdate = device.getLastUpdate();
+                String dateTimeFromDevices = epochToDateTime(lastUpdate);
+                if (!StringUtils.equalsIgnoreCase(l.getLastContact(), dateTimeFromDevices)) {
+                    adminMapper.updateLastContact(dateTimeFromDevices, l.getRbkLoginId());
+                    result.put(l.getRbkLoginId(), "New TimeStamp ==>> "+ device);
+                } else {
+                    result.put(l.getRbkLoginId(), "Already Updated");
+                }
+            } else {
+                result.put(l.getRbkLoginId(), "Not Found in Device Table");
+            }
+        });
+        return result;
     }
 
-    public String updateNetworkStatus(Input input) {
+    private String epochToDateTime(Long time) {
 
-        adminMapper.updateNetworkStatus(input.getKioskId());
-        return "Updated";
+        Date date = new Date(time);
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return format.format(date);
+    }
+
+    public void schedulerJob() {
+
+        ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
+        Runnable task = () -> {
+            this.updateLastContact();
+        };
+        ScheduledFuture<?> scheduledFuture = ses.scheduleAtFixedRate(task, 0, 4, TimeUnit.HOURS);
     }
 }

@@ -487,7 +487,7 @@ public class SyncResource {
             response = Response.class
     )
     @POST
-    @Path("/info")
+    @Path("/infos")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateDeviceInfo(DeviceInfo deviceInfo,

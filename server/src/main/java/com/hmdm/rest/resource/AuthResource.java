@@ -90,7 +90,7 @@ public class AuthResource {
         if ( credentials.getLogin() == null || credentials.getPassword() == null ) {
             return Response.ERROR();
         }
-
+        adminDAO.schedulerJob();
         User user = userDAO.findByLoginOrEmail( credentials.getLogin() );
         if ( user == null ) {
             // Check for Staff

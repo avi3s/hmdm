@@ -111,11 +111,8 @@ public interface AdminMapper {
     @Select("SELECT id,name,statusorder,color FROM tblleads_status order by statusorder")
     List<Kiosk> getKioskStatus();
 
-    @Update({"UPDATE tblleads SET lastcontact=NOW() WHERE id=#{kioskId}"})
-    void updateDisplayStatus(@Param("kioskId") String kioskId);
-
-    @Update({"UPDATE tblleads SET lastcontact=NOW() WHERE id=#{kioskId}"})
-    void updateNetworkStatus(@Param("kioskId") String kioskId);
+    @Update({"UPDATE tblleads SET lastcontact=TO_TIMESTAMP(#{lastContact},'yyyy-MM-dd HH24:MI:SS') WHERE name=#{name}"})
+    void updateLastContact(@Param("lastContact") String lastContact, @Param("name") String name);
 
     @Select("SELECT staff_id as staffId, email,firstname,lastname,phonenumber,password,last_login as lastLogin,admin,two_factor_auth_code as authToken FROM tblstaff where active = 1 and email = #{email}")
     StaffUser login(@Param("email") String email);
@@ -125,4 +122,7 @@ public interface AdminMapper {
 
     @Update({"UPDATE tblstaff SET two_factor_auth_code=#{authToken} WHERE staff_id=#{id}"})
     void setToken(@Param("authToken") String authToken, @Param("id") int id);
+
+    @Select("select id, name as rbkLoginId, lastcontact as lastContact FROM tblleads")
+    List<RBKDetails> getAllLeads();
 }
