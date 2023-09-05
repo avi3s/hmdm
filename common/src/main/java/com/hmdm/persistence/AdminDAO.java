@@ -39,6 +39,8 @@ import javax.validation.ValidationException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -863,10 +865,21 @@ public class AdminDAO {
 
     public void schedulerJob() {
 
-        ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
         Runnable task = () -> {
             this.updateLastContact();
         };
-        ScheduledFuture<?> scheduledFuture = ses.scheduleAtFixedRate(task, 0, 4, TimeUnit.HOURS);
+        ZonedDateTime now = ZonedDateTime.now();
+        ZonedDateTime nextRun = now.withHour(0).withMinute(1).withSecond(0);
+        if(now.compareTo(nextRun) > 0)
+            nextRun = nextRun.plusDays(1);
+
+        Duration duration = Duration.between(now, nextRun);
+        long initialDelay = duration.getSeconds();
+
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        scheduler.scheduleAtFixedRate(task,
+                initialDelay,
+                TimeUnit.DAYS.toSeconds(1),
+                TimeUnit.SECONDS);
     }
 }
