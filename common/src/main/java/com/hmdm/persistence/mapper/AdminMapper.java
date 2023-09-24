@@ -21,7 +21,6 @@
 
 package com.hmdm.persistence.mapper;
 
-import com.hmdm.persistence.domain.User;
 import com.hmdm.persistence.domain.admin.*;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -123,6 +122,9 @@ public interface AdminMapper {
     @Update({"UPDATE tblstaff SET two_factor_auth_code=#{authToken} WHERE staff_id=#{id}"})
     void setToken(@Param("authToken") String authToken, @Param("id") int id);
 
-    @Select("select id, name as rbkLoginId, lastcontact as lastContact FROM tblleads")
-    List<RBKDetails> getAllLeads();
+    @Select("select id, name as rbkLoginId, lastcontact as lastContact, device_id as uniqueValue FROM tblleads")
+    List<LeadsDetails> getAllLeads();
+
+    @Select("select id, name as rbkLoginId, lastcontact as lastContact FROM tblleads where name = #{name}")
+    RBKDetails getLeadByDeviceNumber(String name);
 }

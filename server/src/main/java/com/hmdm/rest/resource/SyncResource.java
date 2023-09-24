@@ -21,39 +21,18 @@
 
 package com.hmdm.rest.resource;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.hmdm.event.DeviceBatteryLevelUpdatedEvent;
 import com.hmdm.event.DeviceInfoUpdatedEvent;
 import com.hmdm.event.DeviceLocationUpdatedEvent;
 import com.hmdm.event.EventService;
+import com.hmdm.persistence.AdminDAO;
 import com.hmdm.persistence.CustomerDAO;
 import com.hmdm.persistence.DeviceDAO;
-import com.hmdm.persistence.domain.ApplicationSetting;
-import com.hmdm.persistence.domain.ApplicationSettingType;
-import com.hmdm.persistence.domain.ApplicationVersion;
-import com.hmdm.persistence.domain.ConfigurationFile;
-import com.hmdm.persistence.domain.Customer;
+import com.hmdm.persistence.UnsecureDAO;
+import com.hmdm.persistence.domain.*;
 import com.hmdm.rest.json.*;
 import com.hmdm.security.SecurityContext;
 import com.hmdm.util.CryptoUtil;
@@ -61,14 +40,22 @@ import com.hmdm.util.FileUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hmdm.persistence.UnsecureDAO;
-import com.hmdm.persistence.domain.Application;
-import com.hmdm.persistence.domain.Configuration;
-import com.hmdm.persistence.domain.Device;
-import com.hmdm.persistence.domain.Settings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * <p>A resource used for synchronizing the data with devices.</p>
@@ -87,6 +74,8 @@ public class SyncResource {
     private UnsecureDAO unsecureDAO;
 
     private DeviceDAO deviceDAO;
+
+    private AdminDAO adminDAO;
 
     private CustomerDAO customerDAO;
 
@@ -128,6 +117,7 @@ public class SyncResource {
                         Injector injector,
                         CustomerDAO customerDAO,
                         DeviceDAO deviceDAO,
+                        AdminDAO adminDAO,
                         @Named("base.url") String baseUrl,
                         @Named("secure.enrollment") boolean secureEnrollment,
                         @Named("hash.secret") String hashSecret,
@@ -142,6 +132,7 @@ public class SyncResource {
         this.hashSecret = hashSecret;
         this.mobileAppName = mobileAppName;
         this.vendor = vendor;
+        this.adminDAO = adminDAO;
 
         Set<SyncResponseHook> allYourInterfaces = new HashSet<>();
         for (Key<?> key : injector.getAllBindings().keySet()) {
@@ -164,11 +155,11 @@ public class SyncResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response getDeviceSettingExtended(DeviceCreateOptions createOptions,
-                                     @PathParam("deviceId")
-                                     @ApiParam("An identifier of device within MDM server")
-                                             String number,
-                                     @Context HttpServletRequest request,
-                                     @Context HttpServletResponse response) {
+                                             @PathParam("deviceId")
+                                             @ApiParam("An identifier of device within MDM server")
+                                                     String number,
+                                             @Context HttpServletRequest request,
+                                             @Context HttpServletResponse response) {
         logger.debug("/public/sync/configuration/{}", number);
 
         if (secureEnrollment) {
@@ -222,7 +213,7 @@ public class SyncResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getDeviceSetting(@PathParam("deviceId")
                                      @ApiParam("An identifier of device within MDM server")
-                                     String number,
+                                             String number,
                                      @Context HttpServletRequest request,
                                      @Context HttpServletResponse response) {
         logger.debug("/public/sync/configuration/{}", number);
@@ -271,8 +262,8 @@ public class SyncResource {
     }
 
     private Response getDeviceSettingInternal(Device dbDevice, boolean migration, boolean foundByImeiOrSerial,
-                                           HttpServletRequest request,
-                                           HttpServletResponse response) throws UnsupportedEncodingException {
+                                              HttpServletRequest request,
+                                              HttpServletResponse response) throws UnsupportedEncodingException {
 
         if (!migration && dbDevice.getOldNumber() != null) {
             // If a device requested the configuration by new device ID, the migration is completed
@@ -299,7 +290,7 @@ public class SyncResource {
                 dbDevice.getCustomerId(), dbDevice.getConfigurationId()
         );
 
-        for (Application app: applications) {
+        for (Application app : applications) {
             final String icon = app.getIcon();
             if (icon != null) {
                 if (!icon.trim().isEmpty()) {
@@ -472,8 +463,8 @@ public class SyncResource {
 
         // Always add signature to enable "soft" security implementation
 //        if (secureEnrollment) {
-            // Add a signature to avoid MITM attack
-            response.setHeader(HEADER_RESPONSE_SIGNATURE, CryptoUtil.getDataSignature(hashSecret, syncResponse));
+        // Add a signature to avoid MITM attack
+        response.setHeader(HEADER_RESPONSE_SIGNATURE, CryptoUtil.getDataSignature(hashSecret, syncResponse));
 //        }
 
         return Response.OK(syncResponse);
@@ -534,6 +525,15 @@ public class SyncResource {
                         objectMapper.writeValueAsString(deviceInfo),
                         dbDevice.getImeiUpdateTs());
 
+                // Update TBL_LEADS Table
+                try {
+                    Device updateDevice = this.unsecureDAO.getDeviceById(dbDevice.getId());
+                    String result = adminDAO.updateLastContact(updateDevice);
+                    logger.debug("Result After Updating TBL_LEADS TABLE -->> {}", result);
+                } catch (Exception e) {
+                    logger.error("Fail to Update TBL_LEADS Table --> {}", e.getMessage());
+                }
+
                 boolean needUpdate = false;
                 if (deviceInfo.getCustom1() != null) {
                     dbDevice.setCustom1(deviceInfo.getCustom1());
@@ -589,8 +589,8 @@ public class SyncResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response saveApplicationSettings(@PathParam("deviceId")
-                                                @ApiParam("An identifier of device within MDM server")
-                                                        String deviceNumber,
+                                            @ApiParam("An identifier of device within MDM server")
+                                                    String deviceNumber,
                                             List<SyncApplicationSetting> applicationSettings) {
         logger.debug("/public/sync/applicationSettings/{} --> {}", deviceNumber, applicationSettings);
 
@@ -656,4 +656,18 @@ public class SyncResource {
         return result;
     }
 
+    // =================================================================================================================
+    @ApiOperation(
+            value = "Get All devices From Leads Table",
+            notes = "Gets the devices info From Leads Table For Old Server",
+            response = SyncResponse.class
+    )
+    @GET
+    @Path("/get-all-leads-devices")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAllTBLLeadsDevices() {
+
+        logger.debug("get-all-leads-devices");
+        return Response.OK(adminDAO.getAllLeads());
+    }
 }

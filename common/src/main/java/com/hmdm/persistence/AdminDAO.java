@@ -486,7 +486,7 @@ public class AdminDAO {
                     String array[] = new String[]{"5"};
                     reports = reports.parallelStream().filter(r -> Arrays.stream(array).anyMatch(Predicate.isEqual(r.getStatus()))).collect(Collectors.toList());
                 } else if (containsFive && containsOne) {
-                    String array[] = new String[]{"1","5"};
+                    String array[] = new String[]{"1", "5"};
                     reports = reports.parallelStream().filter(r -> Arrays.stream(array).anyMatch(Predicate.isEqual(r.getStatus()))).collect(Collectors.toList());
                 }
                 wholeList = reports;
@@ -836,16 +836,16 @@ public class AdminDAO {
     public Map<String, String> updateLastContact() {
 
         Map<String, String> result = new LinkedHashMap<>();
-        List<RBKDetails> leads = adminMapper.getAllLeads();
+        List<LeadsDetails> leads = adminMapper.getAllLeads();
         leads.forEach(l -> {
-            result.put(l.getRbkLoginId(), "Old TimeStamp ==>> "+l.getLastContact());
+            result.put(l.getRbkLoginId(), "Old TimeStamp ==>> " + l.getLastContact());
             Device device = deviceMapper.getDeviceByNumber(StringUtils.replace(l.getRbkLoginId(), "/", "-"));
             if (Objects.nonNull(device)) {
                 Long lastUpdate = device.getLastUpdate();
                 String dateTimeFromDevices = epochToDateTime(lastUpdate);
                 if (!StringUtils.equalsIgnoreCase(l.getLastContact(), dateTimeFromDevices)) {
                     adminMapper.updateLastContact(dateTimeFromDevices, l.getRbkLoginId());
-                    result.put(l.getRbkLoginId(), "New TimeStamp ==>> "+ device);
+                    result.put(l.getRbkLoginId(), "New TimeStamp ==>> " + device);
                 } else {
                     result.put(l.getRbkLoginId(), "Already Updated");
                 }
@@ -854,6 +854,30 @@ public class AdminDAO {
             }
         });
         return result;
+    }
+
+    public String updateLastContact(Device device) {
+
+        String result = "";
+        Long lastUpdate = device.getLastUpdate();
+        String number = StringUtils.replace(device.getNumber(), "-", "/");
+        RBKDetails rbkDetails = adminMapper.getLeadByDeviceNumber(number);
+        if (Objects.nonNull(rbkDetails)) {
+            String dateTimeFromDevices = epochToDateTime(lastUpdate);
+            if (!StringUtils.equalsIgnoreCase(rbkDetails.getLastContact(), dateTimeFromDevices)) {
+                adminMapper.updateLastContact(dateTimeFromDevices, rbkDetails.getRbkLoginId());
+            } else {
+                result = number + " Already Updated";
+            }
+        } else {
+            result = number + " Not Found in TBL_LEADS Table";
+        }
+
+        return result;
+    }
+
+    public List<LeadsDetails> getAllLeads() {
+        return adminMapper.getAllLeads();
     }
 
     private String epochToDateTime(Long time) {
@@ -870,7 +894,7 @@ public class AdminDAO {
         };
         ZonedDateTime now = ZonedDateTime.now();
         ZonedDateTime nextRun = now.withHour(0).withMinute(1).withSecond(0);
-        if(now.compareTo(nextRun) > 0)
+        if (now.compareTo(nextRun) > 0)
             nextRun = nextRun.plusDays(1);
 
         Duration duration = Duration.between(now, nextRun);
